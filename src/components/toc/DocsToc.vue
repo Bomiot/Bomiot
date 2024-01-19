@@ -1,6 +1,6 @@
 <template>
     <div class="q-pa-md">
-      <div v-html="tocRouter" style="margin-top: 25px; width: 95%; max-width: 95%"></div>
+      <div v-html="tocRouter" style="margin-top: 25px; width: 99%; max-width: 99%"></div>
     </div>
 </template>
 

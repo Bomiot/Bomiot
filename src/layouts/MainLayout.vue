@@ -50,14 +50,14 @@
         </q-list>
     </q-drawer>
 
-    <q-drawer :class="{'drawer-background-dark': $q.dark.isActive}" v-model="rightDrawerStore.rightDrawerOpen" side="right">
+    <q-drawer :class="{'drawer-background-dark': $q.dark.isActive}" v-model="rightDrawerStore.rightDrawerOpen" side="right" style="width: 310px!important">
       <DocsToc />
     </q-drawer>
 
     <q-page-container>
         <router-view />
         <q-page-scroller position="bottom-right" :scroll-offset="150" :offset="[18, 18]">
-          <q-btn fab icon="keyboard_arrow_up" color="accent"></q-btn>
+          <q-btn fab icon="keyboard_arrow_up" color="indigo"></q-btn>
         </q-page-scroller>
     </q-page-container>
   </q-layout>

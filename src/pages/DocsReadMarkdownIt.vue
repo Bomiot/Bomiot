@@ -28,6 +28,7 @@ import markdownItMark from 'markdown-it-mark'
 import markdownItDeflist from 'markdown-it-deflist'
 import markdownItAbbr from 'markdown-it-abbr'
 import markdownItMergeCells from 'markdown-it-merge-cells'
+import markdownItCodeCopy from 'markdown-it-code-copy'
 import 'highlight.js/styles/monokai.css'
 import { useMeta, useQuasar } from "quasar"
 import { useRouter } from 'vue-router'
@@ -62,6 +63,7 @@ function MDHtml () {
     md.use(markdownItKatex)
     md.use(emoji)
     md.use(markdownItMergeCells)
+    md.use(markdownItCodeCopy)
     md.use(markdownItContainer, 'warning', {
       validate: function(params) {
         return params
@@ -116,6 +118,7 @@ function MDHtml () {
     md.use(markdownItKatex)
     md.use(emoji)
     md.use(markdownItMergeCells)
+    md.use(markdownItCodeCopy)
     md.use(markdownItContainer, 'warning', {
       validate: function(params) {
         return params
