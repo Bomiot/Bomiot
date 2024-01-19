@@ -21,13 +21,13 @@
             YouTube
           </q-tooltip>
         </q-btn>
-        <q-btn dense flat round style="margin-right: 10px" @click="openLink('https://gitee.com/Singosgu/GreaterWMS')">
+        <q-btn dense flat round style="margin-right: 10px" @click="openLink('https://gitee.com/Bomiot/Bomiot')">
           <img src="/statics/icons/gitee.svg" style="width: 25px" :alt="appNameStore.appName + ' Gitee'" />
           <q-tooltip class="bg-indigo" :offset="[15, 15]" content-style="font-size: 12px">
             Gitee
           </q-tooltip>
         </q-btn>
-        <q-btn dense flat round @click="openLink('https://github.com/GreaterWMS/GreaterWMS')">
+        <q-btn dense flat round @click="openLink('https://github.com/Bomiot/Bomiot')">
           <img src="/statics/icons/github.svg" style="width: 25px" :alt="appNameStore.appName + ' GitHub'" />
           <q-tooltip class="bg-indigo" :offset="[15, 15]" content-style="font-size: 12px">
             GitHub
