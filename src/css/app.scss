@@ -1,0 +1,23 @@
+// app global css in SCSS form
+
+.main-headers-sun {
+  background: linear-gradient(to right, #00b4db, #0083b0)
+}
+
+.main-headers-dark {
+  background: linear-gradient(to right, #0f2027, #203a43, #2c5364)
+}
+
+.drawer-background-dark {
+  background: #121212
+}
+
+.linkClass {
+  text-decoration:none;
+  color: black;
+}
+
+.linkDarkClass {
+  text-decoration:none;
+  color: white;
+}

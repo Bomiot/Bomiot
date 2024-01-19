@@ -1,0 +1,52 @@
+{
+  "name": "bomiot",
+  "version": "0.0.1",
+  "description": "A bomiot app",
+  "productName": "bomiot app",
+  "author": "elvis.shi@56yhz.com",
+  "private": true,
+  "scripts": {
+    "lint": "eslint --ext .js,.vue ./",
+    "format": "prettier --write \"**/*.{js,vue,scss,html,md,json}\" --ignore-path .gitignore",
+    "test": "echo \"No test specified\" && exit 0",
+    "dev": "quasar dev",
+    "build": "quasar build"
+  },
+  "dependencies": {
+    "@giscus/vue": "^2.4.0",
+    "@quasar/extras": "^1.16.4",
+    "axios": "^1.2.1",
+    "lottie-web": "^5.12.2",
+    "markdown-it": "^14.0.0",
+    "markdown-it-anchor": "^8.6.7",
+    "markdown-it-attrs": "^4.1.6",
+    "markdown-it-container": "^4.0.0",
+    "markdown-it-emoji": "^3.0.0",
+    "markdown-it-footnote": "^4.0.0",
+    "markdown-it-highlightjs": "^4.0.1",
+    "markdown-it-katex": "^2.0.3",
+    "markdown-it-task-lists": "^2.1.1",
+    "markdown-it-toc-done-right": "^4.2.0",
+    "pinia": "^2.0.11",
+    "pinia-plugin-persistedstate": "^3.2.1",
+    "quasar": "^2.8.0",
+    "vue": "^3.2.29",
+    "vue-i18n": "^9.0.0",
+    "vue-router": "^4.0.12"
+  },
+  "devDependencies": {
+    "@intlify/vite-plugin-vue-i18n": "^3.3.1",
+    "@quasar/app-vite": "^1.4.3",
+    "autoprefixer": "^10.4.2",
+    "eslint": "^8.11.0",
+    "eslint-config-prettier": "^8.1.0",
+    "eslint-plugin-vue": "^9.0.0",
+    "postcss": "^8.4.14",
+    "prettier": "^2.5.1"
+  },
+  "engines": {
+    "node": "^20 || ^18 || ^16",
+    "npm": ">= 6.13.4",
+    "yarn": ">= 1.21.1"
+  }
+}
