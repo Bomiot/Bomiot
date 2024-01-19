@@ -23,6 +23,11 @@ import markdownItAttrs from 'markdown-it-attrs'
 import markdownItFootnote from 'markdown-it-footnote'
 import markdownItTaskLists from 'markdown-it-task-lists'
 import markdownItHighlight from 'markdown-it-highlightjs'
+import markdownItIns from 'markdown-it-ins'
+import markdownItMark from 'markdown-it-mark'
+import markdownItDeflist from 'markdown-it-deflist'
+import markdownItAbbr from 'markdown-it-abbr'
+import markdownItMergeCells from 'markdown-it-merge-cells'
 import 'highlight.js/styles/monokai.css'
 import { useMeta, useQuasar } from "quasar"
 import { useRouter } from 'vue-router'
@@ -50,12 +55,30 @@ function MDHtml () {
     const md = new MarkdownIt({
       html: true,
       linkify: true,
+      brakes: true,
       typography: true
     })
     md.use(markdownItAttrs)
     md.use(markdownItKatex)
     md.use(emoji)
-    md.use(markdownItContainer)
+    md.use(markdownItMergeCells)
+    md.use(markdownItContainer, 'warning', {
+      validate: function(params) {
+        return params
+        },
+      render: function (tokens, idx) {
+        var m = tokens[idx].info
+        if (tokens[idx].nesting === 1) {
+          return '<details style="background: yellowgreen; color: black; "><summary>' + md.utils.escapeHtml(m) + '</summary>\n'
+        } else {
+          return '</details>\n'
+        }
+      },
+    })
+    md.use(markdownItIns)
+    md.use(markdownItMark)
+    md.use(markdownItDeflist)
+    md.use(markdownItAbbr)
     md.use(markdownItAnchor, { permalink: true, permalinkBefore: true, permalinkSymbol: '' })
     md.use(markdownItTocDoneRight, {
         containerId: 'toc',
@@ -92,7 +115,24 @@ function MDHtml () {
     md.use(markdownItAttrs)
     md.use(markdownItKatex)
     md.use(emoji)
-    md.use(markdownItContainer)
+    md.use(markdownItMergeCells)
+    md.use(markdownItContainer, 'warning', {
+      validate: function(params) {
+        return params
+        },
+      render: function (tokens, idx) {
+        var m = tokens[idx].info
+        if (tokens[idx].nesting === 1) {
+          return '<details style="background: yellowgreen; color: black; "><summary>' + md.utils.escapeHtml(m) + '</summary>\n'
+        } else {
+          return '</details>\n'
+        }
+      },
+    })
+    md.use(markdownItIns)
+    md.use(markdownItMark)
+    md.use(markdownItDeflist)
+    md.use(markdownItAbbr)
     md.use(markdownItAnchor, { permalink: true, permalinkBefore: true, permalinkSymbol: '' })
     md.use(markdownItTocDoneRight, {
         containerId: 'toc',

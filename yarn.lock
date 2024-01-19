@@ -2160,6 +2160,11 @@ magic-string@^0.30.5:
   dependencies:
     "@jridgewell/sourcemap-codec" "^1.4.15"
 
+markdown-it-abbr@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.npmmirror.com/markdown-it-abbr/-/markdown-it-abbr-2.0.0.tgz#aa01d8ff23ebf672f9a7db02a974e59254ce7acb"
+  integrity sha512-of7C8pXSjXjDojW4neNP+jD7inUYH/DO0Ca+K/4FUEccg0oHAEX/nfscw0jfz66PJbYWOAT9U8mjO21X5p6aAw==
+
 markdown-it-anchor@^8.6.7:
   version "8.6.7"
   resolved "https://registry.npmmirror.com/markdown-it-anchor/-/markdown-it-anchor-8.6.7.tgz#ee6926daf3ad1ed5e4e3968b1740eef1c6399634"
@@ -2174,6 +2179,11 @@ markdown-it-container@^4.0.0:
   version "4.0.0"
   resolved "https://registry.npmmirror.com/markdown-it-container/-/markdown-it-container-4.0.0.tgz#3912394f7da6e8ef3b43a0f58b1d0ded851f2a38"
   integrity sha512-HaNccxUH0l7BNGYbFbjmGpf5aLHAMTinqRZQAEQbMr2cdD3z91Q6kIo1oUn1CQndkT03jat6ckrdRYuwwqLlQw==
+
+markdown-it-deflist@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.npmmirror.com/markdown-it-deflist/-/markdown-it-deflist-3.0.0.tgz#f2beb0b308beae5a62f62cca7fde0de48dcbe3de"
+  integrity sha512-OxPmQ/keJZwbubjiQWOvKLHwpV2wZ5I3Smc81OjhwbfJsjdRrvD5aLTQxmZzzePeO0kbGzAo3Krk4QLgA8PWLg==
 
 markdown-it-emoji@^3.0.0:
   version "3.0.0"
@@ -2192,12 +2202,27 @@ markdown-it-highlightjs@^4.0.1:
   dependencies:
     highlight.js "^11.5.1"
 
+markdown-it-ins@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npmmirror.com/markdown-it-ins/-/markdown-it-ins-4.0.0.tgz#f4c805e6ba911f12793c0f99af3ebfda8f19021b"
+  integrity sha512-sWbjK2DprrkINE4oYDhHdCijGT+MIDhEupjSHLXe5UXeVr5qmVxs/nTUVtgi0Oh/qtF+QKV0tNWDhQBEPxiMew==
+
 markdown-it-katex@^2.0.3:
   version "2.0.3"
   resolved "https://registry.npmmirror.com/markdown-it-katex/-/markdown-it-katex-2.0.3.tgz#d7b86a1aea0b9d6496fab4e7919a18fdef589c39"
   integrity sha512-nUkkMtRWeg7OpdflamflE/Ho/pWl64Lk9wNBKOmaj33XkQdumhXAIYhI0WO03GeiycPCsxbmX536V5NEXpC3Ng==
   dependencies:
     katex "^0.6.0"
+
+markdown-it-mark@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npmmirror.com/markdown-it-mark/-/markdown-it-mark-4.0.0.tgz#c19cbc87d9cb9fd1a495e8fe31b740b6d9ebf8c8"
+  integrity sha512-YLhzaOsU9THO/cal0lUjfMjrqSMPjjyjChYM7oyj4DnyaXEzA8gnW6cVJeyCrCVeyesrY2PlEdUYJSPFYL4Nkg==
+
+markdown-it-merge-cells@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.npmmirror.com/markdown-it-merge-cells/-/markdown-it-merge-cells-2.0.0.tgz#d3a6e391ce2c4678c2c5d31102d38fdc02b621f7"
+  integrity sha512-aSAr+Nux0PNdpWQsTZQ2ioxSgaIU7pSGtU4Q+UsxJQc4lexo8vOVUT+qvgQadoZcrgEoXHSpO0P9xFb/r9HdrA==
 
 markdown-it-task-lists@^2.1.1:
   version "2.1.1"
