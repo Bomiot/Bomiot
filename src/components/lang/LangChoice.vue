@@ -43,6 +43,14 @@ function ChangeLanguage(e) {
 onMounted(() => {
   if ($q.localStorage.has('language')) {
     locale.value = JSON.parse($q.localStorage.getItem('language')).langData
+  } else {
+    if ($q.lang.getLocale() === 'zh-CN') {
+      locale.value = 'zh-CN'
+      ChangeLanguage(locale.value)
+    } else {
+      locale.value = 'en'
+      ChangeLanguage(locale.value)
+    }
   }
 })
 

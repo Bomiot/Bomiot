@@ -88,7 +88,11 @@ function MDHtml () {
         listClass: 'listClass',
         linkClass: 'linkDarkClass',
         callback: function (html, ) {
-        mdStore.tocRouterChange(html)
+        if (html.length < 50) {
+          router.push('/404')
+        } else {
+          mdStore.tocRouterChange(html)
+        }
       }
     })
     md.use(markdownItFootnote)
@@ -143,7 +147,11 @@ function MDHtml () {
         listClass: 'listClass',
         linkClass: 'linkClass',
         callback: function (html, ) {
-        mdStore.tocRouterChange(html)
+        if (html.length < 50) {
+          router.push('/404')
+        } else {
+          mdStore.tocRouterChange(html)
+        }
       }
     })
     md.use(markdownItFootnote)
