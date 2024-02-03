@@ -9,7 +9,7 @@
           </q-avatar>
             {{ appNameStore.appName }} Team©
         </q-toolbar-title>
-        <q-btn dense flat round style="margin-right: 10px" @click="openLink('https://space.bilibili.com/407321291/channel/seriesdetail?sid=776320')">
+        <q-btn dense flat round style="margin-right: 10px" @click="openLink('https://space.bilibili.com/407321291')">
           <img src="/statics/icons/bilibili.svg" style="width: 25px" :alt="appNameStore.appName + ' Bilibili'"/>
           <q-tooltip class="bg-indigo" :offset="[15, 15]" content-style="font-size: 12px">
             Bilibili
@@ -35,6 +35,11 @@
         </q-btn>
         <LangChoice />
         <DarkMode />
+        <q-btn-group unelevated style="margin-left: 25px">
+          <q-btn v-show="tokenStore.token === ''" :label="t('login')" @click="loginForm = true"/>
+          <q-btn v-show="tokenStore.token === ''" :label="t('register')" @click="registerForm = true"/>
+          <q-btn v-show="tokenStore.token !== ''" :label="t('logout')" @click="logOuts()"/>
+        </q-btn-group>
         <q-btn dense flat round icon="menu" v-show="rightDrawerStore.rightDrawerMenu" @click="rightDrawerStore.toggleRightDrawer" />
       </q-toolbar>
       <TabList />
@@ -61,19 +66,56 @@
         </q-page-scroller>
     </q-page-container>
   </q-layout>
+  <q-dialog v-model="loginForm">
+    <q-card style="min-width: 350px">
+      <q-card-section class="row items-center q-pb-none">
+        <div class="text-h6">{{ t('login') }}</div>
+        <q-space />
+        <q-btn icon="close" @click="candelLogin()" flat round dense v-close-popup />
+      </q-card-section>
+      <q-card-section>
+        <q-input autofocus :label="t('username')" v-model="loginData.username"></q-input>
+        <q-input :label="t('password')" v-model="loginData.password"></q-input>
+      </q-card-section>
+      <q-card-actions align="right" class="text-primary">
+        <q-btn flat :label="t('cancel')" @click="candelLogin()" v-close-popup />
+        <q-btn flat :label="t('submit')" @click="submitLogin()" v-close-popup />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
+  <q-dialog v-model="registerForm">
+    <q-card style="min-width: 350px">
+      <q-card-section class="row items-center q-pb-none">
+        <div class="text-h6">{{ t('register') }}</div>
+        <q-space />
+        <q-btn icon="close" @click="candelRegister()" flat round dense v-close-popup />
+      </q-card-section>
+      <q-card-section>
+        <q-input autofocus :label="t('username')" v-model="registerData.username"></q-input>
+        <q-input :label="t('password1')" v-model="registerData.password1"></q-input>
+        <q-input :label="t('password2')" v-model="registerData.password2"></q-input>
+      </q-card-section>
+      <q-card-actions align="right" class="text-primary">
+        <q-btn flat :label="t('cancel')" @click="candelRegister()" v-close-popup />
+        <q-btn flat :label="t('submit')" @click="submitRegister()" v-close-popup />
+      </q-card-actions>
+    </q-card>
+  </q-dialog>
 </template>
 
 
 <script setup>
-import { onMounted, computed } from 'vue'
+import { onMounted, computed, ref } from 'vue'
 import { useAppNameStore } from 'stores/appName'
 import { userightDrawerStore } from "stores/rightDrawer"
 import { useleftDrawerStore } from "stores/leftDrawer"
 import { useLanguageStore } from 'stores/language'
+import { useTokenStore } from "stores/token"
 import { useI18n } from "vue-i18n"
 import { useQuasar } from "quasar"
 import { useRouter } from 'vue-router'
 import { openURL } from 'quasar'
+import { post } from 'boot/axios'
 import DarkMode from 'components/dark/DarkMode.vue'
 import LangChoice from 'components/lang/LangChoice.vue'
 import TabList from 'components/TabList.vue'
@@ -88,14 +130,100 @@ const appNameStore = useAppNameStore()
 const rightDrawerStore = userightDrawerStore()
 const leftDrawerStore = useleftDrawerStore()
 const langStore = useLanguageStore()
+const tokenStore = useTokenStore()
+
+const loginForm = ref(false)
+const loginData = ref({
+  username: '',
+  password: ''
+})
+
+const registerForm = ref(false)
+const registerData = ref({
+  username: '',
+  password1: '',
+  password2: ''
+})
 
 const lang = computed(() => langStore.langData)
+
+function candelLogin () {
+  loginData.value = {
+    username: '',
+    password: ''
+  }
+}
+
+function submitLogin () {
+  if (loginData.value.username !== '' && loginData.value.password !== '') {
+    post('login/', loginData).then((res) =>{
+      if (res.token) {
+        tokenStore.tokenChange(res.token)
+      } else {
+        tokenStore.tokenChange('')
+      }
+      candelLogin()
+    }).catch((err) =>{
+      console.log(err)
+    })
+  } else {
+    $q.notify({
+      type: 'warning',
+      message: t('usererror')
+    })
+  }
+}
+
+function candelRegister () {
+  registerData.value = {
+    username: '',
+    password1: '',
+    password2: ''
+  }
+}
+
+function submitRegister () {
+  if (registerData.value.username !== '' && registerData.value.password1 !== '' && registerData.value.password2 !== '') {
+    if (registerData.value.password1 === registerData.value.password2) {
+      post('register/', registerData).then((res) =>{
+        if (res.token) {
+          tokenStore.tokenChange(res.token)
+        } else {
+          tokenStore.tokenChange('')
+        }
+        candelRegister()
+      }).catch((err) =>{
+        console.log(err)
+      })
+    } else {
+      $q.notify({
+        type: 'warning',
+        message: t('passworderror')
+      })
+    }
+
+  } else {
+    $q.notify({
+      type: 'warning',
+      message: t('usererror')
+    })
+  }
+}
+
+function logOuts () {
+  tokenStore.tokenChange('')
+  $q.notify({
+      type: 'info',
+      message: t('logoutnotice')
+    })
+}
 
 function openLink (e) {
   openURL(e)
 }
 
 onMounted(() => {
+  tokenStore.tokenCheck()
 })
 
 </script>

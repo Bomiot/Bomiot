@@ -32,9 +32,9 @@ import { useI18n } from 'vue-i18n'
 const langStore = useLanguageStore()
 const $q = useQuasar()
 
-const lang = computed(() => langStore.langGet)
+const lang = computed(() => langStore.langData)
 const { locale } = useI18n({ useScope: 'global' })
-const langOptions = computed(() => langStore.langOptionGet)
+const langOptions = computed(() => langStore.langOptionsData)
 
 function ChangeLanguage(e) {
   langStore.LangChange(e)
