@@ -71,14 +71,14 @@
       <q-card-section class="row items-center q-pb-none">
         <div class="text-h6">{{ t('login') }}</div>
         <q-space />
-        <q-btn icon="close" @click="candelLogin()" flat round dense v-close-popup />
+        <q-btn icon="close" @click="cancelLogin()" flat round dense v-close-popup />
       </q-card-section>
       <q-card-section>
         <q-input autofocus :label="t('username')" v-model="loginData.username"></q-input>
         <q-input :label="t('password')" v-model="loginData.password"></q-input>
       </q-card-section>
       <q-card-actions align="right" class="text-primary">
-        <q-btn flat :label="t('cancel')" @click="candelLogin()" v-close-popup />
+        <q-btn flat :label="t('cancel')" @click="cancelLogin()" v-close-popup />
         <q-btn flat :label="t('submit')" @click="submitLogin()" v-close-popup />
       </q-card-actions>
     </q-card>
@@ -147,7 +147,7 @@ const registerData = ref({
 
 const lang = computed(() => langStore.langData)
 
-function candelLogin () {
+function cancelLogin () {
   loginData.value = {
     username: '',
     password: ''
@@ -162,7 +162,7 @@ function submitLogin () {
       } else {
         tokenStore.tokenChange('')
       }
-      candelLogin()
+      cancelLogin()
     }).catch((err) =>{
       console.log(err)
     })
