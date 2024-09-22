@@ -21,12 +21,10 @@ classifiers = [
     'Programming Language :: Python :: Implementation :: PyPy'
 ]
 
-
 [tool.poetry.dependencies]
 python = "^3.8"
 django = "~4.2"
 adrf = "~0.1"
-
 
 [tool.poetry.group.dev.dependencies]
 requests = "^2.32.3"
