@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "bomiot"
+version = "0.1.0"
+description = ""
+authors = ["Bomiot <Singosgu@gmail.com>"]
+readme = "README.md"
+homepage = "https://github.com/Bomiot/Bomiot"
+include = [
+    "LICENSE"
+]
+
+classifiers = [
+    # Trove classifiers - https://packaging.python.org/specifications/core-metadata/#metadata-classifier
+    # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
+    'License :: OSI Approved :: MIT License',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: Implementation :: CPython',
+    'Programming Language :: Python :: Implementation :: PyPy'
+]
+
+
+[tool.poetry.dependencies]
+python = "^3.8"
+django = "~4.2"
+adrf = "~0.1"
+
+
+[tool.poetry.group.dev.dependencies]
+requests = "^2.32.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+bomiot = "bomiot.cmd:cmd"

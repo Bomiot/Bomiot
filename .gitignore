@@ -1,0 +1,20 @@
+# Created by .ignore support plugin (hsz.mobi)
+/.idea
+/.vscode
+/.vagrant
+*.pyc
+/bomiot.egg-info
+/dist
+/build
+npm-debug.log
+/test
+/tests
+/bomiot/server/.idea/
+/logs/
+/bomiot/.idea
+/bomiot/logs/
+bomiot/server/logs/
+db.sqlite3
+install.sh
+*.pyc
+.venv
