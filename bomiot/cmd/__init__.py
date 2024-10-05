@@ -69,7 +69,7 @@ subparsers = parser.add_subparsers(
 # init
 parser_init = subparsers.add_parser(
     'init', help='Init workspace, default to bomiot')
-parser_init.add_argument('folder', default='bomiot',
+parser_init.add_argument('folder', default='',
                          nargs='?', type=str, help='Initial workspace folder')
 
 # init admin
@@ -80,7 +80,7 @@ parser_initadmin = subparsers.add_parser(
 parser_runserver = subparsers.add_parser(
     'runserver', help='Start Bomiot server')
 parser_runserver.add_argument(
-    'bind', default='127.0.0.1:8000', nargs='?', type=str, help='Host and port to bind')
+    'bind', default='127.0.0.1:8008', nargs='?', type=str, help='Host and port to bind')
 
 # migrate
 parser_migrate = subparsers.add_parser('migrate', help='Migrate database')
@@ -97,33 +97,6 @@ parser_makemigrations = subparsers.add_parser(
 parser_generate = subparsers.add_parser(
     'generate', help='Generate Scrapy code for configurable project')
 parser_generate.add_argument('project', type=str, help='Project to generate')
-
-# parse
-parser_parse = subparsers.add_parser(
-    'parse', help='Parse project for debugging')
-parser_parse.add_argument('project', type=str, help='Target project')
-parser_parse.add_argument('-d', '--dir', default='.',
-                          type=str, help='Default workspace')
-parser_parse.add_argument('-s', '--start', default=False, type=str2bool, nargs='?', const=True,
-                          help='Parse start requests or not')
-parser_parse.add_argument('-u', '--url', default='',
-                          type=str, help='Url to parse')
-parser_parse.add_argument(
-    '-c', '--callback', default='parse', type=str2str, nargs='?', help='Callback')
-parser_parse.add_argument('-m', '--method', default='GET',
-                          type=str, help='Request method')
-parser_parse.add_argument('-a', '--meta', default=None,
-                          type=str2json, nargs='?', help='Extra meta info')
-parser_parse.add_argument('-p', '--priority', default=0,
-                          type=int, help='Request priority')
-parser_parse.add_argument('-f', '--dont_filter', default=False,
-                          type=str2bool, nargs='?', help='Do not filter')
-parser_parse.add_argument('-b', '--body', default=None,
-                          type=str2body, nargs='?', help='Request body')
-parser_parse.add_argument('--headers', default=None,
-                          type=str2json, nargs='?', help='Request headers')
-parser_parse.add_argument('--cookies', default=None, type=str2json,
-                          nargs='?', help='Request cookies, list or dict')
 
 # loaddata
 parser_loaddata = subparsers.add_parser(
@@ -153,14 +126,6 @@ def cmd():
     if command == 'init':
         from bomiot.cmd.init import init
         init(args.folder)
-    # generate code according to configuration
-    elif command == 'generate':
-        from bomiot.cmd.generate import generate
-        generate(args.project)
-    # debug parse for project
-    elif command == 'parse':
-        from bomiot.cmd.parse import parse
-        parse(args)
     # init admin
     elif command == 'initadmin':
         from bomiot.cmd.initadmin import initadmin

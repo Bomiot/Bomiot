@@ -1,15 +1,18 @@
 from pathlib import Path
+from django.core.management.utils import get_random_secret_key
 import os
-
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-@zopqa8b3mdl+^-re--a2ps%(8-#_wk37f1=9x)le6!wpi50n5'
+PROJECT_DIR = os.path.join(os.getcwd())
+
+SECRET_KEY = get_random_secret_key()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+AUTH_USER_MODEL = "core.User"
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -18,9 +21,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
+    'django_filters',
     'bomiot.server.core',
     'adrf',
-
 ]
 
 MIDDLEWARE = [
@@ -57,9 +61,8 @@ WSGI_APPLICATION = 'bomiot.server.server.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-DB_SUBDIR = 'dbs'
-DB_DIR = os.path.join(os.getcwd(), DB_SUBDIR)
+BASE_DB_TABLE = 'bomiot'
+DB_DIR = os.path.join(os.getcwd(), 'dbs')
 
 # Create DB dir if it does not exist
 os.path.exists(DB_DIR) or os.makedirs(DB_DIR)
@@ -109,6 +112,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(os.getcwd(), 'static_new').replace('\\', '/')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static").replace('\\', '/'),
+]
+
+MEDIA_URL = 'media/'
+MEDIA_ROOT = os.path.join(os.getcwd(), 'media').replace('\\', '/')
+os.path.exists(MEDIA_ROOT) or os.makedirs(MEDIA_ROOT)
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -117,4 +129,86 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ORIGIN_ALLOW_ALL = True
 
+CORS_ALLOW_CREDENTIALS = True
+
 X_FRAME_OPTIONS = 'SAMEORIGIN'
+
+
+LOG_PATH = os.path.join(os.getcwd(), 'logs')
+os.path.exists(LOG_PATH) or os.makedirs(LOG_PATH)
+SERVER_LOGS_FILE = os.path.join(LOG_PATH, 'server.log')
+ERROR_LOGS_FILE = os.path.join(LOG_PATH, 'error.log')
+STANDARD_LOG_FORMAT = (
+    "[%(asctime)s][%(name)s.%(funcName)s():%(lineno)d] [%(levelname)s] %(message)s"
+)
+CONSOLE_LOG_FORMAT = (
+    "[%(asctime)s][%(name)s.%(funcName)s():%(lineno)d] [%(levelname)s] %(message)s"
+)
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "standard": {"format": STANDARD_LOG_FORMAT},
+        "console": {
+            "format": CONSOLE_LOG_FORMAT,
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+        "file": {
+            "format": CONSOLE_LOG_FORMAT,
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+    },
+    "handlers": {
+        "file": {
+            "level": "INFO",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": SERVER_LOGS_FILE,
+            "maxBytes": 1024 * 1024 * 100,  # 100 MB
+            "backupCount": 5,  # 最多备份5个
+            "formatter": "standard",
+            "encoding": "utf-8",
+        },
+        "error": {
+            "level": "ERROR",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": ERROR_LOGS_FILE,
+            "maxBytes": 1024 * 1024 * 100,  # 100 MB
+            "backupCount": 3,  # 最多备份3个
+            "formatter": "standard",
+            "encoding": "utf-8",
+        },
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "console",
+        },
+
+    },
+    "loggers": {
+        "": {
+            "handlers": ["console", "error", "file"],
+            "level": "INFO",
+        },
+        "django": {
+            "handlers": ["console", "error", "file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        'django.db.backends': {
+            'handlers': ["console", "error", "file"],
+            'propagate': False,
+            'level': "INFO"
+        },
+        "uvicorn.error": {
+            "level": "INFO",
+            "handlers": ["console", "error", "file"],
+        },
+        "uvicorn.access": {
+            "handlers": ["console", "error", "file"],
+            "level": "INFO"
+        },
+    },
+}
+
+
+USER_JWT_TIME = 60 * 60 * 24 * 7

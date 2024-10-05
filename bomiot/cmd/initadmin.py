@@ -1,6 +1,5 @@
 import django
 import os
-
 from bomiot import settings
 
 
@@ -9,9 +8,11 @@ def initadmin():
     create super user
     :return:
     """
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bomiot.server.server.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bomiot.server.settings")
     django.setup()
-    from django.contrib.auth.models import User
+    from django.contrib.auth import get_user_model
+
+    User = get_user_model()
     
     admins = User.objects.filter(is_superuser=True)
     if admins:

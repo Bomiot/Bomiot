@@ -1,21 +1,26 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth import get_user_model
+from django.utils.translation import gettext_lazy as _
 
-# Register your models here.
-from bomiot.server.core.models import Client, Project, Monitor
-
-
-class ClientAdmin(admin.ModelAdmin):
-    list_display = ('name', 'ip', 'port', 'created_at', 'updated_at')
+User = get_user_model()
 
 
-class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'configurable', 'built_at', 'generated_at')
-
-
-class MonitorAdmin(admin.ModelAdmin):
-    list_display = ('name', 'description', 'project', 'created_at', 'updated_at')
-
-
-admin.site.register(Client, ClientAdmin)
-admin.site.register(Project, ProjectAdmin)
-admin.site.register(Monitor, MonitorAdmin)
+@admin.register(User)
+class UserAdmin(BaseUserAdmin):
+    fieldsets = (
+        (None, {"fields": ("username", "password")}),
+        (_("Personal info"), {"fields": ("phone", "email", "type")}),
+        (
+            _("Permissions"),
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser"
+                ),
+            },
+        ),
+        (_("Important dates"), {"fields": ("last_login", "date_joined")}),
+    )
+    list_display = ("username", "phone", "email", "type", "is_staff", "is_superuser", "is_active")
