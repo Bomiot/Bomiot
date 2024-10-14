@@ -1,9 +1,8 @@
-from django.shortcuts import render
 import json
 import mimetypes
-import os
+import orjson
 from django.conf import settings
-from django.http import StreamingHttpResponse, JsonResponse, HttpResponse
+from django.http import StreamingHttpResponse, JsonResponse
 from wsgiref.util import FileWrapper
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -41,8 +40,8 @@ def logouts(request):
         return JsonResponse({'msg': 'User Not Log In'})
 
 
-def registers(request):
-    data = json.loads(request.body.decode().replace("'", '"')).get('data')
+async def registers(request):
+    data = orjson.loads(request.body)
     context = {}
     if data['username'] == '':
         context['detail'] = '100001'
@@ -56,14 +55,14 @@ def registers(request):
     if data['pwd1'] != data['pwd2']:
         context['detail'] = '100004'
         return JsonResponse(context)
-    user_exists = User.objects.filter(username=str(data['username']))
+    user_exists = User.objects.filter(username=str(data['username'])).aiterator()
     if user_exists.exists():
         context['detail'] = '100005'
         return JsonResponse(context)
     else:
-        user = User.objects.create_user(username=str(data['username']),
+        user = User.objects.acreate_user(username=str(data['username']),
                                         password=str(data['pwd1']))
-        user.save()
+        await user.asave()
         login(request, user)
         context['detail'] = 'success'
         return JsonResponse(context)

@@ -1,6 +1,5 @@
 import sys
 from bomiot import version
-from bomiot.server.core.utils import str2bool, str2str, str2json, str2body
 import argparse
 
 optional_title = 'Optional arguments'
@@ -66,11 +65,24 @@ parser.add_argument('-h', '--help', action='help',
 subparsers = parser.add_subparsers(
     dest='command', title='Available commands', metavar='')
 
-# init
-parser_init = subparsers.add_parser(
-    'init', help='Init workspace, default to bomiot')
-parser_init.add_argument('folder', default='',
-                         nargs='?', type=str, help='Initial workspace folder')
+# project
+parser_project = subparsers.add_parser(
+    'project', help='project workspace, default to bomiot')
+parser_project.add_argument('folder', default='',
+                         nargs='?', type=str, help='project workspace folder')
+
+# plugins
+parser_plugins = subparsers.add_parser(
+    'plugins', help='plugins workspace, default to bomiot')
+parser_plugins.add_argument('folder', default='',
+                         nargs='?', type=str, help='plugins workspace folder')
+
+# deploy
+parser_deploy = subparsers.add_parser(
+    'deploy', help='deploy project')
+parser_deploy.add_argument('folder', default='',
+                         nargs='?', type=str, help='deploy project')
+
 
 # init admin
 parser_initadmin = subparsers.add_parser(
@@ -122,10 +134,18 @@ def cmd():
     """
     args = parser.parse_args()
     command = args.command
-    # init workspace for bomiot
-    if command == 'init':
-        from bomiot.cmd.init import init
-        init(args.folder)
+    # project workspace for bomiot
+    if command == 'project':
+        from bomiot.cmd.project import project
+        project(args.folder)
+    # plugins workspace for bomiot
+    elif command == 'plugins':
+        from bomiot.cmd.plugins import plugins
+        plugins(args.folder)
+    # deploy project
+    elif command == 'deploy':
+        from bomiot.cmd.deploy import deploy
+        deploy(args.folder)
     # init admin
     elif command == 'initadmin':
         from bomiot.cmd.initadmin import initadmin

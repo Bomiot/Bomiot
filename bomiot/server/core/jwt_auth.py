@@ -5,7 +5,7 @@ from django.conf import settings
 JWT_SALT = "ds()udsjo@jlsdosjf)wjd_#(#)$"
 
 
-def create_token(payload):
+async def create_token(payload):
     headers = {
         "type": "jwt",
         "alg": "HS256"
@@ -15,7 +15,7 @@ def create_token(payload):
     return result
 
 
-def parse_payload(token):
+async def parse_payload(token):
     result = {"status": False, "data": None, "error": None}
     try:
         verified_payload = jwt.decode(token, JWT_SALT, algorithms="HS256", verify=True)

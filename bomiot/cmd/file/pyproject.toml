@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "bomiot"
-version = "0.1.57"
-description = "One workspace for you to do you python app"
+version = "0.1.45"
+description = "One APP , You can do everthing"
 authors = ["Bomiot <Singosgu@gmail.com>"]
 readme = "README.md"
 homepage = "https://github.com/Bomiot/Bomiot"
