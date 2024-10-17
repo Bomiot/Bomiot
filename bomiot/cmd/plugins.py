@@ -4,8 +4,10 @@ import sys
 import shutil
 from pathlib import Path
 from .create import create_file
+from configparser import ConfigParser
 
-def plugins(folder):
+
+def plugins(folder: str):
     """
     plugins workspace
     :param folder:
@@ -22,8 +24,15 @@ def plugins(folder):
             current_path = Path(__file__).resolve()
             file_path = join(current_path.parent, 'file')
 
-            shutil.copy2(join(file_path, 'plugins_config.ini'), plugins_path)
+            shutil.copy2(join(file_path, 'config.ini'), plugins_path)
+            shutil.copy2(join(file_path, 'bomiotconf.py'), plugins_path)
 
-            create_file(str(sys.argv[2]))
+            config = ConfigParser()
+            config.read(join(plugins_path, 'config.ini'), encoding='utf-8')
+            config.set('mode', 'name', 'plugins')
+            with open(join(plugins_path, 'config.ini'), 'w') as config_file:
+                config.write(config_file)
+
+            create_file('')
 
             print('Initialized plugins workspace %s' % sys.argv[2])

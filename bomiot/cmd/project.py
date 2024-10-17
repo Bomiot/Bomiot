@@ -6,7 +6,7 @@ from pathlib import Path
 from .create import create_file
 
 
-def project(folder):
+def project(folder: str):
     """
     project workspace
     :param folder:
@@ -23,7 +23,8 @@ def project(folder):
             current_path = Path(__file__).resolve()
             file_path = join(current_path.parent, 'file')
 
-            shutil.copy2(join(file_path, 'project_config.ini'), project_path)
+            shutil.copy2(join(file_path, 'config.ini'), project_path)
+            shutil.copy2(join(file_path, 'bomiotconf.py'), project_path)
 
             create_file(str(sys.argv[2]))
 

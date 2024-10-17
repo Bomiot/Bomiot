@@ -1,27 +1,26 @@
 import django
 import os
-from bomiot import settings
+from configparser import ConfigParser
 
 
-def initadmin():
+def init_admin():
     """
-    create super user
+    create superuser
     :return:
     """
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bomiot.server.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bomiot.server.server.settings")
     django.setup()
     from django.contrib.auth import get_user_model
 
     User = get_user_model()
-    
-    admins = User.objects.filter(is_superuser=True)
-    if admins:
-        print('Admin user already exists, you can use them to login:')
-        for admin in admins:
-            print('- %s(%s)' % (admin.username, admin.email))
-    else:
+
+    try:
+        User.objects.get(username='admin', is_superuser=True)
+    except Exception as e:
         print('No Admin user exists, create temp admin user')
-        for user in settings.ADMINS:
+        config = ConfigParser()
+        config.read(os.path.join(os.getcwd(), 'setup.ini'), encoding='utf-8')
+        for user in config.get('superuser', 'name', fallback='admin'):
             username = user
             email = '%s@bomiot.com' % username
             password = username
@@ -34,3 +33,5 @@ def initadmin():
             print('%s admin account: %s(%s), initial password: %s, just use it temporarily '
                   'and change the password for safety' % \
                   ('Created' if created else 'Reset', username, email, password))
+    else:
+        print('Admin user already exists, you can use them to login:')

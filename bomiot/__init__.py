@@ -1,8 +1,3 @@
-from os.path import dirname, exists
-from os import makedirs
-import logging
-from bomiot import settings
-import sys
 
 
 def version():

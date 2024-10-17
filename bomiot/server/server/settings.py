@@ -1,14 +1,21 @@
 from pathlib import Path
 from django.core.management.utils import get_random_secret_key
 import os
+from configparser import ConfigParser, RawConfigParser
+import pkgutil
+from .pkgcheck import pkg_check
+import importlib
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 PROJECT_DIR = os.path.join(os.getcwd())
 
+CONFIG = ConfigParser()
+CONFIG.read(os.path.join(PROJECT_DIR, 'setup.ini'), encoding='utf-8')
+
 SECRET_KEY = get_random_secret_key()
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
@@ -23,9 +30,44 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'django_filters',
+    'rest_framework',
     'bomiot.server.core',
-    'adrf',
 ]
+
+for module in pkgutil.iter_modules():
+    try:
+        settings_name = 'bomiotconf'
+        exists = pkg_check(module.name, settings_name)
+        if exists:
+            module_import = importlib.import_module(f'{module.name}.{settings_name}')
+            app_mode = getattr(module_import, 'mode_return')
+            if app_mode == 'plugins':
+                INSTALLED_APPS.append(module.name)
+        else:
+            continue
+    except:
+        continue
+    finally:
+        pass
+
+current_plugins = [p for p in os.listdir(os.getcwd()) if os.path.isdir(p)]
+
+for plugin in current_plugins:
+    try:
+        settings_name = 'bomiotconf'
+        exists = pkg_check(plugin, settings_name)
+        if exists:
+            module_import = importlib.import_module(f'{plugin}.{settings_name}')
+            app_mode = getattr(module_import, 'mode_return')
+            if app_mode == 'plugins':
+                INSTALLED_APPS.append(plugin)
+        else:
+            continue
+    except:
+        continue
+    finally:
+        pass
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -99,9 +141,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = CONFIG.getint('local', 'language_code', fallback='en-us')
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = CONFIG.getint('local', 'time_zone', fallback='UTC')
 
 USE_I18N = True
 
@@ -314,7 +356,7 @@ INTERNAL_IPS = [
     'localhost'
 ]
 
-USER_JWT_TIME = 60 * 60 * 24 * 7
+USER_JWT_TIME = CONFIG.getint('jwt', 'user_jwt_time', fallback=1000000)
 
-ALLOCATION_SECONDS = 100
-THROTTLE_SECONDS = 100
+ALLOCATION_SECONDS = CONFIG.getint('throttle', 'allocation_seconds', fallback=1)
+THROTTLE_SECONDS = CONFIG.getint('throttle', 'throttle_seconds', fallback=10)

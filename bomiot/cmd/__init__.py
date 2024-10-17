@@ -83,6 +83,12 @@ parser_deploy = subparsers.add_parser(
 parser_deploy.add_argument('folder', default='',
                          nargs='?', type=str, help='deploy project')
 
+# create
+parser_create = subparsers.add_parser(
+    'create', help='create bomiot')
+parser_create.add_argument('folder', default='',
+                         nargs='?', type=str, help='create project')
+
 
 # init admin
 parser_initadmin = subparsers.add_parser(
@@ -104,11 +110,6 @@ parser_createsuperuser = subparsers.add_parser(
 # makemigrations
 parser_makemigrations = subparsers.add_parser(
     'makemigrations', help='Generate migrations for database')
-
-# generate
-parser_generate = subparsers.add_parser(
-    'generate', help='Generate Scrapy code for configurable project')
-parser_generate.add_argument('project', type=str, help='Project to generate')
 
 # loaddata
 parser_loaddata = subparsers.add_parser(
@@ -146,10 +147,14 @@ def cmd():
     elif command == 'deploy':
         from bomiot.cmd.deploy import deploy
         deploy(args.folder)
+    # create bomiot
+    elif command == 'create':
+        from bomiot.cmd.create import create_file
+        create_file(args.folder)
     # init admin
     elif command == 'initadmin':
-        from bomiot.cmd.initadmin import initadmin
-        initadmin()
+        from bomiot.cmd.initadmin import init_admin
+        init_admin()
     else:
         from bomiot.server.manage import manage
         manage()

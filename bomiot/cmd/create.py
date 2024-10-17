@@ -1,25 +1,25 @@
 from os.path import join, exists
 from os import makedirs, getcwd
-import sys
 import shutil
 from pathlib import Path
 import toml
 from configparser import ConfigParser
 
 
-def create_file(folder='bomiot'):
+def create_file(folder: str):
     """
     create file
     :return:
     """
     current_path = Path(__file__).resolve()
     file_path = join(current_path.parent, 'file')
-
+    if folder == '':
+        folder = 'bomiot'
     if exists(join(getcwd(), 'setup.ini')) is False:
         shutil.copy2(join(file_path, 'setup.ini'), join(getcwd()))
         config = ConfigParser()
-        config.read(join(getcwd(), 'setup.ini'))
-        config.set('site', 'name', folder)
+        config.read(join(getcwd(), 'setup.ini'), encoding='utf-8')
+        config.set('project', 'name', folder)
         config.set('db_name', 'name', folder)
         with open(join(getcwd(), 'setup.ini'), 'w') as setup_file:
             config.write(setup_file)
