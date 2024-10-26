@@ -1,5 +1,14 @@
 import json
 
+def get_job_id(client, task):
+    """
+    construct job id
+    :param client: client object
+    :param task: task object
+    :return: job id
+    """
+    return '%s-%s-%s' % (client.name, task.project, task.spider)
+
 
 def bytes2str(data):
     """

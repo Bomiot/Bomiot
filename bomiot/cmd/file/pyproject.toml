@@ -1,19 +1,20 @@
 [tool.poetry]
 name = "bomiot"
-version = "0.1.45"
-description = "One APP , You can do everthing"
+version = "0.2.79"
+description = "One workspace for you to do you python app"
 authors = ["Bomiot <Singosgu@gmail.com>"]
 readme = "README.md"
 homepage = "https://github.com/Bomiot/Bomiot"
+repository = "https://github.com/Bomiot/Bomiot"
+keywords = ["Bomiot", "bomiot", "GreaterWMS"]
 include = [
     "LICENSE"
 ]
+exclude = [
+]
 
 classifiers = [
-    # Trove classifiers - https://packaging.python.org/specifications/core-metadata/#metadata-classifier
-    # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
     'License :: OSI Approved :: MIT License',
-    'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
@@ -24,16 +25,17 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4.0"
-django = "~4.2"
-adrf = "~0.1"
+django = "~4.2.16"
 furl = "~2.1.3"
 django-cors-headers = "~4.4.0"
 pyjwt = "~2.9.0"
 django-filter = "~24.3"
 djangorestframework-csv = "~3.0.2"
 orjson = "~3.10.7"
-watchdog = "~5.0.3"
-toml = "^0.10.2"
+toml = "~0.10.2"
+djangorestframework = "~3.15.2"
+django-apscheduler = "~0.7.0"
+pandas = "~2.2.3"
 
 [tool.poetry.group.dev.dependencies]
 

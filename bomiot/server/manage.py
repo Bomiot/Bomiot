@@ -8,6 +8,7 @@ def manage():
     os.environ.setdefault('RUN_MAIN', 'true')
     try:
         from django.core.management import execute_from_command_line
+        # start watch media file change
     except ImportError:
         # The above import may fail for some other reason. Ensure that the
         # issue is really that Django is missing to avoid masking other
@@ -22,7 +23,6 @@ def manage():
             )
         raise
     execute_from_command_line(sys.argv)
-
 
 if __name__ == "__main__":
     manage()

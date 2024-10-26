@@ -8,6 +8,11 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from bomiot.server.core.jwt_auth import create_token, parse_payload
+from os.path import join, isdir
+from os import getcwd, listdir
+import importlib.util
+from pathlib import Path
+import pkg_resources
 
 
 User = get_user_model()
@@ -75,7 +80,26 @@ def check_token(request):
 
 
 def favicon(request):
-    path = str(settings.BASE_DIR) + '/static/icons/logo.png'
+    if settings.PROJECT_NAME == 'bomiot' or settings.PROJECT_NAME == '':
+        path = join(join(join(join(join(settings.BASE_DIR.parent, 'templates'), 'dist'), 'spa'), 'icons'), 'logo.png')
+    else:
+        check_path = False
+        current_path = [p for p in listdir(settings.WORKING_SPACE) if isdir(p)]
+        for module_name in current_path:
+            if module_name == settings.PROJECT_NAME:
+                project_path = join(settings.WORKING_SPACE, settings.PROJECT_NAME)
+                path = join(join(join(join(join(project_path, 'templates'), 'dist'), 'spa'), 'icons'), 'logo.png')
+                check_path = True
+            else:
+                continue
+        if check_path is False:
+            for module in [pkg.key for pkg in pkg_resources.working_set]:
+                if module == settings.PROJECT_NAME:
+                    project_path = importlib.util.find_spec(settings.PROJECT_NAME).origin
+                    list_project_path = Path(project_path).resolve().parent
+                    path = join(join(join(join(join(list_project_path, 'templates'), 'dist'), 'spa'), 'icons'), 'logo.png')
+                else:
+                    continue
     content_type, encoding = mimetypes.guess_type(path)
     resp = StreamingHttpResponse(FileWrapper(open(path, 'rb')), content_type=content_type)
     resp['Cache-Control'] = 'max-age=864000000000'
@@ -83,16 +107,46 @@ def favicon(request):
 
 
 def statics(request):
-    path = str(settings.BASE_DIR) + '/templates/dist/spa' + request.path_info
+    if settings.PROJECT_NAME == 'bomiot' or settings.PROJECT_NAME == '':
+        path = join(join(join(settings.BASE_DIR.parent, 'templates'), 'dist'), 'spa')
+        request_path = request.path_info.split('/')
+        for i in request_path:
+            if i == '':
+                continue
+            else:
+                path = join(path, i)
+    else:
+        check_path = False
+        current_path = [p for p in listdir(settings.WORKING_SPACE) if isdir(p)]
+        for module_name in current_path:
+            if module_name == settings.PROJECT_NAME:
+                project_path = join(settings.WORKING_SPACE, settings.PROJECT_NAME)
+                path = join(join(join(project_path, 'templates'), 'dist'), 'spa')
+                request_path = request.path_info.split('/')
+                for i in request_path:
+                    if i == '':
+                        continue
+                    else:
+                        path = join(path, i)
+                check_path = True
+            else:
+                continue
+        if check_path is False:
+            for module in [pkg.key for pkg in pkg_resources.working_set]:
+                if module == settings.PROJECT_NAME:
+                    project_path = importlib.util.find_spec(settings.PROJECT_NAME).origin
+                    list_project_path = Path(project_path).resolve().parent
+                    path = join(join(join(list_project_path, 'templates'), 'dist'), 'spa')
+                    request_path = request.path_info.split('/')
+                    for i in request_path:
+                        if i == '':
+                            continue
+                        else:
+                            path = join(path, i)
+                else:
+                    continue
     content_type, encoding = mimetypes.guess_type(path)
     resp = StreamingHttpResponse(FileWrapper(open(path, 'rb')), content_type=content_type)
     resp['Cache-Control'] = 'max-age=864000000000'
     return resp
 
-
-# def page_not_found(request, exception):
-#     return render(request, '404.html', status=404)
-#
-#
-# def permission_denied(request, exception):
-#     return render(request, '403.html', status=403)

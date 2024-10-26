@@ -2,7 +2,7 @@ from os.path import join, exists
 from os import makedirs, getcwd, rename
 import shutil
 from pathlib import Path
-from .create import create_file
+from .init import create_file
 from configparser import ConfigParser
 import sys
 
@@ -37,4 +37,4 @@ def deploy(folder: str):
         with open(join(deploy_path, str(sys.argv[2]) + '.ini'), 'w') as deploy_file:
             config.write(deploy_file)
 
-        print('Deploy project workspace success')
+        print(f'Deploy project {str(sys.argv[2])} workspace success')

@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from django.db import DatabaseError
 
 
-async def custom_exception_handler(exc, context):
+def custom_exception_handler(exc, context):
     response = exception_handler(exc, context)
     if response is not None:
         response.data['status_code'] = response.status_code
@@ -12,5 +12,6 @@ async def custom_exception_handler(exc, context):
         if isinstance(exc, DatabaseError):
             response = Response({'msg': DatabaseError})
         else:
-            response = Response({'msg': 'Other Error'})
+            print(response)
+            # response = Response({'msg': 'Other Error'})
     return response

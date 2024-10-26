@@ -83,11 +83,11 @@ parser_deploy = subparsers.add_parser(
 parser_deploy.add_argument('folder', default='',
                          nargs='?', type=str, help='deploy project')
 
-# create
-parser_create = subparsers.add_parser(
-    'create', help='create bomiot')
-parser_create.add_argument('folder', default='',
-                         nargs='?', type=str, help='create project')
+# init
+parser_init = subparsers.add_parser(
+    'init', help='Init bomiot')
+parser_init.add_argument('folder', default='',
+                         nargs='?', type=str, help='Init Bomiot')
 
 
 # init admin
@@ -147,9 +147,9 @@ def cmd():
     elif command == 'deploy':
         from bomiot.cmd.deploy import deploy
         deploy(args.folder)
-    # create bomiot
-    elif command == 'create':
-        from bomiot.cmd.create import create_file
+    # init bomiot
+    elif command == 'init':
+        from bomiot.cmd.init import create_file
         create_file(args.folder)
     # init admin
     elif command == 'initadmin':

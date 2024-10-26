@@ -1,18 +1,25 @@
 from pathlib import Path
 from django.core.management.utils import get_random_secret_key
 import os
-from configparser import ConfigParser, RawConfigParser
-import pkgutil
-from .pkgcheck import pkg_check
-import importlib
+import sys
+from configparser import ConfigParser
+import pkg_resources
+from .pkgcheck import pkg_check, ignore_pkg, ignore_cwd
+import importlib.util
+from os import listdir
+from os.path import join, isdir, exists
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-PROJECT_DIR = os.path.join(os.getcwd())
 
 CONFIG = ConfigParser()
-CONFIG.read(os.path.join(PROJECT_DIR, 'setup.ini'), encoding='utf-8')
+CONFIG.read(join(BASE_DIR, 'workspace.ini'), encoding='utf-8')
+WORKING_SPACE = CONFIG.get('space', 'name', fallback='Create your working space first')
+if WORKING_SPACE not in sys.path:
+    sys.path.insert(0, WORKING_SPACE)
+CONFIG.read(join(WORKING_SPACE, 'setup.ini'), encoding='utf-8')
+PROJECT_NAME = CONFIG.get('project', 'name', fallback='bomiot')
 
 SECRET_KEY = get_random_secret_key()
 
@@ -31,42 +38,50 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_filters',
     'rest_framework',
+    'django_apscheduler',
     'bomiot.server.core',
 ]
 
-for module in pkgutil.iter_modules():
-    try:
-        settings_name = 'bomiotconf'
-        exists = pkg_check(module.name, settings_name)
-        if exists:
-            module_import = importlib.import_module(f'{module.name}.{settings_name}')
-            app_mode = getattr(module_import, 'mode_return')
-            if app_mode == 'plugins':
-                INSTALLED_APPS.append(module.name)
-        else:
-            continue
-    except:
-        continue
-    finally:
-        pass
 
-current_plugins = [p for p in os.listdir(os.getcwd()) if os.path.isdir(p)]
+res_pkg_list = list(set([pkg.key for pkg in pkg_resources.working_set]).difference(set(ignore_pkg())))
+pkg_squared = list(map(lambda data: pkg_check(data), res_pkg_list))
+filtered_pkg_squared = list(filter(lambda x: x is not None, pkg_squared))
 
-for plugin in current_plugins:
-    try:
-        settings_name = 'bomiotconf'
-        exists = pkg_check(plugin, settings_name)
-        if exists:
-            module_import = importlib.import_module(f'{plugin}.{settings_name}')
-            app_mode = getattr(module_import, 'mode_return')
+current_path = list(set([p for p in listdir(WORKING_SPACE) if isdir(p)]).difference(set(ignore_cwd())))
+filtered_current_path = list(filter(lambda y: y is not None, current_path))
+
+if len(filtered_pkg_squared) > 0:
+    for module in filtered_pkg_squared:
+        module_path = importlib.util.find_spec(PROJECT_NAME).origin
+        list_module_path = Path(module_path).resolve().parent
+        module_import = importlib.import_module(f'{module}.bomiotconf')
+        app_mode = module_import.mode_return()
+        if app_mode == 'plugins':
+            if exists(join(list_module_path, 'apps')):
+                INSTALLED_APPS.append(f'{module}')
+        elif app_mode == 'project':
+            if module == PROJECT_NAME and module != 'bomiot':
+                find_apps = [u for u in listdir(list_module_path) if isdir(u)]
+                for app in find_apps:
+                    if exists(join(join(list_module_path, app), 'apps')):
+                        INSTALLED_APPS.append(f'{PROJECT_NAME}.{app}')
+
+if len(filtered_current_path) > 0:
+    for module_name in filtered_current_path:
+        exists_module = pkg_check(module_name)
+        if exists_module is not None:
+            module_import = importlib.import_module(f'{module_name}.bomiotconf')
+            app_mode = module_import.mode_return()
             if app_mode == 'plugins':
-                INSTALLED_APPS.append(plugin)
-        else:
-            continue
-    except:
-        continue
-    finally:
-        pass
+                if exists(join(join(WORKING_SPACE, module_name), 'apps')):
+                    INSTALLED_APPS.append(module_name)
+            elif app_mode == 'project':
+                if module_name == PROJECT_NAME and module_name != 'bomiot':
+                    project_path = join(WORKING_SPACE, PROJECT_NAME)
+                    find_apps = [u for u in listdir(project_path) if isdir(u)]
+                    for app in find_apps:
+                        if exists(join(join(project_path, app), 'apps')):
+                            INSTALLED_APPS.append(f'{PROJECT_NAME}.{app}')
 
 
 MIDDLEWARE = [
@@ -82,10 +97,16 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'bomiot.server.server.urls'
 
+TEMPLATES_PATH = join(BASE_DIR.parent, 'templates')
+
+if PROJECT_NAME in [p for p in listdir(WORKING_SPACE) if isdir(p)]:
+    TEMPLATES_PATH = join(join(WORKING_SPACE, PROJECT_NAME), 'templates')
+
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [TEMPLATES_PATH],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -103,20 +124,41 @@ WSGI_APPLICATION = 'bomiot.server.server.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-BASE_DB_TABLE = 'bomiot'
-DB_DIR = os.path.join(os.getcwd(), 'dbs')
+BASE_DB_TABLE = CONFIG.get('db_name', 'name', fallback='bomiot')
 
-# Create DB dir if it does not exist
-os.path.exists(DB_DIR) or os.makedirs(DB_DIR)
-
-DB_PATH = os.path.join(DB_DIR, 'db.sqlite3')
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': DB_PATH,
-    }
+DATABASE_MAP = {
+    'sqlite': 'django.db.backends.sqlite3',
+    'mysql': 'django.db.backends.mysql',
+    'postgresql': 'django.db.backends.postgresql_psycopg2',
+    'oracle': 'django.db.backends.oracle',
 }
+
+db_engine = CONFIG.get('database', 'engine', fallback='sqlite')
+if db_engine == 'sqlite':
+    DB_DIR = join(WORKING_SPACE, 'dbs')
+    exists(DB_DIR) or os.makedirs(DB_DIR)
+    DB_PATH = join(DB_DIR, 'db.sqlite3')
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': DB_PATH,
+            'OPTIONS': {
+                'timeout': 20,
+            }
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': DATABASE_MAP[CONFIG['database']['engine']],
+            'NAME': CONFIG['database']['name'],
+            'USER': CONFIG['database']['user'],
+            'PASSWORD': CONFIG['database']['password'],
+            'HOST': CONFIG['database']['host'],
+            'PORT': CONFIG['database']['port'],
+        }
+    }
+
 
 
 # Password validation
@@ -154,14 +196,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(os.getcwd(), 'bomiot_static').replace('\\', '/')
+STATIC_ROOT = join(WORKING_SPACE, 'bomiot_static').replace('\\', '/')
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static").replace('\\', '/'),
+    join(BASE_DIR, "static").replace('\\', '/'),
 ]
 
 MEDIA_URL = 'media/'
-MEDIA_ROOT = os.path.join(os.getcwd(), 'media').replace('\\', '/')
-os.path.exists(MEDIA_ROOT) or os.makedirs(MEDIA_ROOT)
+MEDIA_ROOT = join(WORKING_SPACE, 'media').replace('\\', '/')
+exists(MEDIA_ROOT) or os.makedirs(MEDIA_ROOT)
 
 
 # Default primary key field type
@@ -204,10 +246,10 @@ CORS_ALLOW_HEADERS = (
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 
-LOG_PATH = os.path.join(os.getcwd(), 'logs')
-os.path.exists(LOG_PATH) or os.makedirs(LOG_PATH)
-SERVER_LOGS_FILE = os.path.join(LOG_PATH, 'server.log')
-ERROR_LOGS_FILE = os.path.join(LOG_PATH, 'error.log')
+LOG_PATH = join(WORKING_SPACE, 'logs')
+exists(LOG_PATH) or os.makedirs(LOG_PATH)
+SERVER_LOGS_FILE = join(LOG_PATH, 'server.log')
+ERROR_LOGS_FILE = join(LOG_PATH, 'error.log')
 STANDARD_LOG_FORMAT = (
     "[%(asctime)s][%(name)s.%(funcName)s():%(lineno)d] [%(levelname)s] %(message)s"
 )
@@ -360,3 +402,7 @@ USER_JWT_TIME = CONFIG.getint('jwt', 'user_jwt_time', fallback=1000000)
 
 ALLOCATION_SECONDS = CONFIG.getint('throttle', 'allocation_seconds', fallback=1)
 THROTTLE_SECONDS = CONFIG.getint('throttle', 'throttle_seconds', fallback=10)
+
+ALLOWED_IMG = CONFIG.get('image_upload', 'suffix_name', fallback='jpg, jpeg, gif, png, bmp, webp').split(',')
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = None

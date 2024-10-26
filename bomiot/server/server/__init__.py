@@ -20,4 +20,4 @@ if os.path.exists(join(getcwd(), 'setup.ini')) is False:
     with open(join(getcwd(), 'setup.ini'), 'w') as setup_file:
         config.write(setup_file)
 
-print('Welcom to bomiot')
+print('Welcome to bomiot')
