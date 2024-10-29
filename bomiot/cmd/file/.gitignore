@@ -4,7 +4,6 @@
 /.vagrant
 *.pyc
 /bomiot.egg-info
-/dist
 /build
 npm-debug.log
 /test

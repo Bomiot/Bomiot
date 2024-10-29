@@ -14,8 +14,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 CONFIG = ConfigParser()
-CONFIG.read(join(BASE_DIR, 'workspace.ini'), encoding='utf-8')
-WORKING_SPACE = CONFIG.get('space', 'name', fallback='Create your working space first')
+WORKING_SPACE_CONFIG = ConfigParser()
+WORKING_SPACE_CONFIG.read(join(BASE_DIR, 'workspace.ini'), encoding='utf-8')
+WORKING_SPACE = WORKING_SPACE_CONFIG.get('space', 'name', fallback='Create your working space first')
 if WORKING_SPACE not in sys.path:
     sys.path.insert(0, WORKING_SPACE)
 CONFIG.read(join(WORKING_SPACE, 'setup.ini'), encoding='utf-8')
@@ -58,13 +59,15 @@ if len(filtered_pkg_squared) > 0:
         app_mode = module_import.mode_return()
         if app_mode == 'plugins':
             if exists(join(list_module_path, 'apps')):
-                INSTALLED_APPS.append(f'{module}')
+                if module not in INSTALLED_APPS:
+                    INSTALLED_APPS.append(f'{module}')
         elif app_mode == 'project':
             if module == PROJECT_NAME and module != 'bomiot':
                 find_apps = [u for u in listdir(list_module_path) if isdir(u)]
                 for app in find_apps:
                     if exists(join(join(list_module_path, app), 'apps')):
-                        INSTALLED_APPS.append(f'{PROJECT_NAME}.{app}')
+                        if f'{PROJECT_NAME}.{app}' not in INSTALLED_APPS:
+                            INSTALLED_APPS.append(f'{PROJECT_NAME}.{app}')
 
 if len(filtered_current_path) > 0:
     for module_name in filtered_current_path:
@@ -74,14 +77,16 @@ if len(filtered_current_path) > 0:
             app_mode = module_import.mode_return()
             if app_mode == 'plugins':
                 if exists(join(join(WORKING_SPACE, module_name), 'apps')):
-                    INSTALLED_APPS.append(module_name)
+                    if module not in INSTALLED_APPS:
+                        INSTALLED_APPS.append(module_name)
             elif app_mode == 'project':
                 if module_name == PROJECT_NAME and module_name != 'bomiot':
                     project_path = join(WORKING_SPACE, PROJECT_NAME)
                     find_apps = [u for u in listdir(project_path) if isdir(u)]
                     for app in find_apps:
                         if exists(join(join(project_path, app), 'apps')):
-                            INSTALLED_APPS.append(f'{PROJECT_NAME}.{app}')
+                            if f'{PROJECT_NAME}.{app}' not in INSTALLED_APPS:
+                                INSTALLED_APPS.append(f'{PROJECT_NAME}.{app}')
 
 
 MIDDLEWARE = [
@@ -124,7 +129,7 @@ WSGI_APPLICATION = 'bomiot.server.server.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-BASE_DB_TABLE = CONFIG.get('db_name', 'name', fallback='bomiot')
+BASE_DB_TABLE = 'bomiot'
 
 DATABASE_MAP = {
     'sqlite': 'django.db.backends.sqlite3',
@@ -196,10 +201,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = join(WORKING_SPACE, 'bomiot_static').replace('\\', '/')
-STATICFILES_DIRS = [
-    join(BASE_DIR, "static").replace('\\', '/'),
-]
+if PROJECT_NAME == 'bomiot':
+    STATIC_ROOT = join(BASE_DIR, 'bomiot_static').replace('\\', '/')
+    STATICFILES_DIRS = [
+        join(BASE_DIR, "static").replace('\\', '/'),
+    ]
+else:
+    STATIC_ROOT = join(join(WORKING_SPACE, PROJECT_NAME), 'bomiot_static').replace('\\', '/')
+    STATICFILES_DIRS = [
+        join(join(WORKING_SPACE, PROJECT_NAME), 'static').replace('\\', '/')
+    ]
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = join(WORKING_SPACE, 'media').replace('\\', '/')

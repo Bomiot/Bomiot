@@ -65,6 +65,12 @@ parser.add_argument('-h', '--help', action='help',
 subparsers = parser.add_subparsers(
     dest='command', title='Available commands', metavar='')
 
+# new
+parser_project = subparsers.add_parser(
+    'new', help='Create APP for project')
+parser_project.add_argument('folder', default='',
+                         nargs='?', type=str, help='Create APP')
+
 # project
 parser_project = subparsers.add_parser(
     'project', help='project workspace, default to bomiot')
@@ -93,12 +99,6 @@ parser_init.add_argument('folder', default='',
 # init admin
 parser_initadmin = subparsers.add_parser(
     'initadmin', help='Create default super user admin')
-
-# runserver
-parser_runserver = subparsers.add_parser(
-    'runserver', help='Start Bomiot server')
-parser_runserver.add_argument(
-    'bind', default='127.0.0.1:8008', nargs='?', type=str, help='Host and port to bind')
 
 # migrate
 parser_migrate = subparsers.add_parser('migrate', help='Migrate database')
@@ -155,6 +155,10 @@ def cmd():
     elif command == 'initadmin':
         from bomiot.cmd.initadmin import init_admin
         init_admin()
+    # create app
+    elif command == 'new':
+        from bomiot.cmd.createapp import new_app
+        new_app(args.folder)
     else:
         from bomiot.server.manage import manage
         manage()

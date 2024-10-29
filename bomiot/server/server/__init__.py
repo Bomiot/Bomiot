@@ -3,7 +3,7 @@ from os.path import join
 from os import getcwd
 from configparser import ConfigParser
 from pathlib import Path
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'server.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bomiot.server.server.settings')
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 django.setup()
 

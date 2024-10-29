@@ -6,17 +6,8 @@ import shutil
 from pathlib import Path
 from .init import create_file
 import pkg_resources
-
-
-def copy_files(src_folder, dst_folder):
-    makedirs(dst_folder, exist_ok=True)
-    for item in listdir(src_folder):
-        source_item = join(src_folder, item)
-        destination_item = join(dst_folder, item)
-        if isdir(source_item):
-            copy_files(source_item, destination_item)
-        else:
-            shutil.copy2(source_item, destination_item)
+from configparser import ConfigParser
+from .copyfile import copy_files
 
 
 def project(folder: str):
@@ -36,6 +27,8 @@ def project(folder: str):
                 print('Project directory already exists')
             else:
                 makedirs(project_path)
+                static_path = join(project_path, 'static')
+                exists(static_path) or os.makedirs(static_path)
                 current_path = Path(__file__).resolve()
                 file_path = join(current_path.parent, 'file')
 
@@ -49,8 +42,14 @@ def project(folder: str):
 
                 shutil.copy2(join(file_path, 'config.ini'), project_path)
                 shutil.copy2(join(file_path, 'bomiotconf.py'), project_path)
+                shutil.copy2(join(file_path, 'websocket.py'), project_path)
 
                 create_file(str(sys.argv[2]))
+
+                setup_config = ConfigParser()
+                setup_config.read(join(join(getcwd()), 'setup.ini'), encoding='utf-8')
+                setup_config.set('project', 'name', folder)
+                setup_config.write(open(join(join(getcwd()), 'setup.ini'), "wt"))
 
                 copy_files(join(current_path.parent.parent, 'templates'), join(project_path, 'templates'))
 

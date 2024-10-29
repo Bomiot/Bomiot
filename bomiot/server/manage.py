@@ -5,7 +5,6 @@ import sys
 
 def manage():
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bomiot.server.server.settings')
-    os.environ.setdefault('RUN_MAIN', 'true')
     try:
         from django.core.management import execute_from_command_line
         # start watch media file change

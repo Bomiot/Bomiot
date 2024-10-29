@@ -1,11 +1,14 @@
 from os.path import join, exists
 from os import makedirs, getcwd
+import os
 import sys
 import shutil
 from pathlib import Path
 from .init import create_file
 from configparser import ConfigParser
 import pkg_resources
+from .copyfile import copy_files
+from .changeapps import create_plugins_apps_py
 
 
 def plugins(folder: str):
@@ -24,7 +27,7 @@ def plugins(folder: str):
             if sys.argv[2] in [pkg.key for pkg in pkg_resources.working_set]:
                 print('Plugins directory already exists')
             else:
-                makedirs(plugins_path)
+                os.makedirs(plugins_path)
                 current_path = Path(__file__).resolve()
                 file_path = join(current_path.parent, 'file')
 
@@ -39,12 +42,22 @@ def plugins(folder: str):
                 shutil.copy2(join(file_path, 'config.ini'), plugins_path)
                 shutil.copy2(join(file_path, 'bomiotconf.py'), plugins_path)
 
-                config = ConfigParser()
-                config.read(join(plugins_path, 'config.ini'), encoding='utf-8')
-                config.set('mode', 'name', 'plugins')
-                with open(join(plugins_path, 'config.ini'), 'w') as config_file:
-                    config.write(config_file)
+                plugins_config = ConfigParser()
+                plugins_config.read(join(plugins_path, 'config.ini'), encoding='utf-8')
+                plugins_config.set('mode', 'name', 'plugins')
+                plugins_config.write(open(join(plugins_path, 'config.ini'), 'wt'))
 
                 create_file('')
 
-                print('Initialized plugins workspace %s' % sys.argv[2])
+                setup_config = ConfigParser()
+                setup_config.read(join(join(getcwd()), 'setup.ini'), encoding='utf-8')
+                setup_config.set('project', 'name', folder)
+                setup_config.write(open(join(join(getcwd()), 'setup.ini'), "wt"))
+
+                copy_files(join(current_path.parent, 'extends'), plugins_path)
+
+                apps_path = join(plugins_path, 'apps.py')
+                os.remove(apps_path)
+                create_plugins_apps_py(apps_path, sys.argv[2])
+
+                print(f'Initialized plugins workspace {sys.argv[2]}')
