@@ -39,13 +39,12 @@ def plugins(folder: str):
                     f.write("    return __version__.version()\n")
                 f.close()
 
-                shutil.copy2(join(file_path, 'config.ini'), plugins_path)
-                shutil.copy2(join(file_path, 'bomiotconf.py'), plugins_path)
+                shutil.copy2(join(file_path, 'bomiotconf.ini'), plugins_path)
 
                 plugins_config = ConfigParser()
-                plugins_config.read(join(plugins_path, 'config.ini'), encoding='utf-8')
+                plugins_config.read(join(plugins_path, 'bomiotconf.ini'), encoding='utf-8')
                 plugins_config.set('mode', 'name', 'plugins')
-                plugins_config.write(open(join(plugins_path, 'config.ini'), 'wt'))
+                plugins_config.write(open(join(plugins_path, 'bomiotconf.ini'), 'wt'))
 
                 create_file('')
 

@@ -4,10 +4,10 @@ import os
 import sys
 from configparser import ConfigParser
 import pkg_resources
-from .pkgcheck import pkg_check, ignore_pkg, ignore_cwd
+from .pkgcheck import pkg_check, cwd_check, ignore_pkg, ignore_cwd
 import importlib.util
 from os import listdir
-from os.path import join, isdir, exists
+from os.path import join, isdir, exists, isfile
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -17,8 +17,7 @@ CONFIG = ConfigParser()
 WORKING_SPACE_CONFIG = ConfigParser()
 WORKING_SPACE_CONFIG.read(join(BASE_DIR, 'workspace.ini'), encoding='utf-8')
 WORKING_SPACE = WORKING_SPACE_CONFIG.get('space', 'name', fallback='Create your working space first')
-if WORKING_SPACE not in sys.path:
-    sys.path.insert(0, WORKING_SPACE)
+sys.path.insert(0, WORKING_SPACE)
 CONFIG.read(join(WORKING_SPACE, 'setup.ini'), encoding='utf-8')
 PROJECT_NAME = CONFIG.get('project', 'name', fallback='bomiot')
 
@@ -49,44 +48,55 @@ pkg_squared = list(map(lambda data: pkg_check(data), res_pkg_list))
 filtered_pkg_squared = list(filter(lambda x: x is not None, pkg_squared))
 
 current_path = list(set([p for p in listdir(WORKING_SPACE) if isdir(p)]).difference(set(ignore_cwd())))
-filtered_current_path = list(filter(lambda y: y is not None, current_path))
+cur_squared = list(map(lambda data: cwd_check(data), current_path))
+filtered_current_path = list(filter(lambda y: y is not None, cur_squared))
 
 if len(filtered_pkg_squared) > 0:
     for module in filtered_pkg_squared:
         module_path = importlib.util.find_spec(PROJECT_NAME).origin
         list_module_path = Path(module_path).resolve().parent
-        module_import = importlib.import_module(f'{module}.bomiotconf')
-        app_mode = module_import.mode_return()
+        pkg_config_check = ConfigParser()
+        pkg_config_check.read(join(list_module_path), 'bomiotconf.ini', encoding='utf-8')
+        app_mode = pkg_config_check.get('mode', 'name', fallback='plugins')
         if app_mode == 'plugins':
-            if exists(join(list_module_path, 'apps')):
-                if module not in INSTALLED_APPS:
-                    INSTALLED_APPS.append(f'{module}')
+            try:
+                if isfile(join(list_module_path, 'apps.py')):
+                    if module not in INSTALLED_APPS:
+                        INSTALLED_APPS.append(f'{module}')
+            except:
+                continue
         elif app_mode == 'project':
-            if module == PROJECT_NAME and module != 'bomiot':
-                find_apps = [u for u in listdir(list_module_path) if isdir(u)]
-                for app in find_apps:
-                    if exists(join(join(list_module_path, app), 'apps')):
-                        if f'{PROJECT_NAME}.{app}' not in INSTALLED_APPS:
-                            INSTALLED_APPS.append(f'{PROJECT_NAME}.{app}')
+            if module == PROJECT_NAME:
+                for app in listdir(list_module_path):
+                    try:
+                        if isfile(join(join(list_module_path, app), 'apps.py')):
+                            if app not in INSTALLED_APPS:
+                                INSTALLED_APPS.append(f'{app}')
+                    except:
+                        pass
 
 if len(filtered_current_path) > 0:
     for module_name in filtered_current_path:
-        exists_module = pkg_check(module_name)
-        if exists_module is not None:
-            module_import = importlib.import_module(f'{module_name}.bomiotconf')
-            app_mode = module_import.mode_return()
-            if app_mode == 'plugins':
-                if exists(join(join(WORKING_SPACE, module_name), 'apps')):
-                    if module not in INSTALLED_APPS:
+        app_mode_config = ConfigParser()
+        app_mode_config.read(join(join(WORKING_SPACE, module_name), 'bomiotconf.ini'), encoding='utf-8')
+        app_mode = app_mode_config.get('mode', 'name')
+        if app_mode == 'plugins':
+            try:
+                if isfile(join(join(WORKING_SPACE, module_name), 'apps.py')):
+                    if module_name not in INSTALLED_APPS:
                         INSTALLED_APPS.append(module_name)
-            elif app_mode == 'project':
-                if module_name == PROJECT_NAME and module_name != 'bomiot':
-                    project_path = join(WORKING_SPACE, PROJECT_NAME)
-                    find_apps = [u for u in listdir(project_path) if isdir(u)]
-                    for app in find_apps:
-                        if exists(join(join(project_path, app), 'apps')):
+            except:
+                continue
+        elif app_mode == 'project':
+            if module_name == PROJECT_NAME:
+                project_path = join(WORKING_SPACE, PROJECT_NAME)
+                for app in listdir(project_path):
+                    try:
+                        if isfile(join(join(project_path, app), 'apps.py')):
                             if f'{PROJECT_NAME}.{app}' not in INSTALLED_APPS:
                                 INSTALLED_APPS.append(f'{PROJECT_NAME}.{app}')
+                    except:
+                        pass
 
 
 MIDDLEWARE = [

@@ -7,14 +7,13 @@ import sys
 import importlib
 import importlib.util
 import pkg_resources
-from .pkgcheck import pkg_check, ignore_pkg, ignore_cwd
+from .pkgcheck import pkg_check, cwd_check, ignore_pkg, ignore_cwd
 from configparser import ConfigParser
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-if BASE_DIR not in sys.path:
-    sys.path.insert(0, BASE_DIR)
+sys.path.insert(0, BASE_DIR)
 
 CONFIG = ConfigParser()
 WORKING_SPACE_CONFIG = ConfigParser()
@@ -29,30 +28,31 @@ pkg_squared = list(map(lambda data: pkg_check(data), res_pkg_list))
 filtered_pkg_squared = list(filter(lambda x: x is not None, pkg_squared))
 
 current_path = list(set([p for p in listdir(WORKING_SPACE) if isdir(p)]).difference(set(ignore_cwd())))
-filtered_current_path = list(filter(lambda y: y is not None, current_path))
+cur_squared = list(map(lambda data: cwd_check(data), current_path))
+filtered_current_path = list(filter(lambda y: y is not None, cur_squared))
 
 ws = importlib.import_module(f'bomiot.server.core.websocket')
+
+
+if len(filtered_current_path) > 0:
+    for module_name in filtered_current_path:
+        app_mode_config = ConfigParser()
+        app_mode_config.read(join(join(WORKING_SPACE, PROJECT_NAME), 'bomiotconf.ini'), encoding='utf-8')
+        app_mode = app_mode_config.get('mode', 'name')
+        if app_mode == 'project':
+            if module_name == PROJECT_NAME:
+                ws = importlib.import_module(f'{PROJECT_NAME}.websocket')
 
 if len(filtered_pkg_squared) > 0:
     for module in filtered_pkg_squared:
         module_path = importlib.util.find_spec(PROJECT_NAME).origin
         list_module_path = Path(module_path).resolve().parent
-        module_import = importlib.import_module(f'{module}.bomiotconf')
-        app_mode = module_import.mode_return()
+        pkg_config_check = ConfigParser()
+        pkg_config_check.read(join(list_module_path), 'bomiotconf.ini', encoding='utf-8')
+        app_mode = pkg_config_check.get('mode', 'name')
         if app_mode == 'project':
-            if module == PROJECT_NAME and module != 'bomiot':
+            if module == PROJECT_NAME:
                 ws = importlib.import_module(f'{PROJECT_NAME}.websocket')
-
-if len(filtered_current_path) > 0:
-    for module_name in filtered_current_path:
-        exists_module = pkg_check(module_name)
-        if exists_module is not None:
-            module_import = importlib.import_module(f'{module_name}.bomiotconf')
-            app_mode = module_import.mode_return()
-            if app_mode == 'project':
-                if module_name == PROJECT_NAME and module_name != 'bomiot':
-                    ws = importlib.import_module(f'{PROJECT_NAME}.websocket')
-
 
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bomiot.server.server.settings')

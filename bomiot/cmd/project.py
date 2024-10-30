@@ -40,8 +40,7 @@ def project(folder: str):
                     f.write("    return __version__.version()\n")
                 f.close()
 
-                shutil.copy2(join(file_path, 'config.ini'), project_path)
-                shutil.copy2(join(file_path, 'bomiotconf.py'), project_path)
+                shutil.copy2(join(file_path, 'bomiotconf.ini'), project_path)
                 shutil.copy2(join(file_path, 'websocket.py'), project_path)
 
                 create_file(str(sys.argv[2]))
