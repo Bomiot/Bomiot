@@ -1,8 +1,7 @@
 from django.dispatch import Signal, receiver
 
-test_signal = Signal()
+bomiot_signals = Signal()
 
-
-@receiver(test_signal)
-def test_signal_callback(sender, **kwargs):
-    pass
+# @receiver(bomiot_signals)
+# def bomiot_signal_callback(sender, **kwargs):
+#     print(sender, kwargs)

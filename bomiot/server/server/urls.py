@@ -15,6 +15,11 @@ from .pkgcheck import pkg_check, cwd_check, ignore_pkg, ignore_cwd
 from configparser import ConfigParser
 from pathlib import Path
 from django.urls import resolve, Resolver404
+from bomiot.server.core.scheduler import sm
+
+
+if os.environ.get('RUN_MAIN') == 'true':
+    sm.start()
 
 
 def url_exists(url_data):
@@ -115,4 +120,3 @@ if len(filtered_current_path) > 0:
                     except:
                         pass
 
-print(1, os.environ.get('RUN_MAIN'))

@@ -14,6 +14,7 @@ import importlib.util
 from pathlib import Path
 import pkg_resources
 
+from bomiot.server.core.signal import bomiot_signals
 
 User = get_user_model()
 
