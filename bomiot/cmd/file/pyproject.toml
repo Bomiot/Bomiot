@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bomiot"
-version = "0.4.1"
+version = "0.4.15"
 description = "One workspace for you to do you python app"
 authors = ["Bomiot <Singosgu@gmail.com>"]
 readme = "README.md"

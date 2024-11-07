@@ -12,7 +12,7 @@ class AsyncThrottle(BaseThrottle):
             'HTTP_X_FORWARDED_FOR') else request.META.get('REMOTE_ADDR')
         now_time = timezone.now()
         cur_time = now_time - timezone.timedelta(seconds=1)
-        throttle_cur_time_list = ThrottleModel.objects.filter(method=request.method.lower(), create_time__lte=cur_time)
+        throttle_cur_time_list = ThrottleModel.objects.filter(method=request.method.lower(), created_time__lte=cur_time)
         for i in throttle_cur_time_list:
             i.delete()
         throttle_allocation_list = ThrottleModel.objects.filter(ip=ip, method=request.method.lower()).order_by('id')
@@ -21,10 +21,10 @@ class AsyncThrottle(BaseThrottle):
             ThrottleModel.objects.create(ip=ip, method=request.method.lower())
             return True
         else:
-            throttle_last_create_time = throttle_allocation_list.first().create_time
+            throttle_last_created_time = throttle_allocation_list.first().created_time
             ThrottleModel.objects.create(ip=ip, method=request.method.lower())
-            allocation_seconds_balance = (now_time - throttle_last_create_time).seconds
-            data["visit_check"] = throttle_last_create_time
+            allocation_seconds_balance = (now_time - throttle_last_created_time).seconds
+            data["visit_check"] = throttle_last_created_time
             if allocation_seconds_balance >= settings.ALLOCATION_SECONDS:
                 return True
             else:

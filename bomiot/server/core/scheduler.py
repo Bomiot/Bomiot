@@ -29,14 +29,20 @@ def sm_send_success_signal_handler(sender, **kwargs):
     model_data = kwargs['msg'].get('models', '')
     if model_data == 'JobList':
         job_id = f"{inspect.getmodule(sender).__name__}-{sender.__name__}"
-        if JobList.objects.filter(job_id=job_id).exists() is False:
-            data = kwargs['msg'].get('data', '')
+        data = kwargs['msg'].get('data', '')
+        if JobList.objects.filter(job_id=job_id).exists():
+            job_detail = JobList.objects.get(job_id=job_id)
+            job_detail.trigger = data.get('trigger')
+            job_detail.description = data.get('description', '')
+            job_detail.configuration = json.dumps(data)
+            job_detail.save()
+        else:
             JobList.objects.create(job_id=job_id,
                                    module_name=inspect.getmodule(sender).__name__,
                                    func_name=sender.__name__,
                                    trigger=data.get('trigger'),
                                    description=data.get('description', ''),
-                                   configuration=json.dumps(data),
+                                   configuration=json.dumps(data)
                                    )
 
 
@@ -102,15 +108,18 @@ class SchedulerManager(Thread):
         if not job.type and not force:
             return
         # check extra jobs which does not belong to task
-        existed_jobs = self.existed_jobs()
-        existed_job_ids = list(map(lambda obj: obj.id, existed_jobs))
-        realtime_job_ids = list(self.realtime_job_id())
-        deprecated_job_ids = [
-            job_id for job_id in existed_job_ids if not job_id in realtime_job_ids]
-        if deprecated_job_ids:
-            # remove deprecated jobs
-            for job_id in deprecated_job_ids:
-                self.scheduler.remove_job(job_id)
+        try:
+            existed_jobs = self.existed_jobs()
+            existed_job_ids = list(map(lambda obj: obj.id, existed_jobs))
+            realtime_job_ids = list(self.realtime_job_id())
+            deprecated_job_ids = [
+                job_id for job_id in existed_job_ids if not job_id in realtime_job_ids]
+            if deprecated_job_ids:
+                # remove deprecated jobs
+                for job_id in deprecated_job_ids:
+                    self.scheduler.remove_job(job_id)
+        except:
+            pass
 
     def _add_or_modify_new_jobs(self, job, force=False):
         """

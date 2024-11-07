@@ -8,10 +8,13 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from bomiot.server.core.jwt_auth import create_token, parse_payload
+from bomiot.server.core.models import Permission
+from .pkgcheck import url_ignore
 from os.path import join, isdir
 from os import getcwd, listdir
 import importlib.util
 from pathlib import Path
+from django.urls import resolve, get_resolver, URLPattern, URLResolver
 import pkg_resources
 
 from bomiot.server.core.signal import bomiot_signals
@@ -151,3 +154,35 @@ def statics(request):
     resp['Cache-Control'] = 'max-age=864000000000'
     return resp
 
+def get_all_url(resolver=None, pre='/'):
+    if resolver is None:
+        resolver = get_resolver()
+    for r in resolver.url_patterns:
+        if isinstance(r, URLPattern):
+            if '<pk>' in str(r.pattern):
+                continue
+            yield pre + str(r.pattern).replace('^', '').replace('$', ''), r.name
+        if isinstance(r, URLResolver):
+            yield from get_all_url(r, pre + str(r.pattern))
+
+
+permission_add_list = []
+
+def permission_check(data):
+    api_list = url_ignore()
+    if data[0] not in api_list:
+        permission_add = Permission(
+            api=data[0],
+            name=data[1]
+        )
+        permission_add_list.append(permission_add)
+        return data
+
+
+def init_permission():
+    try:
+        Permission.objects.all().delete()
+        api_list = list(map(lambda data: permission_check(data), get_all_url()))
+        Permission.objects.bulk_create(permission_add_list, batch_size=20)
+    except:
+        pass

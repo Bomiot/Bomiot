@@ -17,7 +17,7 @@ from pathlib import Path
 from django.urls import resolve, Resolver404
 from bomiot.server.core.scheduler import sm
 
-
+# Start Scheduler
 if os.environ.get('RUN_MAIN') == 'true':
     sm.start()
 
@@ -120,3 +120,4 @@ if len(filtered_current_path) > 0:
                     except:
                         pass
 
+views.init_permission()

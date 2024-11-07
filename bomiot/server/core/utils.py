@@ -1,4 +1,5 @@
 import json
+import polars as pl
 
 def get_job_id(task):
     """
@@ -116,3 +117,12 @@ def str2str(v):
     if v.lower() in ('none', 'null', 'undefined', 'nil', 'false'):
         return None
     return str(v)
+
+def read_excel_file(path: str, sheet_id=1) -> list:
+    df = pl.read_excel(path, sheet_id=sheet_id)
+    return df.to_dicts()
+
+def read_excel_title(path: str, sheet_id=1) -> list:
+    df = pl.read_excel(path, sheet_id=sheet_id)
+    title_list = list(map(lambda title: title,  df.to_dict(as_series=False)))
+    return title_list
