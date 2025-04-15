@@ -1,6 +1,6 @@
 import json
 import mimetypes
-import orjson
+import os
 from django.conf import settings
 from django.http import StreamingHttpResponse, JsonResponse
 from wsgiref.util import FileWrapper
@@ -9,72 +9,51 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from bomiot.server.core.jwt_auth import create_token, parse_payload
 from bomiot.server.core.models import Permission
+from bomiot.server.core.message import login_message_return, detail_message_return, others_message_return
 from .pkgcheck import url_ignore
-from os.path import join, isdir
-from os import getcwd, listdir
+from os.path import join, isdir, exists
+from os import listdir
 import importlib.util
 from pathlib import Path
-from django.urls import resolve, get_resolver, URLPattern, URLResolver
+from django.urls import get_resolver, URLPattern, URLResolver
 import pkg_resources
-
-from bomiot.server.core.signal import bomiot_signals
 
 User = get_user_model()
 
-
 def logins(request):
     data = json.loads(request.body.decode().replace("'", '"'))
-    user = authenticate(username=data['username'], password=data['pwd'])
-    context = {}
-    if user:
-        login(request, user)
-        user_info = {
-            "id": user.id,
-            "username": user.username
-        }
-        token = create_token(user_info)
-        context['token'] = token
-        context['msg'] = "Success Login"
-        return JsonResponse(context)
+    user_check = User.objects.filter(username=data.get('username'), is_delete=False)
+    if user_check.exists() is False:
+        return JsonResponse(detail_message_return(request.META.get('HTTP_LANGUAGE', ''), "User not exists"))
     else:
-        return JsonResponse({"msg": "User Does Not Exists"})
+        user = authenticate(username=data.get('username'), password=data.get('password'))
+        context = {}
+        if user:
+            if user.is_active is True:
+                login(request, user)
+                user_info = {
+                    "id": user.id,
+                    "username": user.username,
+                    "admin": user.is_superuser,
+                    "permission": user.permission
+                }
+                token = create_token(user_info)
+                context['token'] = token
+                context['msg'] = others_message_return(request.META.get('HTTP_LANGUAGE', ''), 'Success Login')
+                return JsonResponse(context)
+            else:
+                return JsonResponse(login_message_return(request.META.get('HTTP_LANGUAGE', ''), 'User is not active'))
+        else:
+            return JsonResponse(login_message_return(request.META.get('HTTP_LANGUAGE', ''), 'User or Password error'))
 
 
 @login_required
 def logouts(request):
     if request.user.is_authenticated:
         logout(request)
-        JsonResponse({'msg': 'success'})
+        return JsonResponse({'msg': others_message_return(request.META.get('HTTP_LANGUAGE', ''), 'Welcome Back Again')})
     else:
-        return JsonResponse({'msg': 'User Not Log In'})
-
-
-async def registers(request):
-    data = orjson.loads(request.body)
-    context = {}
-    if data['username'] == '':
-        context['detail'] = '100001'
-        return JsonResponse(context)
-    if data['pwd1'] == '':
-        context['detail'] = '100002'
-        return JsonResponse(context)
-    if data['pwd2'] == '':
-        context['detail'] = '100003'
-        return JsonResponse(context)
-    if data['pwd1'] != data['pwd2']:
-        context['detail'] = '100004'
-        return JsonResponse(context)
-    user_exists = User.objects.filter(username=str(data['username'])).aiterator()
-    if user_exists.exists():
-        context['detail'] = '100005'
-        return JsonResponse(context)
-    else:
-        user = User.objects.acreate_user(username=str(data['username']),
-                                        password=str(data['pwd1']))
-        await user.asave()
-        login(request, user)
-        context['detail'] = 'success'
-        return JsonResponse(context)
+        return JsonResponse(login_message_return(request.META.get('HTTP_LANGUAGE', ''), 'User Not Log In'))
 
 
 def check_token(request):
@@ -166,23 +145,27 @@ def get_all_url(resolver=None, pre='/'):
             yield from get_all_url(r, pre + str(r.pattern))
 
 
-permission_add_list = []
-
 def permission_check(data):
     api_list = url_ignore()
     if data[0] not in api_list:
-        permission_add = Permission(
-            api=data[0],
-            name=data[1]
-        )
-        permission_add_list.append(permission_add)
+        try:
+            Permission.objects.get_or_create(api=str(data[0]), name=str(data[1]))
+        except:
+            pass
+        user_data = User.objects.filter(is_superuser=True)
+        for i in user_data:
+            i.permission[str(data[1])] = str(data[0])
+            i.save()
         return data
-
 
 def init_permission():
     try:
-        Permission.objects.all().delete()
+        user_data = User.objects.filter(is_superuser=True)
+        for i in user_data:
+            user_folder = join(settings.MEDIA_ROOT, i.username)
+            exists(user_folder) or os.makedirs(user_folder)
+            i.permission = {}
+            i.save()
         api_list = list(map(lambda data: permission_check(data), get_all_url()))
-        Permission.objects.bulk_create(permission_add_list, batch_size=20)
     except:
         pass

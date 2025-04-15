@@ -2,7 +2,7 @@ from os.path import join, exists
 from os import makedirs, getcwd
 import shutil
 from pathlib import Path
-import toml
+from tomlkit import parse, dumps
 from configparser import ConfigParser
 
 
@@ -26,11 +26,11 @@ def create_file(folder: str):
     if exists(join(working_space, 'pyproject.toml')) is False:
         if folder != 'bmoiot':
             with open(join(file_path, 'pyproject.toml'), 'r', encoding='utf-8') as pip_file:
-                deploy_pip = toml.load(pip_file)
+                deploy_pip = parse(pip_file.read())
             deploy_pip['tool']['poetry']['name'] = folder
             deploy_pip['tool']['poetry']['version'] = '0.0.1'
             with open(join(working_space, 'pyproject.toml'), 'w', encoding='utf-8') as user_pip_file:
-                toml.dump(deploy_pip, user_pip_file)
+                user_pip_file.write(dumps(deploy_pip))
 
     if exists(join(working_space, '.gitignore')) is False:
         shutil.copy2(join(file_path, '.gitignore'), working_space)
@@ -43,9 +43,6 @@ def create_file(folder: str):
 
     log_path = join(working_space, 'logs')
     exists(log_path) or makedirs(log_path)
-
-    media_path = join(working_space, 'media')
-    exists(media_path) or makedirs(media_path)
 
     deploy_path = join(working_space, 'deploy')
     exists(deploy_path) or makedirs(deploy_path)

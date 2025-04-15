@@ -6,7 +6,7 @@ from django.conf import settings
 data = {}
 
 
-class AsyncThrottle(BaseThrottle):
+class CoreThrottle(BaseThrottle):
     def allow_request(self, request, view) -> bool:
         ip = request.META.get('HTTP_X_FORWARDED_FOR') if request.META.get(
             'HTTP_X_FORWARDED_FOR') else request.META.get('REMOTE_ADDR')

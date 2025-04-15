@@ -28,6 +28,8 @@ def deploy(folder: str):
 
         if exists(join(supervisor_path, str(sys.argv[2]) + '.ini')) is False:
             shutil.copy2(join(file_path, 'supervisor.conf'), supervisor_path)
+            if exists(join(supervisor_path, str(sys.argv[2]) + '.conf')):
+                os.remove(join(supervisor_path, str(sys.argv[2]) + '.conf'))
             rename(join(supervisor_path, 'supervisor.conf'), join(supervisor_path, str(sys.argv[2]) + '.conf'))
         supervisor_config = ConfigParser()
         supervisor_config.read(join(supervisor_path, str(sys.argv[2]) + '.conf'))
@@ -45,7 +47,8 @@ def deploy(folder: str):
                    f'{join(join(getcwd(), "logs"), "bomiot_supervisor_access.log")}')
         supervisor_config.set(f'program:{sys.argv[2]}', 'stderr_logfile',
                    f'{join(join(getcwd(), "logs"), "bomiot_supervisor_err.log")}')
-        supervisor_config.write(open(join(supervisor_path, str(sys.argv[2]) + '.conf'), "wt"))
         supervisor_config.remove_section('program:bomiot')
+        supervisor_config.write(open(join(supervisor_path, str(sys.argv[2]) + '.conf'), "wt"))
+
 
         print(f'Deploy project {str(sys.argv[2])} workspace success')

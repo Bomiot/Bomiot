@@ -1,4 +1,6 @@
-import datetime, hashlib, random
+import datetime, hashlib, random, orjson
+
+from django.core.exceptions import ValidationError
 from django.db import models
 
 DEFAULT_DATA = (
@@ -27,3 +29,30 @@ class Md5idField(models.CharField):
         kwargs['max_length'] = self.max_length
         kwargs.pop('default', None)
         return name, path, args, kwargs
+
+
+class JsonField(models.TextField):
+    description = "A text field that stores validated JSON"
+
+    def from_db_value(self, value, expression, connection):
+        return value
+
+    def to_python(self, value):
+        if value is None:
+            return None
+        try:
+            return orjson.loads(value)
+        except orjson.JSONDecodeError:
+            raise ValidationError("Invalid JSON format")
+
+    def get_prep_value(self, value):
+        if value is None:
+            return None
+        return orjson.dumps(value)
+
+    def validate(self, value, model_instance):
+        super().validate(value, model_instance)
+        try:
+            orjson.loads(value)
+        except orjson.JSONDecodeError:
+            raise ValidationError("Invalid JSON format")

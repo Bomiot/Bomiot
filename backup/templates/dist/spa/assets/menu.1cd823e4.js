@@ -1,0 +1,1 @@
+import{a1 as e}from"./index.11d8ee9e.js";const o=e("menu",{state:()=>({menuData:{tab:"test1",title:"",icon:"home",link:"/",routerTo:"/"},homeData:{tab:"test1",title:"",icon:"home",link:"/",routerTo:"/"}}),getters:{menuDataGet(t){return t.menuData},homePageGet(t){return t.homeData}},actions:{menuDataChange(t){this.menuData=t},homePage(t){this.homeData=t}}});export{o as u};

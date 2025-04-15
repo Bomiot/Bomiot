@@ -1,0 +1,1 @@
+import{a1 as a}from"./index.11d8ee9e.js";const s=a("tab",{state:()=>({tabData:"test1"}),getters:{tabDataGet(t){return t.tabData}},actions:{tabDataChange(t){this.tabData=t}},persist:{enable:!0}});export{s as u};

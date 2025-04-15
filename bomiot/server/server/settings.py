@@ -51,12 +51,15 @@ current_path = list(set([p for p in listdir(WORKING_SPACE) if isdir(p)]).differe
 cur_squared = list(map(lambda data: cwd_check(data), current_path))
 filtered_current_path = list(filter(lambda y: y is not None, cur_squared))
 
+LOCALE_PATHS = []
+
 if len(filtered_pkg_squared) > 0:
     for module in filtered_pkg_squared:
         module_path = importlib.util.find_spec(PROJECT_NAME).origin
         list_module_path = Path(module_path).resolve().parent
         pkg_config_check = ConfigParser()
         pkg_config_check.read(join(list_module_path), 'bomiotconf.ini', encoding='utf-8')
+        LOCALE_PATHS.append(join(list_module_path, 'locale'))
         app_mode = pkg_config_check.get('mode', 'name', fallback='plugins')
         if app_mode == 'plugins':
             try:
@@ -79,6 +82,7 @@ if len(filtered_current_path) > 0:
     for module_name in filtered_current_path:
         app_mode_config = ConfigParser()
         app_mode_config.read(join(join(WORKING_SPACE, module_name), 'bomiotconf.ini'), encoding='utf-8')
+        LOCALE_PATHS.append(join(join(WORKING_SPACE, module_name), 'locale'))
         app_mode = app_mode_config.get('mode', 'name')
         if app_mode == 'plugins':
             try:
@@ -102,12 +106,14 @@ if len(filtered_current_path) > 0:
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'bomiot.server.core.middlewares.JwtAuthorizationMiddleware'
 ]
 
 ROOT_URLCONF = 'bomiot.server.server.urls'
@@ -129,6 +135,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.i18n',
             ],
         },
     },
@@ -197,14 +204,19 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
-
-LANGUAGE_CODE = CONFIG.getint('local', 'language_code', fallback='en-us')
+if PROJECT_NAME == 'bomiot':
+    LANGUAGE_DIR = join(BASE_DIR, 'language').replace('\\', '/')
+else:
+    LANGUAGE_DIR = join(join(WORKING_SPACE, PROJECT_NAME), 'language').replace('\\', '/')
+exists(LANGUAGE_DIR) or os.makedirs(LANGUAGE_DIR)
 
 TIME_ZONE = CONFIG.getint('local', 'time_zone', fallback='UTC')
 
 USE_I18N = True
 
-USE_TZ = True
+USE_L10N = True  # 开启本地化(localization)
+
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -223,7 +235,10 @@ else:
     ]
 
 MEDIA_URL = 'media/'
-MEDIA_ROOT = join(WORKING_SPACE, 'media').replace('\\', '/')
+if PROJECT_NAME == 'bomiot':
+    MEDIA_ROOT = join(BASE_DIR, 'media').replace('\\', '/')
+else:
+    MEDIA_ROOT = join(join(WORKING_SPACE, PROJECT_NAME), 'media').replace('\\', '/')
 exists(MEDIA_ROOT) or os.makedirs(MEDIA_ROOT)
 
 
@@ -360,14 +375,14 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.FormParser',
         'rest_framework.parsers.MultiPartParser'
     ],
-    'DEFAULT_AUTHENTICATION_CLASSES': ['bomiot.server.core.auth.AsyncAuthentication', ],
-    'DEFAULT_PERMISSION_CLASSES': ["bomiot.server.core.permission.AsyncPermission", ],
-    'DEFAULT_THROTTLE_CLASSES': ['bomiot.server.core.throttle.AsyncThrottle', ],
+    'DEFAULT_AUTHENTICATION_CLASSES': ['bomiot.server.core.auth.CoreAuthentication', ],
+    'DEFAULT_PERMISSION_CLASSES': ["bomiot.server.core.permission.CorePermission", ],
+    'DEFAULT_THROTTLE_CLASSES': ['bomiot.server.core.throttle.CoreThrottle', ],
     # 'DEFAULT_THROTTLE_RATES': ['utils.throttle.VisitThrottle', ],
     'DEFAULT_CONTENT_NEGOTIATION_CLASS': 'rest_framework.negotiation.DefaultContentNegotiation',
     'DEFAULT_METADATA_CLASS': 'rest_framework.metadata.SimpleMetadata',
     'DEFAULT_VERSIONING_CLASS': None,
-    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': 'bomiot.server.core.page.CorePageNumberPagination',
     # 'PAGE_SIZE': 1,  # 默认 None
     'DEFAULT_FILTER_BACKENDS': [
         'django_filters.rest_framework.DjangoFilterBackend',
@@ -423,7 +438,5 @@ USER_JWT_TIME = CONFIG.getint('jwt', 'user_jwt_time', fallback=1000000)
 
 ALLOCATION_SECONDS = CONFIG.getint('throttle', 'allocation_seconds', fallback=1)
 THROTTLE_SECONDS = CONFIG.getint('throttle', 'throttle_seconds', fallback=10)
-
-ALLOWED_IMG = CONFIG.get('image_upload', 'suffix_name', fallback='jpg, jpeg, gif, png, bmp, webp').split(',')
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = None

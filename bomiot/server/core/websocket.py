@@ -8,18 +8,16 @@ from bomiot.server.core.signal import bomiot_signals
 from django.dispatch import receiver
 
 
-@receiver(bomiot_signals)
+@receiver(bomiot_signals, sender=Message)
 def message_send_success_signal_handler(sender, **kwargs):
-    model_data =  kwargs['msg'].get('models', '')
-    if model_data == 'Message':
-        message_data = Message.objects.get(
-            md5_id = kwargs['msg'].get('data', '').md5_id
-        )
+    message_data = Message.objects.filter(
+        md5_id = kwargs['msg'].get('data', '').md5_id
+    ).first()
 
-        ## Write down your edit message data here
+    ## Write down your edit message data here
 
-        message_data.can_send = True
-        message_data.save()
+    message_data.can_send = True
+    message_data.save()
 
 
 CONECTINGS = {}

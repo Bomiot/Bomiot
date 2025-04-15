@@ -1,4 +1,3 @@
-import os
 import pkg_resources
 import importlib.util
 
@@ -15,11 +14,6 @@ from .pkgcheck import pkg_check, cwd_check, ignore_pkg, ignore_cwd
 from configparser import ConfigParser
 from pathlib import Path
 from django.urls import resolve, Resolver404
-from bomiot.server.core.scheduler import sm
-
-# Start Scheduler
-if os.environ.get('RUN_MAIN') == 'true':
-    sm.start()
 
 
 def url_exists(url_data):
@@ -38,7 +32,6 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name='dist/spa/index.html')),
     path('login/', views.logins, name='login'),
     path('logout/', views.logouts, name='logout'),
-    path('register/', views.registers, name='register'),
     path('checktoken/', views.check_token, name='check_token'),
     path('core/', include('bomiot.server.core.urls')),
 ]

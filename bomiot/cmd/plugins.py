@@ -48,11 +48,6 @@ def plugins(folder: str):
 
                 create_file('')
 
-                setup_config = ConfigParser()
-                setup_config.read(join(join(getcwd()), 'setup.ini'), encoding='utf-8')
-                setup_config.set('project', 'name', folder)
-                setup_config.write(open(join(join(getcwd()), 'setup.ini'), "wt"))
-
                 copy_files(join(current_path.parent, 'extends'), plugins_path)
 
                 apps_path = join(plugins_path, 'apps.py')

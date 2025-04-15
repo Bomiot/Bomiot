@@ -1,6 +1,6 @@
-# bomiot app (templates)
+# Quasar App (template)
 
-A bomiot app
+A Quasar Project
 
 ## Install the dependencies
 ```bash
@@ -29,7 +29,6 @@ yarn format
 # or
 npm run format
 ```
-
 
 
 ### Build the app for production

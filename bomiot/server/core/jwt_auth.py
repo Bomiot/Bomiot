@@ -22,9 +22,9 @@ def parse_payload(token):
         result["status"] = True
         result['data'] = verified_payload
     except jwt.exceptions.ExpiredSignatureError:
-        result['err'] = 'Token Expired'
+        result['detail'] = 'Token Expired'
     except jwt.DecodeError:
-        result['err'] = 'Token Authentication Failed'
+        result['detail'] = 'Token Authentication Failed'
     except jwt.InvalidTokenError:
-        result['err'] = 'Illegal Token'
+        result['detail'] = 'Illegal Token'
     return result

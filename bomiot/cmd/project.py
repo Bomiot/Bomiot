@@ -51,5 +51,7 @@ def project(folder: str):
                 setup_config.write(open(join(join(getcwd()), 'setup.ini'), "wt"))
 
                 copy_files(join(current_path.parent.parent, 'templates'), join(project_path, 'templates'))
+                copy_files(join(join(current_path.parent.parent, 'server'), 'media'), join(project_path, 'media'))
+                copy_files(join(join(current_path.parent.parent, 'server'), 'language'), join(project_path, 'language'))
 
                 print(f'Initialized project workspace {sys.argv[2]}')

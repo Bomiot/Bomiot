@@ -95,17 +95,12 @@ parser_init = subparsers.add_parser(
 parser_init.add_argument('folder', default='',
                          nargs='?', type=str, help='Init Bomiot')
 
-
 # init admin
 parser_initadmin = subparsers.add_parser(
     'initadmin', help='Create default super user admin')
 
 # migrate
 parser_migrate = subparsers.add_parser('migrate', help='Migrate database')
-
-# create superuser
-parser_createsuperuser = subparsers.add_parser(
-    'createsuperuser', help='Create a custom superuser')
 
 # makemigrations
 parser_makemigrations = subparsers.add_parser(

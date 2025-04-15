@@ -1,24 +1,111 @@
-import { boot } from 'quasar/wrappers'
-import axios from 'axios'
+import { boot } from 'quasar/wrappers';
+import axios from 'axios';
+import emitter from './bus';
+import { LocalStorage, Notify, Loading } from 'quasar';
 
-// Be careful when using SSR for cross-request state pollution
-// due to creating a Singleton instance here;
-// If any client changes this (global) instance, it might be a
-// good idea to move this instance creation inside of the
-// "export default () => {}" function below (which runs individually
-// for each client)
-const api = axios.create({ baseURL: 'https://api.example.com' })
+const api = axios.create({
+  baseURL: 'http://127.0.0.1:8008', // Replace with your actual API URL
+  timeout: 10000,
+});
+
+api.interceptors.request.use(
+  (config) => {
+    let token = '';
+    if (LocalStorage.has('token')) {
+      var tokenCheck = JSON.parse(LocalStorage.getItem('token'));
+      if (tokenCheck !== '') {
+        for (const key in tokenCheck) {
+          if (key === 'token') {
+            const value = tokenCheck[key];
+            token = value;
+          }
+        }
+      } else {
+        if (config.url !== 'login/') {
+          Notify.create({
+            type: 'warning',
+            message: 'Please Login First'
+          })
+          return Promise.reject(new Error('Please Login First'));
+        }
+      }
+    }
+    config.headers.token = token;
+    let lang = 'en-US';
+    if (LocalStorage.has('language')) {
+      const langCheck = JSON.parse(LocalStorage.getItem('language'));
+      if (langCheck !== '') {
+        for (const key in langCheck) {
+          if (key === 'langData') {
+            const LangValue = langCheck[key];
+            lang = LangValue;
+          }
+        }
+      }
+    }
+    config.headers.language = lang;
+    Loading.show();
+    return config;
+  },
+  function (error) {
+    Loading.hide();
+    return Promise.reject(error);
+  }
+);
+
+api.interceptors.response.use(
+  function (response) {
+    if (response.data.detail) {
+      Notify.create({
+        type: 'warning',
+        message: response.data.detail
+      })
+    }
+    if (response.data.msg) {
+      Notify.create({
+        type: 'success',
+        message: response.data.msg
+      })
+    }
+    if (response.data.login) {
+      Notify.create({
+        type: 'warning',
+        message: response.data.login
+      })
+      emitter.emit('needLogin', true)
+    } else {
+      emitter.emit('needLogin', false)
+    }
+    Loading.hide();
+    return response.data;
+  }
+);
+
+function get({ url, params }) {
+  return api.get(url, {
+    params: { ...params },
+  });
+}
+
+function post (url, data) {
+  return api.post(url, data);
+}
+
+function put (url, data) {
+  return api.put(url, data);
+}
+
+function patch (url, data) {
+  return api.patch(url, data);
+}
+
+function deleteData (url) {
+  return api.delete(url);
+}
+
 
 export default boot(({ app }) => {
-  // for use inside Vue files (Options API) through this.$axios and this.$api
-
-  app.config.globalProperties.$axios = axios
-  // ^ ^ ^ this will allow you to use this.$axios (for Vue Options API form)
-  //       so you won't necessarily have to import axios in each vue file
-
-  app.config.globalProperties.$api = api
-  // ^ ^ ^ this will allow you to use this.$api (for Vue Options API form)
-  //       so you can easily perform requests against your app's API
+  app.config.globalProperties.$axios = axios;
 })
 
-export { api }
+export { api, get, post, put, patch, deleteData };

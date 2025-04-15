@@ -1,5 +1,6 @@
-import json
-import polars as pl
+import orjson
+import pandas as pd
+
 
 def get_job_id(task):
     """
@@ -30,7 +31,7 @@ def load_dict(x, transformer=None):
     if x is None or isinstance(x, dict):
         return x
     try:
-        data = json.loads(x)
+        data = orjson.loads(x)
         if not transformer:
             def transformer(x): return x
         data = {k: transformer(v) for k, v in data.items()}
@@ -48,7 +49,7 @@ def str2list(x, transformer=None):
     if x is None or isinstance(x, list):
         return x
     try:
-        data = json.loads(x)
+        data = orjson.loads(x)
         if not transformer:
             def transformer(x): return x
         data = list(map(lambda x: transformer(x), data))
@@ -79,7 +80,7 @@ def str2json(v):
     :return:
     """
     try:
-        return json.loads(v)
+        return orjson.loads(v)
     except:
         return None
 
@@ -91,7 +92,7 @@ def str2dict(v):
     :return:
     """
     try:
-        return json.loads(v)
+        return orjson.loads(v)
     except:
         return {}
 
@@ -103,7 +104,7 @@ def str2body(v):
     :return:
     """
     try:
-        return json.loads(v)
+        return orjson.loads(v)
     except:
         return v
 
@@ -118,11 +119,31 @@ def str2str(v):
         return None
     return str(v)
 
-def read_excel_file(path: str, sheet_id=1) -> list:
-    df = pl.read_excel(path, sheet_id=sheet_id)
-    return df.to_dicts()
 
-def read_excel_title(path: str, sheet_id=1) -> list:
-    df = pl.read_excel(path, sheet_id=sheet_id)
-    title_list = list(map(lambda title: title,  df.to_dict(as_series=False)))
-    return title_list
+def is_dict_empty(d):
+    return not d.items()
+
+
+def excel_to_json(path: str, skip=0, read_rows=31) -> list:
+    df = pd.read_excel(path, nrows=0, header=0, engine='openpyxl')
+    column_names = df.columns.tolist()
+    df = pd.read_excel(path, skiprows=skip, nrows=read_rows, engine='openpyxl', names=column_names)
+    data = df.to_json(orient="records", date_format="iso", date_unit='s', force_ascii=False)
+    return orjson.loads(data)
+
+
+def read_excel_title(path: str) -> list:
+    df = pd.read_excel(path, nrows=0, header=0, engine='openpyxl')
+    return df.columns.tolist()
+
+
+def contains_value(data: dict, value) -> bool:
+    return value in data.values()
+
+
+def readable_file_size(size_in_bytes):
+    for unit in ['B', 'KB', 'MB', 'GB', 'TB', 'PB']:
+        if size_in_bytes < 1024.0:
+            return f"{size_in_bytes:.2f} {unit}"
+        size_in_bytes /= 1024.0
+    return f"{size_in_bytes:.2f} EB"
