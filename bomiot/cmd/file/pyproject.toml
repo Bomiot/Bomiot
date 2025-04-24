@@ -1,0 +1,50 @@
+[tool.poetry]
+name = "bomiot"
+version = "0.5.18"
+description = "One App you can do everything"
+authors = ["Bomiot <Singosgu@gmail.com>"]
+readme = "README.md"
+homepage = "https://github.com/Bomiot/Bomiot"
+repository = "https://github.com/Bomiot/Bomiot"
+keywords = ["Bomiot", "bomiot"]
+include = [
+    "LICENSE"
+]
+
+exclude = [
+]
+
+classifiers = [
+    'License :: OSI Approved :: MIT License',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Programming Language :: Python :: Implementation :: CPython',
+    'Programming Language :: Python :: Implementation :: PyPy'
+]
+
+[tool.poetry.dependencies]
+python = ">=3.9,<4.0"
+django = "~4.2.16"
+django-cors-headers = "~4.4.0"
+pyjwt = ">=2.10.1"
+django-filter = "~24.3"
+djangorestframework-csv = "~3.0.2"
+orjson = "~3.10.7"
+djangorestframework = "~3.15.2"
+django-apscheduler = "~0.7.0"
+daphne = "~4.1.2"
+twisted = {extras = ["http2", "tls"], version = "~24.7.0"}
+pandas = "~2.2.3"
+watchdog = "~6.0.0"
+tomlkit = "~0.13.2"
+openpyxl = "~3.1.5"
+pypistats = "^1.9.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+bomiot = "bomiot.cmd:cmd"

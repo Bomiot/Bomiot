@@ -1,0 +1,4 @@
+
+ADMINS = [
+    'admin'
+]

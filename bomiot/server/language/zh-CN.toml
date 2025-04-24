@@ -1,0 +1,51 @@
+[login]
+"Please Login Again"="请再次登入"
+"User is not active"="用户被锁定，请联系管理员解锁"
+"Please Login First"="请先登入"
+"User not exists"="用户不存在"
+"User or Password error"="用户或者密码错误"
+"User Not Log In"="用户未登入"
+"Get Permission List"="获取权限列表"
+
+[permission]
+"Get User List"="获取用户列表"
+"Create One User"="创建一个用户"
+"Set Permission For User"="为用户设置权限"
+"Change Password"="修改密码"
+"Lock & Unlock User"="锁定或解锁用户"
+"Delete One User"="删除一个用户"
+"Get Permission List"="获取权限列表"
+
+[detail]
+"User exists"="用户已存在"
+"User not exists"="用户不存在"
+"User does not have permission to create user"="用户没有创建用户的权限"
+"Can not change admin's permision"="不可以修改管理员的权限"
+"Can not change your own permission"="不可以修改你自己的权限"
+"User does not have permission to set permission for user"="你没有修改用户的权限功能"
+"User does not have permission to change password"="你没有修改密码的权限"
+"User can only change your own password"="你只能修改你自己的密码"
+"Can not lock admin"="不可以锁定管理员"
+"User does not have permission to lock user"="用户没有锁定用户权限"
+"User can not lock/unlock your own"="你不可以锁定自己"
+"Can not delete admin"="不可以删除管理员"
+"User does not have permission to delete user"="用户没有删除用户权限"
+"User can not delete your own"="你不可以删除你自己"
+"File not exists"="文件不存在"
+"Can not share file which is not your own"="你不能分享别人的文件"
+"Can not delete file which is not your own"="你不能删除别人的文件"
+
+[msg]
+"Success Create User"="成功创建用户"
+"Success Change User Permission"="成功修改用户权限"
+"Success Change Password"="成功修改密码"
+"Success lock User"="成功锁定用户"
+"Success unlock User"="成功解锁用户"
+"Success delete User"="删除用户成功"
+"Success upload file"="成功上传文件"
+"Success share your file"="成功分享文件"
+"Success delete file"="成功删除文件"
+
+[others]
+"Success Login"="登入成功"
+"Welcome Back Again"="欢迎再次回来"

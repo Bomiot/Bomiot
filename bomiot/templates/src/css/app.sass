@@ -1,0 +1,79 @@
+.my-sticky-header-last-column-table
+
+  td:last-child
+    /* 最后一列的背景颜色 */
+    background-color: #ffffff
+
+  /** 固定表头 */
+  tr th
+    position: sticky
+    /* 表头（tr th）的 z-index 要比下面的 td 高 */
+    z-index: 2
+    /* 表头的背景颜色 */
+    background: #ffffff
+
+  /* 这将是加载指示器 */
+  thead tr:last-child th
+    /* 所有前面表头行的高度 */
+    top: 48px
+    /* 最高的 z-index */
+    z-index: 3
+  thead tr:first-child th
+    top: 0
+    z-index: 1
+  tr:last-child th:last-child
+    /* 最高的 z-index */
+    z-index: 3
+
+  td:last-child
+    z-index: 1
+
+  /** 固定最后一列 */
+  td:last-child, th:last-child
+    position: sticky
+    right: 0
+
+  /* 在焦点聚焦在固定顶部行时防止滚动 */
+  tbody
+    /* 所有前面表头行的高度 */
+    scroll-margin-top: 48px
+
+.my-sticky-header-last-column-table-dark
+
+  td:last-child
+    /* 最后一列的背景颜色 */
+    background-color: #121212
+
+  /** 固定表头 */
+  tr th
+    position: sticky
+    /* 表头（tr th）的 z-index 要比下面的 td 高 */
+    z-index: 2
+    /* 表头的背景颜色 */
+    background: #121212
+
+  /* 这将是加载指示器 */
+  thead tr:last-child th
+    /* 所有前面表头行的高度 */
+    top: 48px
+    /* 最高的 z-index */
+    z-index: 3
+  thead tr:first-child th
+    top: 0
+    z-index: 1
+  tr:last-child th:last-child
+    /* 最高的 z-index */
+    z-index: 3
+
+  td:last-child
+    z-index: 1
+
+  /** 固定最后一列 */
+  td:last-child, th:last-child
+    position: sticky
+    right: 0
+
+  /* 在焦点聚焦在固定顶部行时防止滚动 */
+  tbody
+    /* 所有前面表头行的高度 */
+    scroll-margin-top: 48px

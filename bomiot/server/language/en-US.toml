@@ -1,0 +1,51 @@
+[login]
+"Please Login Again"="Please Login Again"
+"User is not active"="User is not active"
+"User not exists"="User not exists"
+"Please Login First"="Please Login First"
+"User or Password error"="User or Password error"
+"User Not Log In"="User Not Log In"
+"Get Permission List"="Get Permission List"
+
+[permission]
+"Get User List"="Get User List"
+"Create One User"="Create One User"
+"Set Permission For User"="Set Permission For User"
+"Change Password"="Change Password"
+"Lock & Unlock User"="Lock & Unlock User"
+"Delete One User"="Delete One User"
+"Get Permission List"="Get Permission List"
+
+[detail]
+"User exists"="User exists"
+"User not exists"="User not exists"
+"User does not have permission to create user"="User does not have permission to create user"
+"Can not change admin's permision"="Can not change admin's permision"
+"Can not change your own permission"="Can not change your own permission"
+"User does not have permission to set permission for user"="User does not have permission to set permission for user"
+"User does not have permission to change password"="User does not have permission to change password"
+"User can only change your own password"="User can only change your own password"
+"Can not lock admin"="Can not lock admin"
+"User does not have permission to lock user"="User does not have permission to lock user"
+"User can not lock/unlock your own"="User can not lock/unlock your own"
+"Can not delete admin"="Can not delete admin"
+"User does not have permission to delete user"="User does not have permission to delete user"
+"User can not delete your own"="User can not delete your own"
+"File not exists"="File not exists"
+"Can not share file which is not your own"="Can not share file which is not your own"
+"Can not delete file which is not your own"="Can not delete file which is not your own"
+
+[msg]
+"Success Create User"="Success Create User"
+"Success Change User Permission"="Success Change User Permission"
+"Success Change Password"="Success Change Password"
+"Success lock User"="Success lock User"
+"Success unlock User"="Success unlock User"
+"Success delete User"="Success delete User"
+"Success upload file"="Success upload file"
+"Success share your file"="Success share your file"
+"Success delete file"="Success delete file"
+
+[others]
+"Success Login"="Success Login"
+"Welcome Back Again"="Welcome Back Again"
