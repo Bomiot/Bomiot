@@ -435,3 +435,4 @@ class DeleteFile(viewsets.ModelViewSet):
             file_data.save()
             return Response(msg_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
                                                "Success delete file"), status=200)
+        

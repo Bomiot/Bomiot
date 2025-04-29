@@ -73,7 +73,7 @@ def monitor_server():
         get_network_info()
 
         print("=" * 50)
-        time.sleep(100)  # 每 10 秒监控一次
+        time.sleep(10)  # 每 10 秒监控一次
 
 
 if __name__ == "__main__":

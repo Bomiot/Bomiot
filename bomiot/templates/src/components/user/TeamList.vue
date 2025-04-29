@@ -98,7 +98,7 @@ const columns = computed( () => [
     name: 'username', required: true, label: t('username'), align: 'left', field: 'username'},
   { name: 'date_joined', label: t('date_joined'), field: 'date_joined' },
   { name: 'last_login', label: t('last_login'), field: 'last_login' },
-  { name: 'updated_time', label: t('updated_time'), field: 'updated_time', sortable: true },
+  { name: 'updated_time', label: t('updated_time'), field: 'updated_time' },
   { name: 'action', label: t('action'), align: 'right' }
 ])
 
@@ -140,7 +140,6 @@ function onRequest (props) {
       url: 'core/user/',
       params: {
         search: search.value,
-        ordering: (pagination.value.descending? '-' : '') + '' + pagination.value.sortBy,
         page: requestData.pagination.page,
         max_page: requestData.pagination.rowsPerPage
       }

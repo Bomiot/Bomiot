@@ -5,7 +5,7 @@ import { LocalStorage, Notify, Loading } from 'quasar';
 
 const api = axios.create({
   // baseURL: 'http://127.0.0.1:8008', // Replace with your actual API URL
-  timeout: 1000,
+  timeout: 10000,
 });
 
 api.interceptors.request.use(

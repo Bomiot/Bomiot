@@ -1,17 +1,15 @@
 <template>
   <q-page class="flex flex-top">
-    <UserList />
+    <TeamList />
   </q-page>
 </template>
 
 <script setup>
 import { onBeforeUnmount, onMounted, watch, ref } from 'vue'
 import { useMeta, useQuasar } from "quasar"
-import UserList from "components/user/UserList.vue"
-
+import TeamList from "components/user/TeamList.vue"
 
 const $q = useQuasar()
-
 
 const darkShow = ref(false)
 const title = ref('')

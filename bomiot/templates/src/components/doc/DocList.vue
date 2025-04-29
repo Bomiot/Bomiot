@@ -93,8 +93,8 @@ const columns = computed( () => [
   { name: 'type', align: 'center', label: t('doc.type'), field: 'type' },
   { name: 'size', align: 'center' ,label: t('doc.size'), field: 'size' },
   { name: 'owner', align: 'center', label: t('doc.owner'), field: 'owner' },
-  { name: 'created_time', align: 'center', label: t('created_time'), field: 'created_time', sortable: true },
-  { name: 'updated_time', align: 'center', label: t('updated_time'), field: 'updated_time', sortable: true },
+  { name: 'created_time', align: 'center', label: t('created_time'), field: 'created_time' },
+  { name: 'updated_time', align: 'center', label: t('updated_time'), field: 'updated_time' },
   { name: 'action', label: t('action'), align: 'right' }
 ])
 
@@ -131,26 +131,27 @@ function onRequest (props) {
   } else {
     requestData.pagination = pagination.value
   }
-  get({
-    url: 'core/user/files/',
-    params: {
-      search: search.value,
-      ordering: (pagination.value.descending? '-' : '') + '' + pagination.value.sortBy,
-      page: requestData.pagination.page,
-      max_page: requestData.pagination.rowsPerPage
-    }
-  }).then(res => {
-    rows.value = res.results
-    rowsCount.value = res.count
-    userList.value = res.users
-  }).catch(err => {
-    $q.notify({
-      type: 'error',
-      message: err
+  if (tokenStore.tokenDataGet !== '') {
+    get({
+      url: 'core/user/files/',
+      params: {
+        search: search.value,
+        page: requestData.pagination.page,
+        max_page: requestData.pagination.rowsPerPage
+      }
+    }).then(res => {
+      rows.value = res.results
+      rowsCount.value = res.count
+      userList.value = res.users
+    }).catch(err => {
+      $q.notify({
+        type: 'error',
+        message: err
+      })
+      $q.loading.hide()
     })
-    $q.loading.hide()
-  })
-  pagination.value = requestData.pagination
+    pagination.value = requestData.pagination
+  }
 }
 
 function downloadFile(e) {

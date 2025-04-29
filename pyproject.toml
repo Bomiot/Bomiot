@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bomiot"
-version = "0.5.18"
+version = "0.5.19"
 description = "One App you can do everything"
 authors = ["Bomiot <Singosgu@gmail.com>"]
 readme = "README.md"
@@ -41,6 +41,7 @@ watchdog = "~6.0.0"
 tomlkit = "~0.13.2"
 openpyxl = "~3.1.5"
 pypistats = "^1.9.0"
+psutil = "^7.0.0"
 
 [build-system]
 requires = ["poetry-core"]

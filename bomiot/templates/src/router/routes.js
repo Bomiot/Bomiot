@@ -10,6 +10,7 @@ const routes = [
       { path: 'doc', component: () => import('pages/DocCenter.vue') },
       { path: 'table', component: () => import('pages/TableReader.vue') },
       { path: 'user', component: () => import('pages/UserReader.vue') },
+      { path: 'team', component: () => import('pages/TeamReader.vue') },
     ]
   },
   {

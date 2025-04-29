@@ -24,7 +24,7 @@ def logins(request):
     data = json.loads(request.body.decode().replace("'", '"'))
     user_check = User.objects.filter(username=data.get('username'), is_delete=False)
     if user_check.exists() is False:
-        return JsonResponse(detail_message_return(request.META.get('HTTP_LANGUAGE', ''), "User not exists"))
+        return JsonResponse(login_message_return(request.META.get('HTTP_LANGUAGE', ''), "User not exists"))
     else:
         user = authenticate(username=data.get('username'), password=data.get('password'))
         context = {}

@@ -139,9 +139,11 @@ function cancelLogin () {
 function submitLogin () {
   if (loginData.value.username !== '' && loginData.value.password !== '') {
     post('login/', loginData.value).then((res) =>{
-      tokenStore.tokenChange(res.token)
-      emitter.emit('needLogin', false)
-      cancelLogin()
+      if (!res.login) {
+        tokenStore.tokenChange(res.token)
+        emitter.emit('needLogin', false)
+        cancelLogin()
+      }
     }).catch((err) =>{
       console.log(err)
     })

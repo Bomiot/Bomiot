@@ -15,7 +15,7 @@ class CoreAuthentication(object):
             if token:
                 user_check = User.objects.filter(id=result.get('data').get('id'), is_delete=False)
                 if user_check.exists() is False:
-                    raise APIException(detail_message_return(request.META.get('HTTP_LANGUAGE', ''),
+                    raise APIException(login_message_return(request.META.get('HTTP_LANGUAGE', ''),
                                                              "User not exists"))
                 else:
                     user_data = user_check.first()

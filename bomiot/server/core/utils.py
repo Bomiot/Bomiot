@@ -141,9 +141,13 @@ def contains_value(data: dict, value) -> bool:
     return value in data.values()
 
 
-def readable_file_size(size_in_bytes):
+def readable_file_size(size_in_bytes) -> str:
     for unit in ['B', 'KB', 'MB', 'GB', 'TB', 'PB']:
         if size_in_bytes < 1024.0:
             return f"{size_in_bytes:.2f} {unit}"
         size_in_bytes /= 1024.0
     return f"{size_in_bytes:.2f} EB"
+
+
+def compare_dicts(dict1, dict2) -> dict:
+    return {k: (dict1[k], dict2[k]) for k in dict1 if dict1[k] != dict2[k]}

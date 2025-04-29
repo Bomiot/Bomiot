@@ -51,6 +51,7 @@ export default {
   menuLink: {
     home: '首页',
     user: '用户列表',
+    team: '用户组',
   },
   upload: {
     center: '上传中心',

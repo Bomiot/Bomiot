@@ -99,6 +99,12 @@ parser_init.add_argument('folder', default='',
 parser_initadmin = subparsers.add_parser(
     'initadmin', help='Create default super user admin')
 
+# init password
+parser_project = subparsers.add_parser(
+    'initpwd', help='Init admin password')
+parser_project.add_argument('folder', default='',
+                         nargs='?', type=str, help='init password')
+
 # migrate
 parser_migrate = subparsers.add_parser('migrate', help='Migrate database')
 
@@ -150,6 +156,10 @@ def cmd():
     elif command == 'initadmin':
         from bomiot.cmd.initadmin import init_admin
         init_admin()
+        # init admin
+    elif command == 'initpwd':
+        from bomiot.cmd.initpwd import init_password
+        init_password()
     # create app
     elif command == 'new':
         from bomiot.cmd.createapp import new_app

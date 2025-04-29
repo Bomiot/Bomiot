@@ -51,6 +51,7 @@ export default {
   menuLink: {
     home: 'Home',
     user: 'User List',
+    team: 'Team List',
   },
   upload: {
     center: 'Upload Center',

@@ -40,9 +40,10 @@ const menuStore = useMenuDataStore()
 const menuLinks = computed(() => [
   { tab: 'standard', title: t('menuLink.home'), icon: 'home', link: '/' },
   { tab: 'standard', title: t('menuLink.user'), icon: 'people', link: '/user' },
+  { tab: 'standard', title: t('menuLink.team'), icon: 'diversity_3', link: '/team' },
   { tab: 'standard', title: t('upload.center'), icon: 'upload', link: '/upload' },
   { tab: 'standard', title: t('doc.center'), icon: 'download', link: '/doc' },
-  { tab: 'standard', title: '操作手册', icon: 'people', link: '/readme' },
+  { tab: 'standard', title: '操作手册', icon: 'menu_book', link: '/readme' },
 ])
 
 

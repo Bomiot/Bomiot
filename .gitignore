@@ -17,3 +17,5 @@ db.sqlite3
 install.sh
 *.pyc
 .venv
+/admin
+setup.ini

@@ -2,7 +2,9 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models.signals import post_save, pre_save, post_delete
+from django.contrib.postgres.indexes import GinIndex
 from django.forms import model_to_dict
+from .utils import compare_dicts
 from .signal import bomiot_signals
 
 
@@ -99,6 +101,176 @@ class Message(CoreModel):
         verbose_name_plural = verbose_name
         ordering = ['-id']
 
+
+class Goods(CoreModel):
+    data = models.JSONField()
+
+    class Meta:
+        db_table = settings.BASE_DB_TABLE + '_goods'
+        verbose_name = settings.BASE_DB_TABLE + ' Goods'
+        verbose_name_plural = verbose_name
+        ordering = ['-id']
+        indexes = [
+            GinIndex(fields=['data'], name="data_Goods")
+        ]
+
+
+class Company(CoreModel):
+    data = models.JSONField()
+
+    class Meta:
+        db_table = settings.BASE_DB_TABLE + '_company'
+        verbose_name = settings.BASE_DB_TABLE + ' Company'
+        verbose_name_plural = verbose_name
+        ordering = ['-id']
+        indexes = [
+            GinIndex(fields=['data'], name="data_Company")
+        ]
+
+
+class Team(CoreModel):
+    data = models.JSONField()
+
+    class Meta:
+        db_table = settings.BASE_DB_TABLE + '_team'
+        verbose_name = settings.BASE_DB_TABLE + ' Team'
+        verbose_name_plural = verbose_name
+        ordering = ['-id']
+        indexes = [
+            GinIndex(fields=['data'], name="data_Team")
+        ]
+
+
+class Warehouse(CoreModel):
+    data = models.JSONField()
+
+    class Meta:
+        db_table = settings.BASE_DB_TABLE + '_warehouse'
+        verbose_name = settings.BASE_DB_TABLE + ' Warehouse'
+        verbose_name_plural = verbose_name
+        ordering = ['-id']
+        indexes = [
+            GinIndex(fields=['data'], name="data_Warehouse")
+        ]
+
+
+class Bin(CoreModel):
+    data = models.JSONField()
+
+    class Meta:
+        db_table = settings.BASE_DB_TABLE + '_bin'
+        verbose_name = settings.BASE_DB_TABLE + ' Bin'
+        verbose_name_plural = verbose_name
+        ordering = ['-id']
+        indexes = [
+            GinIndex(fields=['data'], name="data_Bin")
+        ]
+
+
+class Stock(CoreModel):
+    data = models.JSONField()
+
+    class Meta:
+        db_table = settings.BASE_DB_TABLE + '_stock'
+        verbose_name = settings.BASE_DB_TABLE + ' Stock'
+        verbose_name_plural = verbose_name
+        ordering = ['-id']
+        indexes = [
+            GinIndex(fields=['data'], name="data_Stock")
+        ]
+
+
+class Supplier(CoreModel):
+    data = models.JSONField()
+
+    class Meta:
+        db_table = settings.BASE_DB_TABLE + '_supplier'
+        verbose_name = settings.BASE_DB_TABLE + ' Supplier'
+        verbose_name_plural = verbose_name
+        ordering = ['-id']
+        indexes = [
+            GinIndex(fields=['data'], name="data_Supplier")
+        ]
+
+
+class Customer(CoreModel):
+    data = models.JSONField()
+
+    class Meta:
+        db_table = settings.BASE_DB_TABLE + '_customer'
+        verbose_name = settings.BASE_DB_TABLE + ' Customer'
+        verbose_name_plural = verbose_name
+        ordering = ['-id']
+        indexes = [
+            GinIndex(fields=['data'], name="data_Customer")
+        ]
+
+
+class Approve(CoreModel):
+    data = models.JSONField()
+
+    class Meta:
+        db_table = settings.BASE_DB_TABLE + '_approve'
+        verbose_name = settings.BASE_DB_TABLE + ' Approve'
+        verbose_name_plural = verbose_name
+        ordering = ['-id']
+        indexes = [
+            GinIndex(fields=['data'], name="data_Approve")
+        ]
+
+
+class ASN(CoreModel):
+    data = models.JSONField()
+
+    class Meta:
+        db_table = settings.BASE_DB_TABLE + '_asn'
+        verbose_name = settings.BASE_DB_TABLE + ' ASN'
+        verbose_name_plural = verbose_name
+        ordering = ['-id']
+        indexes = [
+            GinIndex(fields=['data'], name="data_ASN")
+        ]
+
+
+class DN(CoreModel):
+    data = models.JSONField()
+
+    class Meta:
+        db_table = settings.BASE_DB_TABLE + '_dn'
+        verbose_name = settings.BASE_DB_TABLE + ' DN'
+        verbose_name_plural = verbose_name
+        ordering = ['-id']
+        indexes = [
+            GinIndex(fields=['data'], name="data_DN")
+        ]
+
+
+class Purchase(CoreModel):
+    data = models.JSONField()
+
+    class Meta:
+        db_table = settings.BASE_DB_TABLE + '_purchase'
+        verbose_name = settings.BASE_DB_TABLE + ' Purchase'
+        verbose_name_plural = verbose_name
+        ordering = ['-id']
+        indexes = [
+            GinIndex(fields=['data'], name="data_Purchase")
+        ]
+
+
+class Bar(CoreModel):
+    data = models.JSONField()
+
+    class Meta:
+        db_table = settings.BASE_DB_TABLE + '_bar'
+        verbose_name = settings.BASE_DB_TABLE + ' Bar'
+        verbose_name_plural = verbose_name
+        ordering = ['-id']
+        indexes = [
+            GinIndex(fields=['data'], name="data_Bar")
+        ]
+
+
 def post_save_user_signals(sender, instance, created, **kwargs):
     if created:
         bomiot_signals.send(sender=User, msg={
@@ -106,21 +278,17 @@ def post_save_user_signals(sender, instance, created, **kwargs):
             'type': 'created',
             'data': instance
         })
-    else:
-        old_instance = sender.objects.get(pk=instance.pk)
-        data_before_update = model_to_dict(old_instance)
-        data_after_update = model_to_dict(instance)
-        updated_fields = {}
-        for field, value in data_before_update.items():
-            if data_after_update[field] != value:
-                updated_fields[field] = data_after_update[field]
-        bomiot_signals.send(sender=User, msg={
-            'models': 'User',
-            'type': 'update',
-            'data': instance,
-            'old_data': data_before_update,
-            'updated_fields': updated_fields
-        })
+    # else:
+    #     old_instance = sender.objects.get(pk=instance.pk)
+    #     data_before_update = model_to_dict(old_instance)
+    #     data_after_update = model_to_dict(instance)
+    #     updated_fields = compare_dicts(data_before_update, data_after_update)
+    #     if updated_fields != {}:
+    #         bomiot_signals.send(sender=User, msg={
+    #             'models': 'User',
+    #             'type': 'update',
+    #             'updated_fields': updated_fields
+    #         })
 
 
 def post_save_msg_signals(sender, instance, created, **kwargs):
@@ -131,27 +299,13 @@ def post_save_msg_signals(sender, instance, created, **kwargs):
             'data': instance
         })
 
+
 def post_save_file_signals(sender, instance, created, **kwargs):
     if created:
         bomiot_signals.send(sender=Files, msg={
             'models': 'Files',
             'type': 'created',
             'data': instance
-        })
-    else:
-        old_instance = sender.objects.get(pk=instance.pk)
-        data_before_update = model_to_dict(old_instance)
-        data_after_update = model_to_dict(instance)
-        updated_fields = {}
-        for field, value in data_before_update.items():
-            if data_after_update[field] != value:
-                updated_fields[field] = data_after_update[field]
-        bomiot_signals.send(sender=User, msg={
-            'models': 'Files',
-            'type': 'update',
-            'data': instance,
-            'old_data': data_before_update,
-            'updated_fields': updated_fields
         })
 
 

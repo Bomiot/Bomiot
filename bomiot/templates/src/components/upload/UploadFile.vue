@@ -93,6 +93,7 @@ import { useQuasar } from 'quasar'
 import { useI18n } from "vue-i18n"
 import { useTokenStore } from 'stores/token'
 import { useLanguageStore } from 'stores/language'
+import { computed, ref, watch } from "vue";
 
 const { t } = useI18n()
 const $q = useQuasar()
@@ -102,15 +103,19 @@ const langStore = useLanguageStore()
 const token = computed(() => tokenStore.token)
 const lang = computed(() => langStore.langGet)
 
-import {computed, ref, watch} from "vue";
-
 const ScreenHeight = ref($q.screen.height * 0.85 + '' + 'px')
 const ScreenWidth = ref($q.screen.width * 0.825 + '' + 'px')
 const CardBackground = ref($q.dark.isActive? '#1D1D1D' : '#1972D2')
 
 function getUrl (e) {
   if (e) {
-    return 'core/user/upload/'
+    var domain = window.location.hostname;
+    if (domain === 'localhost') {
+      return 'http://127.0.0.1:8008/core/user/upload/'
+    } else {
+      return 'core/user/upload/'
+    }
+    
   }
 }
 

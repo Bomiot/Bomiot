@@ -7,7 +7,7 @@
 <script setup>
 import { onBeforeUnmount, onMounted, watch, ref } from 'vue'
 import { useMeta, useQuasar } from "quasar"
-import DocList from "components/table/DocList.vue"
+import DocList from "components/doc/DocList.vue"
 
 const $q = useQuasar()
 
