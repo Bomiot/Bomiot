@@ -19,3 +19,4 @@ install.sh
 .venv
 /admin
 setup.ini
+/.history

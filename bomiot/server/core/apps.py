@@ -2,7 +2,13 @@ from django.apps import AppConfig
 
 
 class CoreConfig(AppConfig):
+    """
+    Core application configuration for the bomiot server.
+    """
     name = 'bomiot.server.core'
 
     def ready(self):
-        import bomiot.server.core.signal
+        """
+        init signal
+        """
+        from bomiot.server.core import signal

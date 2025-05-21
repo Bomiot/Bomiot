@@ -1,0 +1,1 @@
+import{a as i,w as o,bj as e,an as u,am as l,X as v,bk as n}from"./index-DbVLJLI3.js";function d(t){{const a={active:!0};if(typeof t=="function"){const c=i(t);a.val=c.value,o(c,s=>{a.val=s,a.active===!0&&e()})}else a.val=t;n.push(a),e(),u(()=>{a.active=!0,e()}),l(()=>{a.active=!1,e()}),v(()=>{n.splice(n.indexOf(a),1),e()})}}export{d as u};

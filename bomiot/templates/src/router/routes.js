@@ -11,6 +11,16 @@ const routes = [
       { path: 'table', component: () => import('pages/TableReader.vue') },
       { path: 'user', component: () => import('pages/UserReader.vue') },
       { path: 'team', component: () => import('pages/TeamReader.vue') },
+      { path: 'department', component: () => import('pages/DepartmentReader.vue') },
+      { path: 'pypi', component: () => import('pages/PyPiReader.vue') },
+      { path: 'pypicharts', component: () => import('pages/PyPiCharts.vue') },
+      { path: 'pid', component: () => import('pages/PIDReader.vue') },
+      { path: 'cpu', component: () => import('pages/CPUReader.vue') },
+      { path: 'memory', component: () => import('pages/MemoryReader.vue') },
+      { path: 'disk', component: () => import('pages/DiskReader.vue') },
+      { path: 'network', component: () => import('pages/NetworkReader.vue') },
+      { path: 'serverecharts', component: () => import('pages/ServerEcharts.vue') },
+      { path: 'pidcharts', component: () => import('pages/PIDCharts.vue') },
     ]
   },
   {

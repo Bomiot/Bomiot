@@ -49,7 +49,7 @@
               <q-tooltip class="bg-indigo" :offset="[10, 10]" content-style="font-size: 12px">{{ t('doc.shared_to') }}</q-tooltip>
             </q-btn>
             <q-btn round flat icon="delete_sweep" @click="deleteFile(props.rowIndex)">
-              <q-tooltip class="bg-indigo" :offset="[10, 10]" content-style="font-size: 12px">{{ t('deletefile') }}</q-tooltip>
+              <q-tooltip class="bg-indigo" :offset="[10, 10]" content-style="font-size: 12px">{{ t('doc.deletefile') }}</q-tooltip>
             </q-btn>
           </div>
           <div v-else>
@@ -206,7 +206,6 @@ function shareFile (e) {
 }
 
 function isImg(e) {
-  console.log(e)
   const list = ['jpg', 'jpeg', 'png', 'bmp', 'gif', 'tiff', 'webp', 'svg', 'psd', 'raw', 'tga', 'ico']
   return list.includes(e.type)
 }
@@ -222,8 +221,8 @@ function previewImg(e) {
 function deleteFile(e) {
   $q.dialog({
     dark: $q.dark.isActive,
-    title: t('deletefile'),
-    message: t('deletefilenotice'),
+    title: t('doc.deletefile'),
+    message: t('doc.deletefilenotice'),
     cancel: true,
   }).onOk(() =>{
     post('core/user/file/delete/', {"id": rows.value[e].id}).then(() => {

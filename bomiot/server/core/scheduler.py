@@ -4,7 +4,7 @@ from threading import Thread
 import json
 import importlib
 from django.dispatch import receiver
-from bomiot.server.core.signal import bomiot_signals
+from bomiot.server.core.signal import bomiot_job_signals
 from django_apscheduler.models import DjangoJob
 from apscheduler.schedulers.background import BackgroundScheduler
 from django_apscheduler.jobstores import DjangoJobStore, register_events
@@ -24,12 +24,12 @@ args_map = {
 }
 
 
-@receiver(bomiot_signals)
+@receiver(bomiot_job_signals)
 def sm_send_success_signal_handler(sender, **kwargs):
-    model_data = kwargs['msg'].get('models', '')
+    model_data = kwargs.get('msg', '').get('models', '')
     if model_data == 'JobList':
         job_id = f"{inspect.getmodule(sender).__name__}-{sender.__name__}"
-        data = kwargs['msg'].get('data', '')
+        data = kwargs.get('msg', '').get('data', '')
         if JobList.objects.filter(job_id=job_id).exists():
             job_detail = JobList.objects.get(job_id=job_id)
             job_detail.trigger = data.get('trigger')
@@ -143,8 +143,6 @@ class SchedulerManager(Thread):
             self.scheduler.add_job(job_function, job.trigger, id=job_id, replace_existing=True, **configuration)
         except:
             JobList.objects.filter(job_id=job.job_id).delete()
-
-
 
     def run(self):
         """

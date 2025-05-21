@@ -65,7 +65,7 @@ class MyHandler(FileSystemEventHandler):
             data_before_update['updated_time'] = old_instance.updated_time
             data_after_update['updated_time'] = instance.updated_time
             updated_fields = compare_dicts(data_before_update, data_after_update)
-            bomiot_signals.send(sender=Files, msg={
+            bomiot_signals.send(msg={
                 'models': 'Files',
                 'type': 'update',
                 'updated_fields': updated_fields

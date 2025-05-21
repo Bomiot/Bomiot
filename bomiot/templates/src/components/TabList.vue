@@ -24,7 +24,7 @@ const indicatorColor = ref('black')
 
 const tabList = computed(() => [
   { name: 'standard', label: t('menuTab.standard') },
-  { name: 'home2', label: t('menuTab.home') },
+  { name: 'server', label: t('menuTab.server') },
 ])
 
 function tabColor () {

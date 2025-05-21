@@ -1,9 +1,9 @@
 {
   "name": "template",
   "version": "0.0.1",
-  "description": "A Quasar Project",
-  "productName": "Quasar App",
-  "author": "GreaterWMS <38828089+Singosgu@users.noreply.github.com>",
+  "description": "Bomiot",
+  "productName": "Bomiot",
+  "author": "Bomiot <Singosgu@gmail.com>",
   "type": "module",
   "private": true,
   "scripts": {
@@ -17,6 +17,7 @@
   "dependencies": {
     "@quasar/extras": "^1.16.4",
     "axios": "^1.2.1",
+    "echarts": "^5.6.0",
     "lottie-web": "^5.12.2",
     "markdown-it": "^14.0.0",
     "markdown-it-abbr": "^2.0.0",

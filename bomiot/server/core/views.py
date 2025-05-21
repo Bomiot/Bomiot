@@ -1,4 +1,5 @@
 import os
+import psutil
 
 from os.path import join, exists
 from rest_framework import viewsets
@@ -7,17 +8,17 @@ from rest_framework.exceptions import APIException
 from rest_framework.parsers import MultiPartParser, FormParser
 from functools import reduce
 
-from .serializers import UserSerializer, FileSerializer
-from .filter import UserFilter, FileFilter
+from . import serializers, models, filter
 from .page import CorePageNumberPagination
 from .permission import NormalPermission
 from rest_framework.filters import OrderingFilter
+from rest_framework.exceptions import MethodNotAllowed
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import Permission, Files
 from .message import permission_message_return, detail_message_return, msg_message_return, others_message_return
 
 from django.contrib.auth import get_user_model
 from django.db.models import Q
+from django.db.models import Sum
 from django.conf import settings
 
 User = get_user_model()
@@ -25,15 +26,17 @@ User = get_user_model()
 
 class UserPage(CorePageNumberPagination):
 
-    def get_permission_return_data(self, data) -> dict:
-        return {"label": permission_message_return(self.request.META.get('HTTP_LANGUAGE', ''), data.name),
-                "value": data.name}
+    def get_return_data(self, data) -> dict:
+        return {"label": data.name, "value": data.id}
 
     def query_data_add(self) -> list:
-        permission_list = Permission.objects.all()
-        permission_data_list = list(map(lambda data: self.get_permission_return_data(data), permission_list))
+        team_list = models.Team.objects.all()
+        team_data_list = list(map(lambda data: self.get_return_data(data), team_list))
+        department_list = models.Department.objects.all()
+        department_data_list = list(map(lambda data: self.get_return_data(data), department_list))
         return [
-            ("permission", permission_data_list)
+            ("team", team_data_list),
+            ("department", department_data_list)
         ]
 
 
@@ -45,27 +48,33 @@ class UserList(viewsets.ModelViewSet):
     pagination_class = UserPage
     filter_backends = [DjangoFilterBackend, OrderingFilter, ]
     ordering_fields = ['id', "username", "created_time", "updated_time", ]
-    filter_class = UserFilter
+    filter_class = filter.UserFilter
 
     def get_queryset(self):
         if self.request.user:
-            return User.objects.filter(is_delete=False)
+            query_data = {'is_delete': False}
+            search = self.request.query_params.get('search')
+            if search:
+                query_data['username__icontains'] = search
+            return User.objects.filter(**query_data).order_by('-date_joined')
         else:
             return User.objects.none()
 
     def get_serializer_class(self):
         if self.action in ['list']:
-            return UserSerializer
+            return serializers.UserSerializer
         else:
-            return self.http_method_not_allowed(request=self.request)
-
+            raise MethodNotAllowed(self.request.method)
+            
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 class PermissionList(viewsets.ModelViewSet):
     """
         list:
             Response a permission data list（all）
     """
-    queryset = Permission.objects.all()
+    queryset = models.Permission.objects.all()
     filter_backends = [DjangoFilterBackend, OrderingFilter, ]
     ordering_fields = ['id', "created_time", "updated_time", ]
 
@@ -77,13 +86,13 @@ class UserCreate(viewsets.ModelViewSet):
     """
     filter_backends = [DjangoFilterBackend, OrderingFilter, ]
     ordering_fields = ['id', "created_time", "updated_time", ]
-    filter_class = UserFilter
+    filter_class = filter.UserFilter
 
     def get_serializer_class(self):
         if self.action in ['create']:
-            return UserSerializer
+            return serializers.UserSerializer
         else:
-            return self.http_method_not_allowed(request=self.request)
+            raise MethodNotAllowed(self.request.method)
 
     def create(self, request, **kwargs):
         data = self.request.data
@@ -97,7 +106,7 @@ class UserCreate(viewsets.ModelViewSet):
                 user_folder = join(settings.MEDIA_ROOT, data.get('username'))
                 exists(user_folder) or os.makedirs(user_folder)
             else:
-                if "Set Permission For User" not in self.request.auth.permission:
+                if "Create One User" not in self.request.auth.permission:
                     raise APIException(detail_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
                                                              "User does not have permission to create user"))
                 else:
@@ -108,56 +117,6 @@ class UserCreate(viewsets.ModelViewSet):
                                            "Success Create User"), status=200)
 
 
-class UserPermission(viewsets.ModelViewSet):
-    """
-        create:
-            Set permission for user
-    """
-    filter_backends = [DjangoFilterBackend, OrderingFilter, ]
-    ordering_fields = ['id', "created_time", "updated_time", ]
-    filter_class = UserFilter
-
-    def get_serializer_class(self):
-        if self.action in ['create']:
-            return UserSerializer
-        else:
-            return self.http_method_not_allowed(request=self.request)
-
-    def get_permission_data(self, data):
-        permission_data = Permission.objects.filter(name=data).first()
-        return {
-            permission_data.name: permission_data.api
-        }
-
-    def create(self, request, **kwargs):
-        data = self.request.data
-        user_check = User.objects.filter(id=data.get('id'), is_delete=False)
-        if user_check.exists() is False:
-            raise APIException(detail_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
-                                                     "User not exists"))
-        else:
-            user_data = user_check.first()
-            if "Set Permission For User" not in self.request.auth.permission:
-                raise APIException(detail_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
-                                                         "User does not have permission to set permission for user"))
-            else:
-                if self.request.auth.id == int(data.get('id')):
-                    raise APIException(detail_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
-                                                             "Can not change your own permission"))
-                else:
-                    if user_data.is_superuser is True:
-                        raise APIException(detail_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
-                                                                 "Can not change admin's permission"))
-                    else:
-                        permission_list = data.get('permission')
-                        data_list = list(map(lambda data: self.get_permission_data(data), permission_list))
-                        permission_data = reduce(lambda x, y: {**x, **y}, data_list)
-                        user_data.permission = permission_data
-                        user_data.save()
-            return Response(msg_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
-                                               "Success Change User Permission"), status=200)
-
-
 class UserChangePWD(viewsets.ModelViewSet):
     """
         create:
@@ -165,13 +124,13 @@ class UserChangePWD(viewsets.ModelViewSet):
     """
     filter_backends = [DjangoFilterBackend, OrderingFilter, ]
     ordering_fields = ['id', "created_time", "updated_time", ]
-    filter_class = UserFilter
+    filter_class = filter.UserFilter
 
     def get_serializer_class(self):
         if self.action in ['create']:
-            return UserSerializer
+            return serializers.UserSerializer
         else:
-            return self.http_method_not_allowed(request=self.request)
+            raise MethodNotAllowed(self.request.method)
 
     def create(self, request, **kwargs):
         data = self.request.data
@@ -199,6 +158,72 @@ class UserChangePWD(viewsets.ModelViewSet):
                                                "Success Change Password"), status=200)
 
 
+class UserSetTeam(viewsets.ModelViewSet):
+    """
+        create:
+            set team for user
+    """
+    filter_backends = [DjangoFilterBackend, OrderingFilter, ]
+    ordering_fields = ['id', "created_time", "updated_time", ]
+    filter_class = filter.UserFilter
+
+    def get_serializer_class(self):
+        if self.action in ['create']:
+            return serializers.UserSerializer
+        else:
+            raise MethodNotAllowed(self.request.method)
+
+    def create(self, request, **kwargs):
+        data = self.request.data
+        user_check = User.objects.filter(id=data.get('id'), is_delete=False)
+        if user_check.exists() is False:
+            raise APIException(detail_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                                     "User not exists"))
+        else:
+            user_data = user_check.first()
+            if "Set Team For User" not in self.request.auth.permission:
+                raise APIException(detail_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                                         "User does not have permission to set team for user"))
+            else:
+                user_data.team = data.get('team_id')
+                user_data.save()
+        return Response(msg_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                            "Success set team"), status=200)
+
+
+class UserSetDepartment(viewsets.ModelViewSet):
+    """
+        create:
+            set department for user
+    """
+    filter_backends = [DjangoFilterBackend, OrderingFilter, ]
+    ordering_fields = ['id', "created_time", "updated_time", ]
+    filter_class = filter.UserFilter
+
+    def get_serializer_class(self):
+        if self.action in ['create']:
+            return serializers.UserSerializer
+        else:
+            raise MethodNotAllowed(self.request.method)
+
+    def create(self, request, **kwargs):
+        data = self.request.data
+        user_check = User.objects.filter(id=data.get('id'), is_delete=False)
+        if user_check.exists() is False:
+            raise APIException(detail_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                                     "User not exists"))
+        else:
+            user_data = user_check.first()
+            if "Set Department For User" not in self.request.auth.permission:
+                raise APIException(detail_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                                         "User does not have permission to set department for user"))
+            else:
+                user_data.department = data.get('department_id')
+                user_data.save()
+        return Response(msg_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                            "Success set department"), status=200)
+
+
 class UserLock(viewsets.ModelViewSet):
     """
         create:
@@ -206,13 +231,13 @@ class UserLock(viewsets.ModelViewSet):
     """
     filter_backends = [DjangoFilterBackend, OrderingFilter, ]
     ordering_fields = ['id', "created_time", "updated_time", ]
-    filter_class = UserFilter
+    filter_class = filter.UserFilter
 
     def get_serializer_class(self):
         if self.action in ['create']:
-            return UserSerializer
+            return serializers.UserSerializer
         else:
-            return self.http_method_not_allowed(request=self.request)
+            raise MethodNotAllowed(self.request.method)
 
     def create(self, request, **kwargs):
         data = self.request.data
@@ -253,13 +278,13 @@ class UserDelete(viewsets.ModelViewSet):
     """
     filter_backends = [DjangoFilterBackend, OrderingFilter, ]
     ordering_fields = ['id', "created_time", "updated_time", ]
-    filter_class = UserFilter
+    filter_class = filter.UserFilter
 
     def get_serializer_class(self):
         if self.action in ['create']:
-            return UserSerializer
+            return serializers.UserSerializer
         else:
-            return self.http_method_not_allowed(request=self.request)
+            raise MethodNotAllowed(self.request.method)
 
     def create(self, request, **kwargs):
         data = self.request.data
@@ -294,7 +319,7 @@ class UserUpload(viewsets.ModelViewSet):
     permission_classes = [NormalPermission, ]
     filter_backends = [DjangoFilterBackend, OrderingFilter, ]
     ordering_fields = ['id', "created_time", "updated_time", ]
-    filter_class = FileFilter
+    filter_class = filter.FileFilter
     parser_classes = (MultiPartParser, FormParser)
 
     def create(self, request, *args, **kwargs):
@@ -315,16 +340,14 @@ class UserUpload(viewsets.ModelViewSet):
 class FilePage(CorePageNumberPagination):
 
     def get_user_return_data(self, data):
-        if self.request.auth.id == data.id:
-            return None
         return {"label": data.username, "value": data.id}
 
     def query_data_add(self) -> list:
-        user_list = User.objects.all()
+        user_list = User.objects.filter(is_delete=False).exclude(id=self.request.auth.id)
         user_data_list = list(map(lambda data: self.get_user_return_data(data), user_list))
-        user_res_list = list(filter(lambda x: x is not None, user_data_list))
+
         return [
-            ("users", user_res_list)
+            ("users", user_data_list)
         ]
 
 
@@ -336,27 +359,35 @@ class UserFiles(viewsets.ModelViewSet):
     pagination_class = FilePage
     permission_classes = [NormalPermission, ]
     filter_backends = [DjangoFilterBackend, OrderingFilter, ]
-    ordering_fields = ['id', "username", "created_time", "updated_time", ]
-    filter_class = FileFilter
+    ordering_fields = ['id', "created_time", "updated_time", ]
+    filter_class = filter.FileFilter
 
     def get_queryset(self):
         if self.request.user:
+            query_data = {'is_delete': False}
+            search = self.request.query_params.get('search')
+            if search:
+                query_data['name__icontains'] = search
             if self.request.auth.is_superuser is True:
-                return Files.objects.filter(is_delete=False)
+                return models.Files.objects.filter(**query_data).order_by('-updated_time')
             else:
                 share_user = '<->' + str(self.request.auth.id) + self.request.auth.username
-                return Files.objects.filter(
-                    Q(owner=self.request.auth.username, is_delete=False) | Q(shared_to__icontains=share_user,
-                                                                             is_delete=False)
-                )
+                return models.Files.objects.filter(
+                                            Q(owner=self.request.auth.username, **query_data)
+                                            |
+                                            Q(shared_to__icontains=share_user, **query_data)
+                                            ).order_by('-updated_time')
         else:
-            return Files.objects.none()
+            return models.Files.objects.none()
 
     def get_serializer_class(self):
         if self.action in ['list']:
-            return FileSerializer
+            return serializers.FileSerializer
         else:
-            return self.http_method_not_allowed(request=self.request)
+            raise MethodNotAllowed(self.request.method)
+                
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 class FileShare(viewsets.ModelViewSet):
@@ -367,13 +398,13 @@ class FileShare(viewsets.ModelViewSet):
     permission_classes = [NormalPermission, ]
     filter_backends = [DjangoFilterBackend, OrderingFilter, ]
     ordering_fields = ['id', "created_time", "updated_time", ]
-    filter_class = FileFilter
+    filter_class = filter.FileFilter
 
     def get_serializer_class(self):
         if self.action in ['create']:
-            return FileSerializer
+            return serializers.FileSerializer
         else:
-            return self.http_method_not_allowed(request=self.request)
+            raise MethodNotAllowed(self.request.method)
 
     def get_users_data(self, data):
         user_data = User.objects.filter(id=data).first()
@@ -381,7 +412,7 @@ class FileShare(viewsets.ModelViewSet):
 
     def create(self, request, **kwargs):
         data = self.request.data
-        file_check = Files.objects.filter(id=data.get('id'), is_delete=False)
+        file_check = models.Files.objects.filter(id=data.get('id'), is_delete=False)
         if file_check.exists() is False:
             raise APIException(detail_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
                                                      "File not exists"))
@@ -408,17 +439,17 @@ class DeleteFile(viewsets.ModelViewSet):
     permission_classes = [NormalPermission, ]
     filter_backends = [DjangoFilterBackend, OrderingFilter, ]
     ordering_fields = ['id', "created_time", "updated_time", ]
-    filter_class = FileFilter
+    filter_class = filter.FileFilter
 
     def get_serializer_class(self):
         if self.action in ['create']:
-            return FileSerializer
+            return serializers.FileSerializer
         else:
-            return self.http_method_not_allowed(request=self.request)
+            raise MethodNotAllowed(self.request.method)
 
     def create(self, request, **kwargs):
         data = self.request.data
-        file_check = Files.objects.filter(id=data.get('id'), is_delete=False)
+        file_check = models.Files.objects.filter(id=data.get('id'), is_delete=False)
         if file_check.exists() is False:
             raise APIException(detail_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
                                                      "File not exists"))
@@ -435,4 +466,719 @@ class DeleteFile(viewsets.ModelViewSet):
             file_data.save()
             return Response(msg_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
                                                "Success delete file"), status=200)
+
+
+class TeamPage(CorePageNumberPagination):
+
+    def get_permission_return_data(self, data) -> dict:
+        return {"label": permission_message_return(self.request.META.get('HTTP_LANGUAGE', ''), data.name),
+                "value": data.name}
+
+    def query_data_add(self) -> list:
+        permission_list = models.Permission.objects.all()
+        permission_data_list = list(map(lambda data: self.get_permission_return_data(data), permission_list))
+        return [
+            ("permission", permission_data_list)
+        ]
+
+class TeamList(viewsets.ModelViewSet):
+    """
+        list:
+            Response a team data list（all）
+    """
+    pagination_class = TeamPage
+    filter_backends = [DjangoFilterBackend, OrderingFilter, ]
+    ordering_fields = ['id', "name", "created_time", "updated_time", ]
+    filter_class = filter.TeamFilter
+
+    def get_queryset(self):
+        if self.request.user:
+            query_data = {'is_delete': False}
+            search = self.request.query_params.get('search')
+            if search:
+                query_data['name__icontains'] = search
+            return models.Team.objects.filter(**query_data).order_by('-id')
+        else:
+            return models.Team.objects.none()
+
+    def get_serializer_class(self):
+        if self.action in ['list']:
+            return serializers.TeamSerializer
+        else:
+            raise MethodNotAllowed(self.request.method)
+            
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+
+class TeamCreate(viewsets.ModelViewSet):
+    """
+        create:
+            create a team
+    """
+    filter_backends = [DjangoFilterBackend, OrderingFilter, ]
+    ordering_fields = ['id', "created_time", "updated_time", ]
+    filter_class = filter.TeamFilter
+
+    def get_serializer_class(self):
+        if self.action in ['create']:
+            return serializers.TeamSerializer
+        else:
+            raise MethodNotAllowed(self.request.method)
+
+    def create(self, request, **kwargs):
+        data = self.request.data
+        team_check = models.Team.objects.filter(name=data.get('name'), is_delete=False)
+        if team_check.exists():
+            raise APIException(detail_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                                     "Team exists"))
+        else:
+            if self.request.auth.is_superuser is True:
+                models.Team.objects.create(name=data.get('name'))
+            else:
+                if "Create One Team" not in self.request.auth.permission:
+                    raise APIException(detail_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                                             "User does not have permission to create team"))
+                else:
+                    models.Team.objects.create(name=data.get('name'))
+        return Response(msg_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                           "Success create team"), status=200)
+
+
+class TeamPermission(viewsets.ModelViewSet):
+    """
+        create:
+            Set permission for team
+    """
+    filter_backends = [DjangoFilterBackend, OrderingFilter, ]
+    ordering_fields = ['id', "created_time", "updated_time", ]
+    filter_class = filter.TeamFilter
+
+    def get_serializer_class(self):
+        if self.action in ['create']:
+            return serializers.TeamSerializer
+        else:
+            raise MethodNotAllowed(self.request.method)
+
+    def get_permission_data(self, data):
+        permission_data = models.Permission.objects.filter(name=data).first()
+        return {
+            permission_data.name: permission_data.api
+        }
+
+    def create(self, request, **kwargs):
+        data = self.request.data
+        team_check = models.Team.objects.filter(id=data.get('id'), is_delete=False)
+        if team_check.exists() is False:
+            raise APIException(detail_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                                     "Team not exists"))
+        else:
+            user_data = team_check.first()
+            if "Set Permission For Team" not in self.request.auth.permission:
+                raise APIException(detail_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                                         "User does not have permission to set permission for team"))
+            else:
+                permission_list = data.get('permission')
+                data_list = list(map(lambda data: self.get_permission_data(data), permission_list))
+                permission_data = reduce(lambda x, y: {**x, **y}, data_list)
+                user_data.permission = permission_data
+                user_data.save()
+        return Response(msg_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                            "Success change team permission"), status=200)
+
+
+class TeamChange(viewsets.ModelViewSet):
+    """
+        create:
+            Change one team
+    """
+    filter_backends = [DjangoFilterBackend, OrderingFilter, ]
+    ordering_fields = ['id', "created_time", "updated_time", ]
+    filter_class = filter.TeamFilter
+
+    def get_serializer_class(self):
+        if self.action in ['create']:
+            return serializers.TeamSerializer
+        else:
+            raise MethodNotAllowed(self.request.method)
+
+    def create(self, request, **kwargs):
+        data = self.request.data
+        team_check = models.Team.objects.filter(name=data.get('name'), is_delete=False)
+        if team_check.exists():
+            raise APIException(detail_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                                     "Team exists"))
+        else:
+            if self.request.auth.is_superuser is True:
+                models.Team.objects.filter(id=data.get('id')).update(name=data.get('name'))
+            else:
+                if "Change Team" not in self.request.auth.permission:
+                    raise APIException(detail_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                                             "User does not have permission to change team"))
+                else:
+                    models.Team.objects.filter(id=data.get('id')).update(name=data.get('name'))
+        return Response(msg_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                           "Success change team"), status=200)
+
+
+class TeamDelete(viewsets.ModelViewSet):
+    """
+        create:
+            Delete one team
+    """
+    filter_backends = [DjangoFilterBackend, OrderingFilter, ]
+    ordering_fields = ['id', "created_time", "updated_time", ]
+    filter_class = filter.TeamFilter
+
+    def get_serializer_class(self):
+        if self.action in ['create']:
+            return serializers.TeamSerializer
+        else:
+            raise MethodNotAllowed(self.request.method)
+
+    def create(self, request, **kwargs):
+        data = self.request.data
+        team_check = models.Team.objects.filter(id=data.get('id'), is_delete=False)
+        if team_check.exists() is False:
+            raise APIException(detail_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                                     "Team not exists"))
+        else:
+            if self.request.auth.is_superuser is True:
+                models.Team.objects.filter(id=data.get('id')).update(is_delete=True)
+            else:
+                if "Delete Team" not in self.request.auth.permission:
+                    raise APIException(detail_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                                             "User does not have permission to delete team"))
+                else:
+                    models.Team.objects.filter(id=data.get('id')).update(is_delete=True)
+        return Response(msg_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                           "Success delete team"), status=200)
+
+
+class DepartmentList(viewsets.ModelViewSet):
+    """
+        list:
+            Response a department data list（all）
+    """
+    filter_backends = [DjangoFilterBackend, OrderingFilter, ]
+    ordering_fields = ['id', "name", "created_time", "updated_time", ]
+    filter_class = filter.DepartmentFilter
+
+    def get_queryset(self):
+        if self.request.user:
+            query_data = {'is_delete': False}
+            search = self.request.query_params.get('search')
+            if search:
+                query_data['name__icontains'] = search
+            return models.Department.objects.filter(**query_data).order_by('-id')
+        else:
+            return models.Department.objects.none()
+
+    def get_serializer_class(self):
+        if self.action in ['list']:
+            return serializers.DepartmentSerializer
+        else:
+            raise MethodNotAllowed(self.request.method)
+            
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+
+class DepartmentCreate(viewsets.ModelViewSet):
+    """
+        create:
+            create one department
+    """
+    filter_backends = [DjangoFilterBackend, OrderingFilter, ]
+    ordering_fields = ['id', "created_time", "updated_time", ]
+    filter_class = filter.DepartmentFilter
+
+    def get_serializer_class(self):
+        if self.action in ['create']:
+            return serializers.DepartmentSerializer
+        else:
+            raise MethodNotAllowed(self.request.method)
+
+    def create(self, request, **kwargs):
+        data = self.request.data
+        department_check = models.Department.objects.filter(name=data.get('name'), is_delete=False)
+        if department_check.exists():
+            raise APIException(detail_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                                     "Department exists"))
+        else:
+            if self.request.auth.is_superuser is True:
+                models.Department.objects.create(name=data.get('name'))
+            else:
+                if "Create department" not in self.request.auth.permission:
+                    raise APIException(detail_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                                             "User does not have permission to create department"))
+                else:
+                    models.Department.objects.create(name=data.get('name'))
+        return Response(msg_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                           "Success create department"), status=200)
+
+
+class DepartmentChange(viewsets.ModelViewSet):
+    """
+        create:
+            Change one department
+    """
+    filter_backends = [DjangoFilterBackend, OrderingFilter, ]
+    ordering_fields = ['id', "created_time", "updated_time", ]
+    filter_class = filter.DepartmentFilter
+
+    def get_serializer_class(self):
+        if self.action in ['create']:
+            return serializers.DepartmentSerializer
+        else:
+            raise MethodNotAllowed(self.request.method)
+
+    def create(self, request, **kwargs):
+        data = self.request.data
+        department_check = models.Department.objects.filter(name=data.get('name'), is_delete=False)
+        if department_check.exists():
+            raise APIException(detail_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                                     "Department exists"))
+        else:
+            if self.request.auth.is_superuser is True:
+                models.Department.objects.filter(id=data.get('id')).update(name=data.get('name'))
+            else:
+                if "Change department" not in self.request.auth.permission:
+                    raise APIException(detail_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                                             "User does not have permission to change department"))
+                else:
+                    models.Department.objects.filter(id=data.get('id')).update(name=data.get('name'))
+        return Response(msg_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                           "Success change department"), status=200)
+
+
+class DepartmentDelete(viewsets.ModelViewSet):
+    """
+        create:
+            Delete one department
+    """
+    filter_backends = [DjangoFilterBackend, OrderingFilter, ]
+    ordering_fields = ['id', "created_time", "updated_time", ]
+    filter_class = filter.DepartmentFilter
+
+    def get_serializer_class(self):
+        if self.action in ['create']:
+            return serializers.DepartmentSerializer
+        else:
+            raise MethodNotAllowed(self.request.method)
+
+    def create(self, request, **kwargs):
+        data = self.request.data
+        department_check = models.Department.objects.filter(id=data.get('id'), is_delete=False)
+        if department_check.exists() is False:
+            raise APIException(detail_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                                     "Department not exists"))
+        else:
+            if self.request.auth.is_superuser is True:
+                models.Department.objects.filter(id=data.get('id')).update(is_delete=True)
+            else:
+                if "Delete department" not in self.request.auth.permission:
+                    raise APIException(detail_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                                             "User does not have permission to delete department"))
+                else:
+                    models.Department.objects.filter(id=data.get('id')).update(is_delete=True)
+        return Response(msg_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                           "Success delete department"), status=200)
+
+
+class PyPiList(viewsets.ModelViewSet):
+    """
+        list:
+            Response a PyPi data list（all）
+    """
+    permission_classes = [NormalPermission, ]
+    filter_backends = [DjangoFilterBackend, OrderingFilter, ]
+    ordering_fields = ["id", "created_time", "updated_time", ]
+    filter_class = filter.PyPiFilter
+
+    def get_queryset(self):
+        if self.request.user:
+            query_data = {}
+            query_data['is_delete'] = False
+            query_data['category__icontains'] = self.request.query_params.get('search')
+            return models.PyPi.objects.filter(**query_data).order_by('-date')
+        else:
+            return models.PyPi.objects.none()
+
+    def get_serializer_class(self):
+        if self.action in ['list']:
+            return serializers.PyPiSerializer
+        else:
+            return self.http_method_not_allowed(request=self.request)
         
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+
+class PyPiChartsPage(CorePageNumberPagination):
+    def __init__(self, *args, **kwargs):
+        self.pypi_data = {}
+        self.pypi_data['title'] = 'PyPi Downloads Pie Chart'
+        self.pypi_data['xAxis_list'] = []
+        self.with_mirrors_list = []
+        self.without_mirrors_list = []
+        super(PyPiChartsPage, self).__init__(*args, **kwargs)
+    
+    def get_pypi_return_data(self, data) -> dict:
+        date_check = data.date.strftime("%m-%d")
+        if date_check in self.pypi_data['xAxis_list']:
+            return data
+        else:
+            self.pypi_data['xAxis_list'].append(date_check)
+            with_mirrors_check =  models.PyPi.objects.filter(category='with_mirrors', date=data.date)
+            without_mirrors_check =  models.PyPi.objects.filter(category='without_mirrors', date=data.date)
+            if with_mirrors_check.exists():
+                self.with_mirrors_list.append(with_mirrors_check.first().downloads)
+            else:
+                self.with_mirrors_list.append(0)
+            if without_mirrors_check.exists():
+                self.without_mirrors_list.append(without_mirrors_check.first().downloads)
+            else:
+                self.without_mirrors_list.append(0)
+        return data
+
+    def query_data_add(self) -> list:
+        pypi_list = models.PyPi.objects.filter().order_by('-date')[:90]
+        pypi_data_list = list(map(lambda data: self.get_pypi_return_data(data), pypi_list))
+
+        self.pypi_data['xAxis_list'] = list(reversed(self.pypi_data['xAxis_list']))
+        self.pypi_data['series_list'] = [
+            { 'name': "with_mirrors", 'data': list(reversed(self.with_mirrors_list)) },
+            { 'name': "without_mirrors", 'data': list(reversed(self.without_mirrors_list)) }
+        ]
+
+        return [
+            ("pypi_data", self.pypi_data),
+        ]
+
+
+class PyPiCharts(viewsets.ModelViewSet):
+    """
+        list:
+            Response a PID Charts data list（all）
+    """
+    pagination_class = PyPiChartsPage
+    permission_classes = [NormalPermission, ]
+    filter_backends = [DjangoFilterBackend, OrderingFilter, ]
+    ordering_fields = ["id", "created_time", "updated_time", ]
+    filter_class = filter.PyPiFilter
+
+    def get_queryset(self):
+        return models.PyPi.objects.none()
+
+    def get_serializer_class(self):
+        if self.action in ['list']:
+            return serializers.PyPiSerializer
+        else:
+            return self.http_method_not_allowed(request=self.request)
+        
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+
+class PIDList(viewsets.ModelViewSet):
+    """
+        list:
+            Response a PID data list（all）
+    """
+    permission_classes = [NormalPermission, ]
+    filter_backends = [DjangoFilterBackend, OrderingFilter, ]
+    ordering_fields = ["id", "created_time", "updated_time", ]
+    filter_class = filter.PidsFilter
+
+    def get_queryset(self):
+        if self.request.user:
+            query_data = {}
+            query_data['is_delete'] = False
+            query_data['name__icontains'] = self.request.query_params.get('search')
+            return models.Pids.objects.filter(**query_data).order_by('-memory_usage', '-cpu_usage')
+        else:
+            return models.Pids.objects.none()
+
+    def get_serializer_class(self):
+        if self.action in ['list']:
+            return serializers.PidsSerializer
+        else:
+            return self.http_method_not_allowed(request=self.request)
+        
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+    
+
+class CPUList(viewsets.ModelViewSet):
+    """
+        list:
+            Response a CPU data list（all）
+    """
+    permission_classes = [NormalPermission, ]
+    filter_backends = [DjangoFilterBackend, OrderingFilter, ]
+    ordering_fields = ["id", "created_time", "updated_time", ]
+    filter_class = filter.CPUFilter
+
+    def get_queryset(self):
+        if self.request.user:
+            query_data = {}
+            query_data['is_delete'] = False
+            return models.CPU.objects.filter(**query_data).order_by('-id')
+        else:
+            return models.CPU.objects.none()
+
+    def get_serializer_class(self):
+        if self.action in ['list']:
+            return serializers.CPUSerializer
+        else:
+            return self.http_method_not_allowed(request=self.request)
+        
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+    
+
+class MemoryList(viewsets.ModelViewSet):
+    """
+        list:
+            Response a Memory data list（all）
+    """
+    permission_classes = [NormalPermission, ]
+    filter_backends = [DjangoFilterBackend, OrderingFilter, ]
+    ordering_fields = ["id", "created_time", "updated_time", ]
+    filter_class = filter.MemoryFilter
+
+    def get_queryset(self):
+        if self.request.user:
+            query_data = {}
+            query_data['is_delete'] = False
+            return models.Memory.objects.filter(**query_data).order_by('-id')
+        else:
+            return models.Memory.objects.none()
+
+    def get_serializer_class(self):
+        if self.action in ['list']:
+            return serializers.MemorySerializer
+        else:
+            return self.http_method_not_allowed(request=self.request)
+        
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+    
+
+class DiskList(viewsets.ModelViewSet):
+    """
+        list:
+            Response a Disk data list（all）
+    """
+    permission_classes = [NormalPermission, ]
+    filter_backends = [DjangoFilterBackend, OrderingFilter, ]
+    ordering_fields = ["id", "created_time", "updated_time", ]
+    filter_class = filter.DiskFilter
+
+    def get_queryset(self):
+        if self.request.user:
+            query_data = {}
+            query_data['is_delete'] = False
+            return models.Disk.objects.filter(**query_data).order_by('-id')
+        else:
+            return models.Disk.objects.none()
+
+    def get_serializer_class(self):
+        if self.action in ['list']:
+            return serializers.DiskSerializer
+        else:
+            return self.http_method_not_allowed(request=self.request)
+        
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+    
+
+class NetworkList(viewsets.ModelViewSet):
+    """
+        list:
+            Response a Network data list（all）
+    """
+    permission_classes = [NormalPermission, ]
+    filter_backends = [DjangoFilterBackend, OrderingFilter, ]
+    ordering_fields = ["id", "created_time", "updated_time", ]
+    filter_class = filter.NetworkFilter
+
+    def get_queryset(self):
+        if self.request.user:
+            query_data = {}
+            query_data['is_delete'] = False
+            return models.Network.objects.filter(**query_data).order_by('-id')
+        else:
+            return models.Network.objects.none()
+
+    def get_serializer_class(self):
+        if self.action in ['list']:
+            return serializers.NetworkSerializer
+        else:
+            return self.http_method_not_allowed(request=self.request)
+        
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+    
+
+class ServerChartsPage(CorePageNumberPagination):
+    def __init__(self, *args, **kwargs):
+        self.cpu_data = {}
+        self.cpu_data['xAxis_list'] = []
+        self.cpu_usage_list = []
+
+        self.memory_data = {}
+        self.memory_data['xAxis_list'] = []
+        self.memory_used_list = []
+        self.memory_free_list = []
+
+        self.disk_data = {}
+        self.disk_data['xAxis_list'] = []
+        self.disk_used_list = []
+        self.disk_free_list = []
+
+        self.network_data = {}
+        self.network_data['xAxis_list'] = []
+        self.bytes_sent_list = []
+        self.bytes_recv_list = []
+        super(ServerChartsPage, self).__init__(*args, **kwargs)
+
+
+    def get_cpu_return_data(self, data) -> dict:
+        self.cpu_data['xAxis_list'].append(data.created_time.strftime("%H:%M"))
+        self.cpu_usage_list.append(data.cpu_usage)
+        return data
+    
+    def get_memory_return_data(self, data) -> dict:
+        self.memory_data['xAxis_list'].append(data.created_time.strftime("%H:%M"))
+        self.memory_used_list.append(data.used)
+        self.memory_free_list.append(data.free)
+        return data
+
+    def get_network_return_data(self, data) -> dict:
+        self.network_data['xAxis_list'].append(data.created_time.strftime("%H:%M"))
+        self.bytes_sent_list.append(data.bytes_sent)
+        self.bytes_recv_list.append(data.bytes_recv)
+        return data
+    
+    def query_data_add(self) -> list:
+        cpu_list = models.CPU.objects.filter().order_by('-id')[:30]
+        cpu_data_list = list(map(lambda data: self.get_cpu_return_data(data), cpu_list))
+        
+        memory_list = models.Memory.objects.filter().order_by('-id')[:30]
+        memory_data_list = list(map(lambda data: self.get_memory_return_data(data), memory_list))
+
+        partitions = psutil.disk_partitions()
+        for i in range(len(partitions)):
+            try:
+                disk_usage = psutil.disk_usage(partitions[i].mountpoint)
+                self.disk_data['xAxis_list'].append(partitions[i].mountpoint)
+                self.disk_used_list.append(float(disk_usage.used))
+                self.disk_free_list.append(float(disk_usage.free))
+            except PermissionError:
+                print(f"{partitions[i].mountpoint}")
+
+        network_list = models.Network.objects.filter().order_by('-id')[:30]
+        network_data_list = list(map(lambda data: self.get_network_return_data(data), network_list))
+        
+        self.cpu_data['xAxis_list'] = list(reversed(self.cpu_data['xAxis_list']))
+        self.cpu_data['title'] = others_message_return(self.request.META.get('HTTP_LANGUAGE', ''), "CPU Info")
+        self.cpu_data['series_list'] = [
+            { 'name': others_message_return(self.request.META.get('HTTP_LANGUAGE', ''), "CPU Usage"), 'data': list(reversed(self.cpu_usage_list)) }
+        ]
+
+        self.memory_data['xAxis_list'] = list(reversed(self.memory_data['xAxis_list']))
+        self.memory_data['title'] = others_message_return(self.request.META.get('HTTP_LANGUAGE', ''), "Memory Info")
+        self.memory_data['series_list'] = [
+            { 'name': others_message_return(self.request.META.get('HTTP_LANGUAGE', ''), "Memory Usad"), 'data': list(reversed(self.memory_used_list)) },
+            { 'name': others_message_return(self.request.META.get('HTTP_LANGUAGE', ''), "Memory Free"), 'data': list(reversed(self.memory_free_list)) },
+        ]
+
+        self.disk_data['title'] = others_message_return(self.request.META.get('HTTP_LANGUAGE', ''), "Disk Info")
+        self.disk_data['series_list'] = [
+            { 'name': others_message_return(self.request.META.get('HTTP_LANGUAGE', ''), "Disk Used"), 'data': self.disk_used_list },
+            { 'name': others_message_return(self.request.META.get('HTTP_LANGUAGE', ''), "Disk Free"), 'data': self.disk_free_list },
+        ]
+
+        self.network_data['xAxis_list'] = list(reversed(self.network_data['xAxis_list']))
+        self.network_data['title'] = others_message_return(self.request.META.get('HTTP_LANGUAGE', ''), "Network Info")
+        self.network_data['series_list'] = [
+            { 'name': others_message_return(self.request.META.get('HTTP_LANGUAGE', ''), "Bytes Sent"), 'data': list(reversed(self.bytes_sent_list)) },
+            { 'name': others_message_return(self.request.META.get('HTTP_LANGUAGE', ''), "Bytes Received"), 'data': list(reversed(self.bytes_recv_list)) },
+        ]
+        return [
+            ("cpu_data", self.cpu_data),
+            ("memory_data", self.memory_data),
+            ("disk_data", self.disk_data),
+            ("network_data", self.network_data)
+        ]
+
+class ServerCharts(viewsets.ModelViewSet):
+    """
+        list:
+            Response a Server Charts data list（all）
+    """
+    pagination_class = ServerChartsPage
+    permission_classes = [NormalPermission, ]
+    filter_backends = [DjangoFilterBackend, OrderingFilter, ]
+    ordering_fields = ["id", "created_time", "updated_time", ]
+    filter_class = filter.NetworkFilter
+
+    def get_queryset(self):
+        return models.Network.objects.none()
+
+    def get_serializer_class(self):
+        if self.action in ['list']:
+            return serializers.NetworkSerializer
+        else:
+            return self.http_method_not_allowed(request=self.request)
+        
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+    
+class PIDChartsPage(CorePageNumberPagination):
+    def __init__(self, *args, **kwargs):
+        self.pid_data = {}
+        self.pid_data['title'] = 'PID Tree Map'
+        self.pid_series_list = []
+        super(PIDChartsPage, self).__init__(*args, **kwargs)
+    
+    def get_pid_return_data(self, data) -> dict:
+        pid_append_data = {}
+        pid_append_data['name'] = data.get('name')
+        pid_append_data['value'] = data.get('total_memory')
+        self.pid_series_list.append(pid_append_data)
+        return data
+
+    def query_data_add(self) -> list:
+        pid_list = models.Pids.objects.values('name').annotate(total_memory=Sum('memory')).order_by('-total_memory')
+        pid_data_list = list(map(lambda data: self.get_pid_return_data(data), pid_list))
+        self.pid_data['series_list'] = self.pid_series_list
+
+        return [
+            ("pid_data", self.pid_data),
+        ]
+
+class PIDCharts(viewsets.ModelViewSet):
+    """
+        list:
+            Response a PID Charts data list（all）
+    """
+    pagination_class = PIDChartsPage
+    permission_classes = [NormalPermission, ]
+    filter_backends = [DjangoFilterBackend, OrderingFilter, ]
+    ordering_fields = ["id", "created_time", "updated_time", ]
+    filter_class = filter.PidsFilter
+
+    def get_queryset(self):
+        return models.Pids.objects.none()
+
+    def get_serializer_class(self):
+        if self.action in ['list']:
+            return serializers.PidsSerializer
+        else:
+            return self.http_method_not_allowed(request=self.request)
+        
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)

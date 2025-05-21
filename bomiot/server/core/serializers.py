@@ -1,8 +1,18 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Files
+from . import models
 
 User = get_user_model()
+
+
+class BaseSerializer(serializers.ModelSerializer):
+    """
+    Base Serializer for common fields
+    """
+    is_delete = serializers.BooleanField(read_only=True, required=False)
+    created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -11,6 +21,8 @@ class UserSerializer(serializers.ModelSerializer):
     phone = serializers.CharField(read_only=True, required=False)
     permission = serializers.JSONField(read_only=True, required=False)
     request_limit = serializers.IntegerField(read_only=True, required=False)
+    team = serializers.IntegerField(read_only=True, required=False)
+    department = serializers.IntegerField(read_only=True, required=False)
     is_active = serializers.BooleanField(read_only=True, required=False)
     date_joined = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
     last_login = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
@@ -18,10 +30,45 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'phone', 'is_active', 'request_limit', 'permission', 'date_joined', 'last_login', 'updated_time']
+        fields = ['id', 'username', 'email', 'phone', 'is_active', 'request_limit', 'team', 'department', 'permission', 'date_joined', 'last_login', 'updated_time']
         read_only_fields = ['id']
 
+
+class TeamSerializer(serializers.ModelSerializer):
+    """
+    Team Serializer
+    """
+    name = serializers.CharField(read_only=True, required=False)
+    permission = serializers.JSONField(read_only=True, required=False)
+    is_delete = serializers.BooleanField(read_only=True, required=False)
+    created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+
+    class Meta:
+        model = models.Team
+        fields = ['id', 'name', 'permission', 'is_delete', 'created_time', 'updated_time']
+        read_only_fields = ['id']
+
+
+class DepartmentSerializer(serializers.ModelSerializer):
+    """
+    Department Serializer
+    """
+    name = serializers.CharField(read_only=True, required=False)
+    is_delete = serializers.BooleanField(read_only=True, required=False)
+    created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+
+    class Meta:
+        model = models.Team
+        fields = ['id', 'name', 'is_delete', 'created_time', 'updated_time']
+        read_only_fields = ['id']
+
+
 class FileSerializer(serializers.ModelSerializer):
+    """
+    File Serializer
+    """
     name = serializers.CharField(read_only=True, required=False)
     type = serializers.CharField(read_only=True, required=False)
     size = serializers.CharField(read_only=True, required=False)
@@ -32,6 +79,114 @@ class FileSerializer(serializers.ModelSerializer):
     updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
 
     class Meta:
-        model = Files
+        model = models.Files
         fields = ['id', 'name', 'type', 'size', 'owner', 'shared_to', 'is_delete', 'created_time', 'updated_time']
+        read_only_fields = ['id']
+
+
+class PidsSerializer(serializers.ModelSerializer):
+    """
+    Pid Serializer
+    """
+    pid = serializers.IntegerField(read_only=True, required=False)
+    name = serializers.CharField(read_only=True, required=False)
+    memory = serializers.IntegerField(read_only=True, required=False)
+    memory_usage = serializers.FloatField(read_only=True, required=False)
+    cpu_usage = serializers.FloatField(read_only=True, required=False)
+    create_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+
+    class Meta:
+        model = models.Pids
+        fields = ['pid', 'name', 'memory', 'create_time', 'memory_usage', 'cpu_usage', 'created_time', 'updated_time']
+        read_only_fields = ['pid']
+
+
+class PyPiSerializer(serializers.ModelSerializer):
+    """
+    PyPi Serializer
+    """
+    category = serializers.CharField(read_only=True, required=False)
+    date = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d')
+    percent = serializers.FloatField(read_only=True, required=False)
+    downloads = serializers.IntegerField(read_only=True, required=False)
+
+    class Meta:
+        model = models.PyPi
+        fields = ['id', 'category', 'date', 'percent', 'downloads']
+        read_only_fields = ['id']
+
+
+class CPUSerializer(serializers.ModelSerializer):
+    """
+    CPU Serializer
+    """
+    cpu_usage = serializers.FloatField(read_only=True, required=False)
+    physical_cores = serializers.IntegerField(read_only=True, required=False)
+    logical_cores = serializers.IntegerField(read_only=True, required=False)
+    cpu_frequency = serializers.CharField(read_only=True, required=False)
+    min_cpu_frequency = serializers.CharField(read_only=True, required=False)
+    max_cpu_frequency = serializers.CharField(read_only=True, required=False)
+    created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+
+    class Meta:
+        model = models.CPU
+        fields = ['id', 'cpu_usage', 'physical_cores', 'logical_cores', 'cpu_frequency', 'min_cpu_frequency', 'max_cpu_frequency', 'created_time', 'updated_time']
+        read_only_fields = ['id']
+
+
+class MemorySerializer(serializers.ModelSerializer):
+    """
+    Memory Serializer
+    """
+    total = serializers.IntegerField(read_only=True, required=False)
+    used = serializers.IntegerField(read_only=True, required=False)
+    free = serializers.IntegerField(read_only=True, required=False)
+    percent = serializers.FloatField(read_only=True, required=False)
+    swap_total = serializers.IntegerField(read_only=True, required=False)
+    swap_used = serializers.IntegerField(read_only=True, required=False)
+    swap_free = serializers.IntegerField(read_only=True, required=False)
+    swap_percent = serializers.FloatField(read_only=True, required=False)
+    created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+
+    class Meta:
+        model = models.Memory
+        fields = ['id', 'total', 'used', 'free', 'percent', 'swap_total', 'swap_used', 'swap_free', 'swap_percent', 'created_time', 'updated_time']
+        read_only_fields = ['id']
+
+
+class DiskSerializer(serializers.ModelSerializer):
+    """
+    Disk Serializer
+    """
+    device = serializers.CharField(read_only=True, required=False)
+    mountpoint = serializers.CharField(read_only=True, required=False)
+    total = serializers.IntegerField(read_only=True, required=False)
+    used = serializers.IntegerField(read_only=True, required=False)
+    free = serializers.IntegerField(read_only=True, required=False)
+    percent = serializers.FloatField(read_only=True, required=False)
+    created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+
+    class Meta:
+        model = models.Disk
+        fields = ['id', 'device', 'mountpoint', 'total', 'used', 'free', 'percent', 'created_time', 'updated_time']
+        read_only_fields = ['id']
+
+
+class NetworkSerializer(serializers.ModelSerializer):
+    """
+    Network Serializer
+    """
+    bytes_sent = serializers.IntegerField(read_only=True, required=False)
+    bytes_recv = serializers.IntegerField(read_only=True, required=False)
+    created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+
+    class Meta:
+        model = models.Network
+        fields = ['id', 'bytes_sent', 'bytes_recv', 'created_time', 'updated_time']
         read_only_fields = ['id']

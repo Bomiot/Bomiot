@@ -214,7 +214,7 @@ TIME_ZONE = CONFIG.getint('local', 'time_zone', fallback='UTC')
 
 USE_I18N = True
 
-USE_L10N = True  # 开启本地化(localization)
+USE_L10N = True  # (localization)
 
 USE_TZ = False
 
@@ -435,6 +435,7 @@ INTERNAL_IPS = [
 ]
 
 USER_JWT_TIME = CONFIG.getint('jwt', 'user_jwt_time', fallback=1000000)
+JWT_SALT = 'ds()udsjo@jlsdosjf)wjd_#(#)$'
 
 ALLOCATION_SECONDS = CONFIG.getint('throttle', 'allocation_seconds', fallback=1)
 THROTTLE_SECONDS = CONFIG.getint('throttle', 'throttle_seconds', fallback=10)

@@ -133,6 +133,10 @@ def statics(request):
     resp['Cache-Control'] = 'max-age=864000000000'
     return resp
 
+def queryset_to_json(queryset):
+    data = list(queryset.values())
+    return JsonResponse(data, safe=False)
+
 def get_all_url(resolver=None, pre='/'):
     if resolver is None:
         resolver = get_resolver()
@@ -148,25 +152,30 @@ def get_all_url(resolver=None, pre='/'):
 def permission_check(data):
     api_list = url_ignore()
     if str(data[0]) not in api_list and str(data[1]) != 'None':
-        try:
-            Permission.objects.get_or_create(api=str(data[0]), name=str(data[1]))
-        except:
-            pass
+        if not Permission.objects.filter(api=str(data[0]), name=str(data[1])).exists():
+            Permission.objects.create(api=str(data[0]), name=str(data[1]))
         user_data = User.objects.filter(is_superuser=True)
         for i in user_data:
             i.permission[str(data[1])] = str(data[0])
-            i.save()
+        User.objects.bulk_update(user_data, ['permission'])
         return data
-
 
 def init_permission():
     try:
-        user_data = User.objects.filter(is_superuser=True)
+        permission_list = Permission.objects.filter()
+        data = queryset_to_json(permission_list)
+        data_list = json.loads(data.content.decode())
+        print(len(data_list))
+        user_data = list(User.objects.filter(is_superuser=True))
+        media_root = settings.MEDIA_ROOT
         for i in user_data:
-            user_folder = join(settings.MEDIA_ROOT, i.username)
-            exists(user_folder) or os.makedirs(user_folder)
+            user_folder = join(media_root, i.username)
+            if not exists(user_folder):
+                os.makedirs(user_folder)
             i.permission = {}
-            i.save()
-        api_list = list(map(lambda data: permission_check(data), get_all_url()))
-    except:
-        pass
+        User.objects.bulk_update(user_data, ['permission'])
+
+        api_list = (permission_check(data) for data in get_all_url())
+        list(api_list)
+    except Exception as e:
+        print(f"Error initializing permissions: {e}")
