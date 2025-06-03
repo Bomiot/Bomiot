@@ -21,6 +21,8 @@ const routes = [
       { path: 'network', component: () => import('pages/NetworkReader.vue') },
       { path: 'serverecharts', component: () => import('pages/ServerEcharts.vue') },
       { path: 'pidcharts', component: () => import('pages/PIDCharts.vue') },
+      { path: 'api', component: () => import('pages/APIReader.vue') },
+      { path: 'example', component: () => import('pages/ExampleReader.vue') },
     ]
   },
   {

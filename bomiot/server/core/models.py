@@ -47,6 +47,22 @@ class Permission(CoreModel):
         ordering = ['-id']
 
 
+class API(CoreModel):
+    id = models.AutoField(primary_key=True)
+    method = models.CharField(max_length=18, verbose_name="Method", default='GET')
+    api = models.CharField(max_length=255, verbose_name="API API")
+    func_name = models.CharField(max_length=255, verbose_name="API Name")
+
+    def __str__(self):
+        return self.api
+
+    class Meta:
+        db_table = settings.BASE_DB_TABLE + '_api'
+        verbose_name = settings.BASE_DB_TABLE + ' API'
+        verbose_name_plural = verbose_name
+        ordering = ['-id']
+
+
 class ThrottleModel(CoreModel):
     ip = models.CharField(max_length=255, verbose_name="IP")
     method = models.CharField(max_length=18, verbose_name="Method")
@@ -174,16 +190,16 @@ class Network(CoreModel):
         ordering = ['-id']
 
 
-class Goods(CoreModel):
+class Example(CoreModel):
     data = models.JSONField()
 
     class Meta:
-        db_table = settings.BASE_DB_TABLE + '_goods'
-        verbose_name = settings.BASE_DB_TABLE + ' Goods'
+        db_table = settings.BASE_DB_TABLE + '_example'
+        verbose_name = settings.BASE_DB_TABLE + ' Example'
         verbose_name_plural = verbose_name
         ordering = ['-id']
         indexes = [
-            GinIndex(fields=['data'], name="goods_data_gin_index")
+            GinIndex(fields=['data'], name="example_data_gin_index")
         ]
 
 
@@ -211,6 +227,19 @@ class Team(CoreModel):
         ]
 
 
+class Goods(CoreModel):
+    data = models.JSONField()
+
+    class Meta:
+        db_table = settings.BASE_DB_TABLE + '_goods'
+        verbose_name = settings.BASE_DB_TABLE + ' Goods'
+        verbose_name_plural = verbose_name
+        ordering = ['-id']
+        indexes = [
+            GinIndex(fields=['data'], name="goods_data_gin_index")
+        ]
+
+
 class Bin(CoreModel):
     data = models.JSONField()
 
@@ -234,6 +263,19 @@ class Stock(CoreModel):
         ordering = ['-id']
         indexes = [
             GinIndex(fields=['data'], name="stock_data_gin_index")
+        ]
+
+
+class Capital(CoreModel):
+    data = models.JSONField()
+
+    class Meta:
+        db_table = settings.BASE_DB_TABLE + '_capital'
+        verbose_name = settings.BASE_DB_TABLE + ' Capital'
+        verbose_name_plural = verbose_name
+        ordering = ['-id']
+        indexes = [
+            GinIndex(fields=['data'], name="capital_data_gin_index")
         ]
 
 
@@ -314,6 +356,7 @@ class Bar(CoreModel):
             GinIndex(fields=['data'], name="bar_data_gin_index")
         ]
 
+
 class PyPi(CoreModel):
     category = models.CharField(max_length=255, verbose_name="Category")
     date = models.DateTimeField(auto_now_add=False, auto_now=False, blank=True, verbose_name="PyPi Date")
@@ -325,148 +368,3 @@ class PyPi(CoreModel):
         verbose_name = settings.BASE_DB_TABLE + ' PyPi'
         verbose_name_plural = verbose_name
         ordering = ['-id']
-
-
-def post_save_user_signals(sender, instance, created, **kwargs):
-    if created:
-        bomiot_signals.send(msg={
-            'models': 'User',
-            'type': 'created',
-            'data': {
-                'id': instance.id,
-                'username': instance.username,
-                'email': instance.email,
-                'phone': instance.phone,
-                'type': instance.type,
-                'permission': instance.permission,
-                'request_limit': instance.request_limit,
-                'team': instance.team,
-                'department': instance.department,
-                'is_active': instance.is_active
-            }
-        })
-
-def post_save_team_signals(sender, instance, created, **kwargs):
-    if created:
-        bomiot_signals.send(msg={
-            'models': 'Team',
-            'type': 'created',
-            'data': {
-                'id': instance.id,
-                'name': instance.name,
-                'permission': instance.permission
-            }
-        })
-
-def post_save_department_signals(sender, instance, created, **kwargs):
-    if created:
-        bomiot_signals.send(msg={
-            'models': 'Department',
-            'type': 'created',
-            'data': {
-                'id': instance.id,
-                'name': instance.name
-            }
-        })
-
-def post_save_msg_signals(sender, instance, created, **kwargs):
-    if created:
-        bomiot_signals.send(msg={
-            'models': 'Message',
-            'type': 'created',
-            'data': {
-                'id': instance.id,
-                'sender': instance.sender,
-                'receiver': instance.receiver,
-                'detail': instance.detail,
-                'can_send': instance.can_send,
-                'created_time': instance.created_time
-            }
-        })
-
-def post_save_file_signals(sender, instance, created, **kwargs):
-    if created:
-        bomiot_signals.send(msg={
-            'models': 'Files',
-            'type': 'created',
-            'data': {
-                'id': instance.id,
-                'name': instance.name,
-                'type': instance.type,
-                'size': instance.size,
-                'owner': instance.owner,
-                'shared_to': instance.shared_to
-            }
-        })
-
-def post_save_cpu_signals(sender, instance, created, **kwargs):
-    if created:
-        bomiot_signals.send(msg={
-            'models': 'CPU',
-            'type': 'created',
-            'data': {
-                'id': instance.id,
-                'cpu_usage': instance.cpu_usage,
-                'physical_cores': instance.physical_cores,
-                'logical_cores': instance.logical_cores,
-                'cpu_frequency': instance.cpu_frequency,
-                'min_cpu_frequency': instance.min_cpu_frequency,
-                'max_cpu_frequency': instance.max_cpu_frequency
-            }
-        })
-
-def post_save_memory_signals(sender, instance, created, **kwargs):
-    if created:
-        bomiot_signals.send(msg={
-            'models': 'Memory',
-            'type': 'created',
-            'data': {
-                'id': instance.id,
-                'total': instance.total,
-                'used': instance.used,
-                'free': instance.free,
-                'percent': instance.percent,
-                'swap_total': instance.swap_total,
-                'swap_used': instance.swap_used,
-                'swap_free': instance.swap_free,
-                'swap_percent': instance.swap_percent
-            }
-        })
-
-def post_save_disk_signals(sender, instance, created, **kwargs):
-    if created:
-        bomiot_signals.send(msg={
-            'models': 'Disk',
-            'type': 'created',
-            'data': {
-                'id': instance.id,
-                'device': instance.device,
-                'mountpoint': instance.mountpoint,
-                'total': instance.total,
-                'used': instance.used,
-                'free': instance.free,
-                'percent': instance.percent
-            }
-        })
-
-def post_save_network_signals(sender, instance, created, **kwargs):
-    if created:
-        bomiot_signals.send(msg={
-            'models': 'Network',
-            'type': 'created',
-            'data': {
-                'id': instance.id,
-                'bytes_sent': instance.bytes_sent,
-                'bytes_recv': instance.bytes_recv
-            }
-        })
-
-post_save.connect(post_save_user_signals, sender=User)
-post_save.connect(post_save_team_signals, sender=Team)
-post_save.connect(post_save_department_signals, sender=Department)
-post_save.connect(post_save_msg_signals, sender=Message)
-post_save.connect(post_save_file_signals, sender=Files)
-post_save.connect(post_save_cpu_signals, sender=CPU)
-post_save.connect(post_save_memory_signals, sender=Memory)
-post_save.connect(post_save_disk_signals, sender=Disk)
-post_save.connect(post_save_network_signals, sender=Network)

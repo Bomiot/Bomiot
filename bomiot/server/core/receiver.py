@@ -1,20 +1,29 @@
-from django.dispatch import receiver
-from .signal import bomiot_data_signals
+from bomiot.server.core.message import msg_message_return, detail_message_return, login_message_return
+from bomiot.server.core.models import Example
+from bomiot.server.core.utils import queryset_to_dict
 
-@receiver(bomiot_data_signals)
-def handle_data_signal(sender, **kwargs):
-    """
-    处理信号数据，验证数据是否符合要求。
-    """
-    data = kwargs.get('data')
-    if not data or not isinstance(data, dict):
-        raise ValueError("Invalid data format: data must be a dictionary.")
 
-    # 验证数据是否包含必需字段
-    required_fields = ['name', 'description']
-    for field in required_fields:
-        if field not in data:
-            raise ValueError(f"Missing required field: {field}")
+# class ExampleClass:
+    # def example_get(self, data):
+    #     print(data.get('query_params').get('params'))
+    #     example_list = Example.objects.filter()
+    #     qs_list = queryset_to_dict(example_list)
+    #     return [
+    #         ('results', data.get('data')),
+    #     ]
 
-    # 如果数据符合要求，返回成功信息
-    return {"status": "success", "message": "Data is valid."}
+    # def example_create(self, data):
+    #     print(data.get('data'))
+    #     language = data.get('request').META.get('HTTP_LANGUAGE', 'en-US')
+    #     return msg_message_return(language, "Success Create")
+    
+    # def example_update(self, data):
+    #     print(data.get('data'))
+    #     print(data.get('updated_fields'))
+    #     language = data.get('request').META.get('HTTP_LANGUAGE', 'en-US')
+    #     return msg_message_return(language, "Success Update")
+    
+    # def example_delete(self, data):
+    #     print(data.get('data'))
+    #     language = data.get('request').META.get('HTTP_LANGUAGE', 'en-US')
+    #     return msg_message_return(language, "Success Delete")

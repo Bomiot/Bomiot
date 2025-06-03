@@ -123,6 +123,12 @@ parser_dumpdata = subparsers.add_parser(
 parser_dumpdata.add_argument(
     'appname', default='core', nargs='?', type=str, help='Appname')
 
+# marketplace
+parser_project = subparsers.add_parser(
+    'market', help='copy project from marketplace')
+parser_project.add_argument('folder', default='',
+                         nargs='?', type=str, help='project marketplace folder')
+
 # show help info when no args
 if len(sys.argv[1:]) == 0:
     parser.print_help()
@@ -164,6 +170,9 @@ def cmd():
     elif command == 'new':
         from bomiot.cmd.createapp import new_app
         new_app(args.folder)
+    elif command == 'market':
+        from bomiot.cmd.market import copy_project
+        copy_project(args.folder)
     else:
         from bomiot.server.manage import manage
         manage()

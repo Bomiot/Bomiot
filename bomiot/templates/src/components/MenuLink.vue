@@ -54,6 +54,8 @@ const menuLinks = computed(() => [
   { tab: 'server', title: 'Network', icon: 'wifi', link: '/network' },
   { tab: 'server', title: 'DashBoard', icon: 'dashboard', link: '/serverecharts' },
   { tab: 'server', title: 'PID Tree', icon: 'view_quilt', link: '/pidcharts' },
+  { tab: 'api', title: 'API', icon: 'api', link: '/api' },
+  { tab: 'api', title: t('menuLink.example'), icon: 'more_horiz', link: '/example' },
 ])
 
 

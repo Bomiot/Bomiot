@@ -41,12 +41,24 @@ class MyHandler(FileSystemEventHandler):
         detail = Path(data)
         user_check = User.objects.filter(username=detail.parent.name)
         if user_check.exists():
-            Files.objects.create(
-                name=detail.name,
-                type=detail.name.split('.')[-1].lower(),
-                size=readable_file_size(detail.stat().st_size),
-                owner=detail.parent.name
-            )
+            file_data = Files.objects.create(
+                        name=detail.name,
+                        type=detail.name.split('.')[-1].lower(),
+                        size=readable_file_size(detail.stat().st_size),
+                        owner=detail.parent.name
+                    )
+            bomiot_signals.send(msg={
+                'models': 'Files',
+                'type': 'create',
+                'data': {
+                    'id': file_data.id,
+                    'name': file_data.name,
+                    'type': file_data.type,
+                    'size': file_data.size,
+                    'owner': file_data.owner,
+                    'shared_to': file_data.shared_to
+                }
+            })
 
 
     def modified_file(self, data):
@@ -68,6 +80,14 @@ class MyHandler(FileSystemEventHandler):
             bomiot_signals.send(msg={
                 'models': 'Files',
                 'type': 'update',
+                'data': {
+                    'id': instance.id,
+                    'name': instance.name,
+                    'type': instance.type,
+                    'size': instance.size,
+                    'owner': instance.owner,
+                    'shared_to': instance.shared_to
+                },
                 'updated_fields': updated_fields
             })
 

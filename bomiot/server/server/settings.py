@@ -68,15 +68,7 @@ if len(filtered_pkg_squared) > 0:
                         INSTALLED_APPS.append(f'{module}')
             except:
                 continue
-        elif app_mode == 'project':
-            if module == PROJECT_NAME:
-                for app in listdir(list_module_path):
-                    try:
-                        if isfile(join(join(list_module_path, app), 'apps.py')):
-                            if app not in INSTALLED_APPS:
-                                INSTALLED_APPS.append(f'{app}')
-                    except:
-                        pass
+
 
 if len(filtered_current_path) > 0:
     for module_name in filtered_current_path:
@@ -113,7 +105,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'bomiot.server.core.middlewares.JwtAuthorizationMiddleware'
+    # 'bomiot.server.core.middlewares.JwtAuthorizationMiddleware'
 ]
 
 ROOT_URLCONF = 'bomiot.server.server.urls'
@@ -208,7 +200,8 @@ if PROJECT_NAME == 'bomiot':
     LANGUAGE_DIR = join(BASE_DIR, 'language').replace('\\', '/')
 else:
     LANGUAGE_DIR = join(join(WORKING_SPACE, PROJECT_NAME), 'language').replace('\\', '/')
-exists(LANGUAGE_DIR) or os.makedirs(LANGUAGE_DIR)
+if exists(join(WORKING_SPACE, PROJECT_NAME)):
+    exists(LANGUAGE_DIR) or os.makedirs(LANGUAGE_DIR)
 
 TIME_ZONE = CONFIG.getint('local', 'time_zone', fallback='UTC')
 
@@ -239,7 +232,8 @@ if PROJECT_NAME == 'bomiot':
     MEDIA_ROOT = join(BASE_DIR, 'media').replace('\\', '/')
 else:
     MEDIA_ROOT = join(join(WORKING_SPACE, PROJECT_NAME), 'media').replace('\\', '/')
-exists(MEDIA_ROOT) or os.makedirs(MEDIA_ROOT)
+if exists(join(WORKING_SPACE, PROJECT_NAME)):
+    exists(MEDIA_ROOT) or os.makedirs(MEDIA_ROOT)
 
 
 # Default primary key field type

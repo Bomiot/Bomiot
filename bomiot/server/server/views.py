@@ -1,4 +1,4 @@
-import json
+import json, orjson
 import mimetypes
 import os
 from django.conf import settings
@@ -152,7 +152,7 @@ def get_all_url(resolver=None, pre='/'):
 def permission_check(data):
     api_list = url_ignore()
     if str(data[0]) not in api_list and str(data[1]) != 'None':
-        if not Permission.objects.filter(api=str(data[0]), name=str(data[1])).exists():
+        if Permission.objects.filter(api=str(data[0]), name=str(data[1])).exists() is False:
             Permission.objects.create(api=str(data[0]), name=str(data[1]))
         user_data = User.objects.filter(is_superuser=True)
         for i in user_data:
@@ -162,10 +162,7 @@ def permission_check(data):
 
 def init_permission():
     try:
-        permission_list = Permission.objects.filter()
-        data = queryset_to_json(permission_list)
-        data_list = json.loads(data.content.decode())
-        print(len(data_list))
+        Permission.objects.filter().delete()
         user_data = list(User.objects.filter(is_superuser=True))
         media_root = settings.MEDIA_ROOT
         for i in user_data:

@@ -4,17 +4,6 @@ from . import models
 
 User = get_user_model()
 
-
-class BaseSerializer(serializers.ModelSerializer):
-    """
-    Base Serializer for common fields
-    """
-    is_delete = serializers.BooleanField(read_only=True, required=False)
-    created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
-    updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
-
-
-
 class UserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(read_only=True, required=False)
     email = serializers.CharField(read_only=True, required=False)
@@ -81,6 +70,38 @@ class FileSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Files
         fields = ['id', 'name', 'type', 'size', 'owner', 'shared_to', 'is_delete', 'created_time', 'updated_time']
+        read_only_fields = ['id']
+
+
+class APISerializer(serializers.ModelSerializer):
+    """
+    API Serializer
+    """
+    method = serializers.CharField(read_only=True, required=False)
+    api = serializers.CharField(read_only=True, required=False)
+    func_name = serializers.CharField(read_only=True, required=False)
+    is_delete = serializers.BooleanField(read_only=True, required=False)
+    created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    
+    class Meta:
+        model = models.Example
+        fields = ['id', 'method', 'api', 'func_name', 'is_delete', 'created_time', 'updated_time']
+        read_only_fields = ['id']
+
+
+class ExampleSerializer(serializers.ModelSerializer):
+    """
+    Example Serializer
+    """
+    data = serializers.JSONField(read_only=True, required=False)
+    is_delete = serializers.BooleanField(read_only=True, required=False)
+    created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    
+    class Meta:
+        model = models.Example
+        fields = ['id', 'data', 'is_delete', 'created_time', 'updated_time']
         read_only_fields = ['id']
 
 
@@ -189,4 +210,154 @@ class NetworkSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Network
         fields = ['id', 'bytes_sent', 'bytes_recv', 'created_time', 'updated_time']
+        read_only_fields = ['id']
+
+
+class GoodsSerializer(serializers.ModelSerializer):
+    """
+    Goods Serializer
+    """
+    data = serializers.JSONField(read_only=True, required=False)
+    is_delete = serializers.BooleanField(read_only=True, required=False)
+    created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    
+    class Meta:
+        model = models.Goods
+        fields = ['id', 'data', 'is_delete', 'created_time', 'updated_time']
+        read_only_fields = ['id']
+
+
+class BinSerializer(serializers.ModelSerializer):
+    """
+    Bin Serializer
+    """
+    data = serializers.JSONField(read_only=True, required=False)
+    is_delete = serializers.BooleanField(read_only=True, required=False)
+    created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    
+    class Meta:
+        model = models.Bin
+        fields = ['id', 'data', 'is_delete', 'created_time', 'updated_time']
+        read_only_fields = ['id']
+
+
+class StockSerializer(serializers.ModelSerializer):
+    """
+    Stock Serializer
+    """
+    data = serializers.JSONField(read_only=True, required=False)
+    is_delete = serializers.BooleanField(read_only=True, required=False)
+    created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    
+    class Meta:
+        model = models.Stock
+        fields = ['id', 'data', 'is_delete', 'created_time', 'updated_time']
+        read_only_fields = ['id']
+
+
+class CapitalSerializer(serializers.ModelSerializer):
+    """
+    Capital Serializer
+    """
+    data = serializers.JSONField(read_only=True, required=False)
+    is_delete = serializers.BooleanField(read_only=True, required=False)
+    created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    
+    class Meta:
+        model = models.Capital
+        fields = ['id', 'data', 'is_delete', 'created_time', 'updated_time']
+        read_only_fields = ['id']
+
+
+class SupplierSerializer(serializers.ModelSerializer):
+    """
+    Supplier Serializer
+    """
+    data = serializers.JSONField(read_only=True, required=False)
+    is_delete = serializers.BooleanField(read_only=True, required=False)
+    created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    
+    class Meta:
+        model = models.Supplier
+        fields = ['id', 'data', 'is_delete', 'created_time', 'updated_time']
+        read_only_fields = ['id']
+
+
+class CustomerSerializer(serializers.ModelSerializer):
+    """
+    Customer Serializer
+    """
+    data = serializers.JSONField(read_only=True, required=False)
+    is_delete = serializers.BooleanField(read_only=True, required=False)
+    created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    
+    class Meta:
+        model = models.Customer
+        fields = ['id', 'data', 'is_delete', 'created_time', 'updated_time']
+        read_only_fields = ['id']
+
+
+class ASNSerializer(serializers.ModelSerializer):
+    """
+    ASN Serializer
+    """
+    data = serializers.JSONField(read_only=True, required=False)
+    is_delete = serializers.BooleanField(read_only=True, required=False)
+    created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    
+    class Meta:
+        model = models.ASN
+        fields = ['id', 'data', 'is_delete', 'created_time', 'updated_time']
+        read_only_fields = ['id']
+
+
+class DNSerializer(serializers.ModelSerializer):
+    """
+    DN Serializer
+    """
+    data = serializers.JSONField(read_only=True, required=False)
+    is_delete = serializers.BooleanField(read_only=True, required=False)
+    created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    
+    class Meta:
+        model = models.DN
+        fields = ['id', 'data', 'is_delete', 'created_time', 'updated_time']
+        read_only_fields = ['id']
+
+
+class PurchaseSerializer(serializers.ModelSerializer):
+    """
+    Purchase Serializer
+    """
+    data = serializers.JSONField(read_only=True, required=False)
+    is_delete = serializers.BooleanField(read_only=True, required=False)
+    created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    
+    class Meta:
+        model = models.Purchase
+        fields = ['id', 'data', 'is_delete', 'created_time', 'updated_time']
+        read_only_fields = ['id']
+
+
+class BarSerializer(serializers.ModelSerializer):
+    """
+    Bar Serializer
+    """
+    data = serializers.JSONField(read_only=True, required=False)
+    is_delete = serializers.BooleanField(read_only=True, required=False)
+    created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    
+    class Meta:
+        model = models.Bar
+        fields = ['id', 'data', 'is_delete', 'created_time', 'updated_time']
         read_only_fields = ['id']

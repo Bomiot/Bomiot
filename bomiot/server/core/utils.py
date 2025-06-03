@@ -1,6 +1,11 @@
 import orjson
+import ast
 import pandas as pd
-
+from django.conf import settings
+from os.path import join
+import importlib.util
+import importlib
+from .message import msg_message_return
 
 def get_job_id(task):
     """
@@ -151,3 +156,196 @@ def readable_file_size(size_in_bytes) -> str:
 
 def compare_dicts(dict1, dict2) -> dict:
     return {k: (dict1[k], dict2[k]) for k in dict1 if dict1[k] != dict2[k]}
+
+
+def queryset_to_dict(queryset) -> list:
+    """
+    Convert a Django queryset to a list of dictionaries.
+    :param queryset: Django queryset
+    :return: List of dictionaries
+    """
+    return [{
+        **flatten_json(obj),
+        'created_time': obj['created_time'].strftime('%Y-%m-%d %H:%M:%S'),
+        'updated_time': obj['updated_time'].strftime('%Y-%m-%d %H:%M:%S')
+    } for obj in queryset.values('id', 'created_time', 'updated_time', 'data')]
+
+
+def find_value_in_json(json_data, key_to_find):
+    if isinstance(json_data, dict):
+        for key, value in json_data.items():
+            if key == key_to_find:
+                return value
+            if isinstance(value, (dict, list)):
+                result = find_value_in_json(value, key_to_find)
+                if result is not None:
+                    return result
+    elif isinstance(json_data, list):
+        for item in json_data:
+            result = find_value_in_json(item, key_to_find)
+            if result is not None:
+                return result
+    return None
+
+
+def flatten_json(nested_dict):
+    return {
+        **nested_dict['data'],
+        'id': nested_dict['id'],
+        'created_time': nested_dict['created_time'],
+        'updated_time': nested_dict['updated_time']
+    }
+
+
+def is_empty_value(val):
+    if isinstance(val, dict):
+        return all(is_empty_value(v) for v in val.values())
+    elif isinstance(val, list):
+        return all(is_empty_value(v) for v in val)
+    return val in [None, '', 'null', 'undefined', 'nil', [], {}, set()]
+
+
+def all_fields_empty(json_dict):
+    return is_empty_value(json_dict)
+
+
+def check_method_in_file_by_ast(file_path, method_name):
+    try:
+        detail = {}
+        with open(file_path, 'r', encoding='utf-8') as f:
+            tree = ast.parse(f.read(), filename=file_path)
+        found = False
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                if node.name == method_name and isinstance(tree, ast.Module):
+                    detail = {
+                                "class": node.name,
+                                "method": method_name,
+                            }
+                    found = True
+                    break
+            elif isinstance(node, ast.ClassDef):
+                for item in node.body:
+                    if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                        if item.name == method_name:
+                            detail = {
+                                "class": node.name,
+                                "method": method_name,
+                            }
+                            found = True
+                            break
+                if found:
+                    break
+        return found, detail
+
+    except FileNotFoundError:
+        print(f"'{file_path}' can not find")
+        return False, detail
+    except SyntaxError as e:
+        print(f"'{file_path}' {e}")
+        return False, detail
+    except Exception as e:
+        print(f"{e}")
+        return False, detail
+
+def receiver_callback(data, method) -> dict:
+    if settings.PROJECT_NAME == 'bomiot':
+        receiver_path = join(settings.BASE_DIR, 'core', 'receiver.py')
+    else:
+        receiver_path = join(settings.WORKING_SPACE, settings.PROJECT_NAME, 'receiver.py')
+    receiver_check = check_method_in_file_by_ast(receiver_path, method)
+    if receiver_check[0] is True:
+        spec = importlib.util.spec_from_file_location("receiver", receiver_path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        if 'class' in receiver_check[1]:
+            try:
+                target_class = getattr(module, receiver_check[1]['class'])
+                instance = target_class()
+                if hasattr(instance, receiver_check[1]['method']):
+                    result = getattr(instance, receiver_check[1]['method'])(data)
+                    return result
+                else:
+                    print(f"{type(receiver_check[1]).get('class')} class don't have {receiver_check[1]['method']} method")
+            except AttributeError:
+                print(f"class {type(receiver_check[1]).get('class')} can not find {receiver_path}")
+        else:
+            if hasattr(module, receiver_check[1]['method']):
+                result = getattr(instance, receiver_check[1]['method'])(data)
+                return result
+            else:
+                print(f"{receiver_path} don't have {receiver_check[1]['method']} method")
+    else:
+        mode = data.get('mode')
+        language = data.get('request').META.get('HTTP_LANGUAGE', 'en-US')
+        if mode == 'get':
+            return [
+            ('results', data.get('data')),
+        ]
+        elif mode == 'create':
+            return msg_message_return(language, "Success Create")
+        elif mode == 'update':
+            return msg_message_return(language, "Success Update")
+        elif mode == 'delete':
+            return msg_message_return(language, "Success Delete")
+        
+
+def receiver_file_callback(data, method) -> dict:
+    if settings.PROJECT_NAME == 'bomiot':
+        receiver_path = join(settings.BASE_DIR, 'core', 'files.py')
+    else:
+        receiver_path = join(settings.WORKING_SPACE, settings.PROJECT_NAME, 'files.py')
+    receiver_check = check_method_in_file_by_ast(receiver_path, method)
+    if receiver_check[0] is True:
+        spec = importlib.util.spec_from_file_location("files", receiver_path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        if 'class' in receiver_check[1]:
+            try:
+                target_class = getattr(module, receiver_check[1]['class'])
+                instance = target_class()
+                if hasattr(instance, receiver_check[1]['method']):
+                    result = getattr(instance, receiver_check[1]['method'])(data)
+                    return result
+                else:
+                    print(f"{type(receiver_check[1]).get('class')} class don't have {receiver_check[1]['method']} method")
+            except AttributeError:
+                print(f"class {type(receiver_check[1]).get('class')} can not find {receiver_path}")
+        else:
+            if hasattr(module, receiver_check[1]['method']):
+                result = getattr(instance, receiver_check[1]['method'])(data)
+                return result
+            else:
+                print(f"{receiver_path} don't have {receiver_check[1]['method']} method")
+    else:
+        return
+    
+def receiver_server_callback(data, method) -> dict:
+    if settings.PROJECT_NAME == 'bomiot':
+        receiver_path = join(settings.BASE_DIR, 'core', 'server.py')
+    else:
+        receiver_path = join(settings.WORKING_SPACE, settings.PROJECT_NAME, 'server.py')
+    receiver_check = check_method_in_file_by_ast(receiver_path, method)
+    if receiver_check[0] is True:
+        spec = importlib.util.spec_from_file_location("server", receiver_path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        if 'class' in receiver_check[1]:
+            try:
+                target_class = getattr(module, receiver_check[1]['class'])
+                instance = target_class()
+                if hasattr(instance, receiver_check[1]['method']):
+                    result = getattr(instance, receiver_check[1]['method'])(data)
+                    return result
+                else:
+                    print(f"{type(receiver_check[1]).get('class')} class don't have {receiver_check[1]['method']} method")
+            except AttributeError:
+                print(f"class {type(receiver_check[1]).get('class')} can not find {receiver_path}")
+        else:
+            if hasattr(module, receiver_check[1]['method']):
+                result = getattr(instance, receiver_check[1]['method'])(data)
+                return result
+            else:
+                print(f"{receiver_path} don't have {receiver_check[1]['method']} method")
+    else:
+        return

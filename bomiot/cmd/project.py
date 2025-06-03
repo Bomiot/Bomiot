@@ -42,6 +42,9 @@ def project(folder: str):
 
                 shutil.copy2(join(file_path, 'bomiotconf.ini'), project_path)
                 shutil.copy2(join(file_path, 'websocket.py'), project_path)
+                shutil.copy2(join(file_path, 'receiver.py'), project_path)
+                shutil.copy2(join(file_path, 'files.py'), project_path)
+                shutil.copy2(join(file_path, 'server.py'), project_path)
 
                 create_file(str(sys.argv[2]))
 

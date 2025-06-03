@@ -1,7 +1,6 @@
 from django.dispatch import Signal, receiver
 import importlib
 
-
 class BomiotSignal(Signal):
     """
     Custom Signal class, using 'Bomiot' as the default sender
@@ -36,16 +35,6 @@ class BomiotSignal(Signal):
 bomiot_signals = BomiotSignal()
 bomiot_job_signals = Signal()
 bomiot_data_signals = Signal()
-
-
-@receiver(bomiot_signals)
-def bomiot_signal_callback(**kwargs):
-    """
-    Signal receiver to handle the received signal
-    """
-    # print(kwargs)
-
-
 
 @receiver(bomiot_job_signals)
 def bomiot_signal_callback(sender, **kwargs):

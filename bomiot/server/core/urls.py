@@ -1,6 +1,16 @@
 import os
 from django.urls import path
-from . import views
+from . import client, views, handler
+from bomiot.server.function import goods
+from bomiot.server.function import bin
+from bomiot.server.function import stock
+from bomiot.server.function import capital
+from bomiot.server.function import supplier
+from bomiot.server.function import customer
+from bomiot.server.function import asn
+from bomiot.server.function import dn
+from bomiot.server.function import purchase
+from bomiot.server.function import bar
 from bomiot.server.core.scheduler import sm
 from bomiot.server.core.observer import ob
 from bomiot.server.core.server_monitor import start_monitoring
@@ -42,13 +52,95 @@ urlpatterns += [
 ]
 
 urlpatterns += [
-    path(r'pid/', views.PIDList.as_view({"get": "list"})),
-    path(r'cpu/', views.CPUList.as_view({"get": "list"})),
-    path(r'memory/', views.MemoryList.as_view({"get": "list"})),
-    path(r'disk/', views.DiskList.as_view({"get": "list"})),
-    path(r'network/', views.NetworkList.as_view({"get": "list"})),
-    path(r'server/echarts/', views.ServerCharts.as_view({"get": "list"})),
-    path(r'server/pidcharts/', views.PIDCharts.as_view({"get": "list"})),
+    path(r'pid/', client.PIDList.as_view({"get": "list"})),
+    path(r'cpu/', client.CPUList.as_view({"get": "list"})),
+    path(r'memory/', client.MemoryList.as_view({"get": "list"})),
+    path(r'disk/', client.DiskList.as_view({"get": "list"})),
+    path(r'network/', client.NetworkList.as_view({"get": "list"})),
+    path(r'server/echarts/', client.ServerCharts.as_view({"get": "list"})),
+    path(r'server/pidcharts/', client.PIDCharts.as_view({"get": "list"})),
+]
+
+urlpatterns += [
+    path(r'example/', handler.ExampleList.as_view({"get": "list"})),
+    path(r'example/create/', handler.ExampleCreate.as_view({"post": "create"})),
+    path(r'example/update/', handler.ExampleUpdate.as_view({"post": "create"})),
+    path(r'example/delete/', handler.ExampleDelete.as_view({"post": "create"}))
+]
+
+urlpatterns += [
+    path(r'goods/', goods.GoodsList.as_view({"get": "list"}), name="Get Goods List"),
+    path(r'goods/create/', goods.GoodsCreate.as_view({"post": "create"}), name="Create Goods"),
+    path(r'goods/update/', goods.GoodsUpdate.as_view({"post": "create"}), name="Update Goods"),
+    path(r'goods/delete/', goods.GoodsDelete.as_view({"post": "create"}), name="Delete Goods")
+]
+
+urlpatterns += [
+    path(r'bin/', bin.BinList.as_view({"get": "list"}), name="Get Bin List"),
+    path(r'bin/create/', bin.BinCreate.as_view({"post": "create"}), name="Create Bin"),
+    path(r'bin/update/', bin.BinUpdate.as_view({"post": "create"}), name="Update Bin"),
+    path(r'bin/delete/', bin.BinDelete.as_view({"post": "create"}), name="Delete Bin")
+]
+
+urlpatterns += [
+    path(r'stock/', stock.StockList.as_view({"get": "list"}), name="Get Stock List"),
+    path(r'stock/create/', stock.StockCreate.as_view({"post": "create"}), name="Create Stock"),
+    path(r'stock/update/', stock.StockUpdate.as_view({"post": "create"}), name="Update Stock"),
+    path(r'stock/delete/', stock.StockDelete.as_view({"post": "create"}), name="Delete Stock")
+]
+
+urlpatterns += [
+    path(r'capital/', capital.CapitalList.as_view({"get": "list"}), name="Get Capital List"),
+    path(r'capital/create/', capital.CapitalCreate.as_view({"post": "create"}), name="Create Capital"),
+    path(r'capital/update/', capital.CapitalUpdate.as_view({"post": "create"}), name="Update Capital"),
+    path(r'capital/delete/', capital.CapitalDelete.as_view({"post": "create"}), name="Delete Capital")
+]
+
+urlpatterns += [
+    path(r'supplier/', supplier.SupplierList.as_view({"get": "list"}), name="Get Supplier List"),
+    path(r'supplier/create/', supplier.SupplierCreate.as_view({"post": "create"}), name="Create Supplier"),
+    path(r'supplier/update/', supplier.SupplierUpdate.as_view({"post": "create"}), name="Update Supplier"),
+    path(r'supplier/delete/', supplier.SupplierDelete.as_view({"post": "create"}), name="Delete Supplier")
+]
+
+urlpatterns += [
+    path(r'customer/', customer.CustomerList.as_view({"get": "list"}), name="Get Customer List"),
+    path(r'customer/create/', customer.CustomerCreate.as_view({"post": "create"}), name="Create Customer"),
+    path(r'customer/update/', customer.CustomerUpdate.as_view({"post": "create"}), name="Update Customer"),
+    path(r'customer/delete/', customer.CustomerDelete.as_view({"post": "create"}), name="Delete Customer")
+]
+
+urlpatterns += [
+    path(r'asn/', asn.ASNList.as_view({"get": "list"}), name="Get ASN List"),
+    path(r'asn/create/', asn.ASNCreate.as_view({"post": "create"}), name="Create ASN"),
+    path(r'asn/update/', asn.ASNUpdate.as_view({"post": "create"}), name="Update ASN"),
+    path(r'asn/delete/', asn.ASNDelete.as_view({"post": "create"}), name="Delete ASN")
+]
+
+urlpatterns += [
+    path(r'dn/', dn.DNList.as_view({"get": "list"}), name="Get DN List"),
+    path(r'dn/create/', dn.DNCreate.as_view({"post": "create"}), name="Create DN"),
+    path(r'dn/update/', dn.DNUpdate.as_view({"post": "create"}), name="Update DN"),
+    path(r'dn/delete/', dn.DNDelete.as_view({"post": "create"}), name="Delete DN")
+]
+
+urlpatterns += [
+    path(r'purchase/', purchase.PurchaseList.as_view({"get": "list"}), name="Get Purchase List"),
+    path(r'purchase/create/', purchase.PurchaseCreate.as_view({"post": "create"}), name="Create Purchase"),
+    path(r'purchase/update/', purchase.PurchaseUpdate.as_view({"post": "create"}), name="Update Purchase"),
+    path(r'purchase/delete/', purchase.PurchaseDelete.as_view({"post": "create"}), name="Delete Purchase")
+]
+
+urlpatterns += [
+    path(r'bar/', bar.BarList.as_view({"get": "list"}), name="Get Bar List"),
+    path(r'bar/create/', bar.BarCreate.as_view({"post": "create"}), name="Create Bar"),
+    path(r'bar/update/', bar.BarUpdate.as_view({"post": "create"}), name="Update Bar"),
+    path(r'bar/delete/', bar.BarDelete.as_view({"post": "create"}), name="Delete Bar")
+]
+
+urlpatterns += [
+    path(r'api/', views.APIList.as_view({"get": "list"})),
+    path(r'api/change/', views.APIChange.as_view({"post": "create"})),
 ]
 
 # Start Scheduler

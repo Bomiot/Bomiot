@@ -26,6 +26,8 @@ export default {
   per_page: '每页多少行',
   refresh: '刷新',
   new: '新增',
+  edit: '修改数据',
+  delete: '删除数据',
   refreshdata: '刷新数据',
   newUser: '新增用户',
   createuser: '请输入用户名，默认密码是你输入的用户名',
@@ -55,6 +57,7 @@ export default {
     user: '用户列表',
     team: '用户组',
     department: '部门管理',
+    example: '示例'
   },
   upload: {
     center: '上传中心',
@@ -144,6 +147,15 @@ export default {
   network: {
     bytes_sent: '发送字节数',
     bytes_recv: '接收字节数',
+  },
+  example: {
+    create: '创建数据',
+    update: '修改数据',
+    delete: '删除数据',
+    value: '值',
+    status: '状态',
+    description: '描述',
+    error: '数据必须超过1个字符'
   },
   400: '错误请求(400)',
   401: '未取得授权(401)',

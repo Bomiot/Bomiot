@@ -29,6 +29,8 @@ class CoreAuthentication:
 
         # parse Token
         result = parse_payload(token)
+        if result.get('status') is False:
+            self._raise_api_exception(request, 'Please Login Again')
         user_id = result.get('data', {}).get('id')
         user_permissions = result.get('data', {}).get('permission', {})
 

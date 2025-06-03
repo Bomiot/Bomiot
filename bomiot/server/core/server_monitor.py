@@ -24,14 +24,27 @@ class ServerManager:
         cpu_info_check = CPU.objects.filter()
         if cpu_info_check.count() >= 10080:
             cpu_info_check.order_by('id').first().delete()
-        CPU.objects.create(
-            cpu_usage=float(f"{cpu_percent:.2f}"),
-            physical_cores=int(cpu_count),
-            logical_cores=int(cpu_count_logical),
-            cpu_frequency=f"{cpu_freq.current:.2f} MHz",
-            min_cpu_frequency=f"{cpu_freq.min:.2f} MHz",
-            max_cpu_frequency=f"{cpu_freq.max:.2f} MHz"
-        )
+        cpu_data = CPU.objects.create(
+                   cpu_usage=float(f"{cpu_percent:.2f}"),
+                   physical_cores=int(cpu_count),
+                   logical_cores=int(cpu_count_logical),
+                   cpu_frequency=f"{cpu_freq.current:.2f} MHz",
+                   min_cpu_frequency=f"{cpu_freq.min:.2f} MHz",
+                   max_cpu_frequency=f"{cpu_freq.max:.2f} MHz"
+                   )
+        bomiot_signals.send(msg={
+            'models': 'CPU',
+            'type': 'created',
+            'data': {
+                'id': cpu_data.id,
+                'cpu_usage': float(f"{cpu_percent:.2f}"),
+                'physical_cores': int(cpu_count),
+                'logical_cores': int(cpu_count_logical),
+                'cpu_frequency': f"{cpu_freq.current:.2f} MHz",
+                'min_cpu_frequency': f"{cpu_freq.min:.2f} MHz",
+                'max_cpu_frequency': f"{cpu_freq.max:.2f} MHz"
+            }
+        })
 
     def get_memory_info(self):
         """Memory"""
@@ -40,16 +53,31 @@ class ServerManager:
         memory_info_check = Memory.objects.filter()
         if memory_info_check.count() >= 10080:
             memory_info_check.order_by('id').first().delete()
-        Memory.objects.create(
-            total=int(memory.total),
-            used=int(memory.used),
-            free=int(memory.free),
-            percent=float(f'{memory.percent:.2f}'),
-            swap_total=int(swap.total),
-            swap_used=int(swap.used),
-            swap_free=int(swap.free),
-            swap_percent=float(f'{swap.percent:.2f}'),
-        )
+        memory_data = Memory.objects.create(
+                      total=int(memory.total),
+                      used=int(memory.used),
+                      free=int(memory.free),
+                      percent=float(f'{memory.percent:.2f}'),
+                      swap_total=int(swap.total),
+                      swap_used=int(swap.used),
+                      swap_free=int(swap.free),
+                      swap_percent=float(f'{swap.percent:.2f}'),
+                      )
+        bomiot_signals.send(msg={
+            'models': 'Memory',
+            'type': 'created',
+            'data': {
+                'id': memory_data.id,
+                'total': int(memory.total),
+                'used': int(memory.used),
+                'free': int(memory.free),
+                'percent': float(f'{memory.percent:.2f}'),
+                'swap_total': int(swap.total),
+                'swap_used': int(swap.used),
+                'swap_free': int(swap.free),
+                'swap_percent': float(f'{swap.percent:.2f}')
+            }
+        })
 
     def get_disk_info(self):
         """Disk"""
@@ -68,6 +96,19 @@ class ServerManager:
                     free=int(disk_usage.free),
                     percent=float(f'{disk_usage.percent:.2f}')
                 )
+                bomiot_signals.send(msg={
+                    'models': 'Disk',
+                    'type': 'created',
+                    'data': {
+                        'id': i+1,
+                        'device': partitions[i].device,
+                        'mountpoint': partitions[i].mountpoint,
+                        'total': int(disk_usage.total),
+                        'used': int(disk_usage.used),
+                        'free': int(disk_usage.free),
+                        'percent': float(f'{disk_usage.percent:.2f}')
+                    }
+                })
                 disk_list.append(disk_detail)
             except PermissionError:
                 print(f"{partitions[i].mountpoint}")
@@ -83,10 +124,19 @@ class ServerManager:
         newtork_info_check = Network.objects.filter()
         if newtork_info_check.count() >= 10080:
             newtork_info_check.order_by('id').first().delete()
-        Network.objects.create(
-            bytes_sent=int(bytes_sent),
-            bytes_recv=int(bytes_recv)
-        )
+        instance = Network.objects.create(
+                   bytes_sent=int(bytes_sent),
+                   bytes_recv=int(bytes_recv)
+                   )
+        bomiot_signals.send(msg={
+            'models': 'Network',
+            'type': 'created',
+            'data': {
+                'id': instance.id,
+                'bytes_sent': int(bytes_sent),
+                'bytes_recv': int(bytes_recv)
+            }
+        })
 
     def get_pid(self):
         """PIDs"""

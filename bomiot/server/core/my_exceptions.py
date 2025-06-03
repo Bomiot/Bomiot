@@ -24,6 +24,7 @@ def custom_exception_handler(exc, context):
             response = Response({'msg': 'A database error occurred.'})
         else:
             # handle other exceptions
-            response = Response({'msg': 'An unknown error occurred.'})
+            # response = Response({'msg': 'An unknown error occurred.'})
+            pass
 
     return response

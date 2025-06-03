@@ -74,18 +74,6 @@ if len(filtered_pkg_squared) > 0:
                         ]
             except:
                 continue
-        elif app_mode == 'project':
-            if module == settings.PROJECT_NAME:
-                for url in listdir(list_module_path):
-                    try:
-                        if isfile(join(join(list_module_path, url), 'urls.py')):
-                            if url_exists(f'/{settings.PROJECT_NAME}/{url}/') is True:
-                                urlpatterns += [
-                                    path(f'{settings.PROJECT_NAME}/{url}/',
-                                         include(f'{settings.PROJECT_NAME}.{url}.urls'))
-                                ]
-                    except:
-                        pass
 
 if len(filtered_current_path) > 0:
     for module_name in filtered_current_path:
