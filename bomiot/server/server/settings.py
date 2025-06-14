@@ -450,7 +450,7 @@ FILE_EXTENSION = CONFIG.get('file', 'file_extension', fallback='py,png,jpg,jpeg,
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = CONFIG.get('mail', 'email_host', fallback='')
-EMAIL_PORT = CONFIG.getint('mail', 'email_from', fallback=465)
+EMAIL_PORT = CONFIG.getint('mail', 'email_port', fallback=465)
 EMAIL_HOST_USER = CONFIG.get('mail', 'email_host_user', fallback='')
 EMAIL_HOST_PASSWORD = CONFIG.get('mail', 'email_host_password', fallback='')
 DEFAULT_FROM_EMAIL = CONFIG.get('mail', 'default_from_email', fallback='')

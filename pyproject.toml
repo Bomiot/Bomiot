@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bomiot"
-version = "0.8.0"
+version = "0.8.1"
 description = "One App you can do everything"
 authors = ["Bomiot <Singosgu@gmail.com>"]
 readme = "README.md"
