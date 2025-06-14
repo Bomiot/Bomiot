@@ -141,46 +141,46 @@ class ServerManager:
     def get_pid(self):
         """PIDs"""
         Pids.objects.all().delete()  # Clear all previous records
-        pid_list = psutil.process_iter(['pid', 'name', 'memory_info', 'create_time', 'memory_percent', 'cpu_percent'])
         pid_add_list = []
-        for data in pid_list:
+        data_list = []
+        for proc in psutil.process_iter(['pid', 'name', 'memory_info', 'create_time', 'memory_percent', 'cpu_percent']):
             try:
-                if data.info['pid'] != 0:
-                    pid_add = Pids(
-                        pid=int(data.info['pid']),
-                        name=str(data.info['name']),
-                        memory=int(data.info['memory_info'].rss),
-                        create_time=datetime.fromtimestamp(data.info['create_time']),
-                        memory_usage=round(float(data.info['memory_percent']), 2),
-                        cpu_usage=round(float(data.info['cpu_percent']), 2)
-                        )
-                    bomiot_signals.send(msg={
-                        'models': 'Pids',
-                        'type': 'created',
-                        'data': {
-                            'pid': int(data.info['pid']),
-                            'name': str(data.info['name']),
-                            'memory': int(data.info['memory_info'].rss),
-                            'create_time': datetime.fromtimestamp(data.info['create_time']),
-                            'memory_usage': round(float(data.info['memory_percent']), 2),
-                            'cpu_usage': round(float(data.info['cpu_percent']), 2)
-                        }
-                    })
-                    pid_add_list.append(pid_add)
+                info = proc.info
+                pid = info['pid']
+                if pid == 0:
+                    continue
+                name = info['name']
+                mem_rss = info['memory_info'].rss
+                create_time = info['create_time']
+                mem_percent = info['memory_percent']
+                cpu_percent = info['cpu_percent']
+                item = {
+                    'pid': int(pid),
+                    'name': str(name),
+                    'memory': int(mem_rss),
+                    'create_time': datetime.fromtimestamp(create_time),
+                    'memory_usage': round(float(mem_percent), 2),
+                    'cpu_usage': round(float(cpu_percent), 2)
+                }
+                pid_add = Pids(**item)
+                pid_add_list.append(pid_add)
+                data_list.append(item)
             except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-                pass
-        Pids.objects.bulk_create(pid_add_list, batch_size=100)  # Bulk create PIDs to improve performance
+                continue
+        Pids.objects.bulk_create(pid_add_list, batch_size=200)  # Bulk create PIDs to improve performance
+        bomiot_signals.send(msg={
+            'models': 'Pids',
+            'type': 'created',
+            'data': data_list
+        })
 
     def cteate_pypi_database(self, data):
-        """
-        Create PyPI database
-        """
         return PyPi(
-                date=data.get('date'),
-                downloads=data.get('downloads'),
-                percent=data.get('percent'),
-                category=data.get('category')
-            )
+            date=data.get('date'),
+            downloads=data.get('downloads'),
+            percent=data.get('percent'),
+            category=data.get('category')
+        )
 
     def res_pypi_data(self, data):
         data["date"] = datetime.strptime(data.get('date'), '%Y-%m-%d')
@@ -188,21 +188,21 @@ class ServerManager:
         return data
 
     def get_pypi_stats(self):
-        """
-        PyPI stats check
-        """
-        pypi_check = PyPi.objects.filter(created_time__date=datetime.now().date())
-        if pypi_check.exists() is False:
-            if pypi_check.count() > 0:
-                PyPi.objects.all().delete()  # Clear all previous records
+        today = datetime.now().date()
+        pypi_today_qs = PyPi.objects.filter(created_time__date=today)
+        if pypi_today_qs.exists() is False:
+            PyPi.objects.exclude(created_time__date=today).delete()
             df = pypistats.overall("bomiot", total='daily', format="pandas")
-            data = df.to_json(orient="records", date_format="iso", date_unit='s', force_ascii=False)
-            res = orjson.loads(data)
-            res = [record for record in res if record.get('category') != 'Total']
-            res_list = list(map(lambda data: self.res_pypi_data(data), res))
-            res_sorted = sorted(res_list, key=lambda x: x["date"], reverse=True)
-            pypi_list = list(map(lambda data: self.cteate_pypi_database(data), res_sorted))
-            PyPi.objects.bulk_create(pypi_list, batch_size=100)
+            res = df.to_dict(orient="records")
+            pypi_list = []
+            for record in res:
+                if record.get('category') == 'Total':
+                    continue
+                data = self.res_pypi_data(record)
+                pypi_obj = self.cteate_pypi_database(data)
+                pypi_list.append(pypi_obj)
+            pypi_list.sort(key=lambda x: x.date, reverse=True)
+            PyPi.objects.bulk_create(pypi_list, batch_size=200)
 
 
     def monitor_server(self):
@@ -219,9 +219,6 @@ class ServerManager:
 
 def start_monitoring():
     """Start the server monitoring thread"""
-    try:
-        server_manager = ServerManager()
-        monitoring_thread = threading.Thread(target=server_manager.monitor_server, daemon=True)
-        monitoring_thread.start()
-    except Exception as e:
-        print(f"Server Monitor Error: {e}")
+    server_manager = ServerManager()
+    monitoring_thread = threading.Thread(target=server_manager.monitor_server, daemon=True)
+    monitoring_thread.start()

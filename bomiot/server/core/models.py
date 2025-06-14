@@ -52,6 +52,7 @@ class API(CoreModel):
     method = models.CharField(max_length=18, verbose_name="Method", default='GET')
     api = models.CharField(max_length=255, verbose_name="API API")
     func_name = models.CharField(max_length=255, verbose_name="API Name")
+    name = models.CharField(max_length=255, verbose_name="API Description", default='')
 
     def __str__(self):
         return self.api
@@ -60,7 +61,7 @@ class API(CoreModel):
         db_table = settings.BASE_DB_TABLE + '_api'
         verbose_name = settings.BASE_DB_TABLE + ' API'
         verbose_name_plural = verbose_name
-        ordering = ['-id']
+        ordering = ['id']
 
 
 class ThrottleModel(CoreModel):
@@ -356,6 +357,31 @@ class Bar(CoreModel):
             GinIndex(fields=['data'], name="bar_data_gin_index")
         ]
 
+
+class Fee(CoreModel):
+    data = models.JSONField()
+
+    class Meta:
+        db_table = settings.BASE_DB_TABLE + '_fee'
+        verbose_name = settings.BASE_DB_TABLE + ' Fee'
+        verbose_name_plural = verbose_name
+        ordering = ['-id']
+        indexes = [
+            GinIndex(fields=['data'], name="fee_data_gin_index")
+        ]
+
+
+class Driver(CoreModel):
+    data = models.JSONField()
+
+    class Meta:
+        db_table = settings.BASE_DB_TABLE + '_driver'
+        verbose_name = settings.BASE_DB_TABLE + ' Driver'
+        verbose_name_plural = verbose_name
+        ordering = ['-id']
+        indexes = [
+            GinIndex(fields=['data'], name="driver_data_gin_index")
+        ]
 
 class PyPi(CoreModel):
     category = models.CharField(max_length=255, verbose_name="Category")

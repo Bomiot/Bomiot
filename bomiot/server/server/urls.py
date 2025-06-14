@@ -1,4 +1,4 @@
-import pkg_resources
+import importlib.metadata
 import importlib.util
 
 from os import listdir
@@ -33,6 +33,7 @@ urlpatterns = [
     path('login/', views.logins, name='login'),
     path('logout/', views.logouts, name='logout'),
     path('checktoken/', views.check_token, name='check_token'),
+    path('md/<str:mddocs>', views.mdurl, name='markdown'),
     path('core/', include('bomiot.server.core.urls')),
 ]
 
@@ -49,7 +50,9 @@ urlpatterns += [
     re_path(r'^media/(?P<path>.*)$', static_serve, {'document_root': settings.MEDIA_ROOT}),
 ]
 
-res_pkg_list = list(set([pkg.key for pkg in pkg_resources.working_set]).difference(set(ignore_pkg())))
+
+all_packages = [dist.metadata['Name'] for dist in importlib.metadata.distributions()]
+res_pkg_list = list(set([name.lower() for name in all_packages]).difference(set(ignore_pkg())))
 pkg_squared = list(map(lambda data: pkg_check(data), res_pkg_list))
 filtered_pkg_squared = list(filter(lambda x: x is not None, pkg_squared))
 
@@ -60,10 +63,10 @@ filtered_current_path = list(filter(lambda y: y is not None, cur_squared))
 
 if len(filtered_pkg_squared) > 0:
     for module in filtered_pkg_squared:
-        module_path = importlib.util.find_spec(settings.PROJECT_NAME).origin
+        module_path = importlib.util.find_spec(module).origin
         list_module_path = Path(module_path).resolve().parent
         pkg_config_check = ConfigParser()
-        pkg_config_check.read(join(list_module_path), 'bomiotconf.ini', encoding='utf-8')
+        pkg_config_check.read(join(list_module_path, 'bomiotconf.ini'), encoding='utf-8')
         app_mode = pkg_config_check.get('mode', 'name', fallback='plugins')
         if app_mode == 'plugins':
             try:
@@ -100,5 +103,3 @@ if len(filtered_current_path) > 0:
                             ]
                     except:
                         pass
-
-views.init_permission()

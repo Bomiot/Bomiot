@@ -15,6 +15,7 @@
     "postinstall": "quasar prepare"
   },
   "dependencies": {
+    "@lexmin0412/markdown-it-echarts": "^0.1.5",
     "@quasar/extras": "^1.16.4",
     "axios": "^1.2.1",
     "echarts": "^5.6.0",

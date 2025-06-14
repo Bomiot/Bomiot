@@ -174,14 +174,18 @@ function downloadFile(e) {
     });
 }
 
+function idBetween(data) {
+  const regex = /<->(\d+)<->/g;
+  const numbers = [];
+  let match;
+  while ((match = regex.exec(data)) !== null) {
+    numbers.push(Number(match[1]));
+  }
+  return numbers;
+}
+
 function shareFile (e) {
-  var model_data = []
-  userList.value.forEach(item => {
-  model_data.push({
-      label: item.toString().split(',')[1],
-      value: item.toString().split(',')[0]
-    })
-  })
+  var model_data = idBetween(rows.value[e].shared_to)
   $q.dialog({
     title: t('doc.share'),
     message: t('doc.shared_to'),
@@ -225,7 +229,7 @@ function deleteFile(e) {
     message: t('doc.deletefilenotice'),
     cancel: true,
   }).onOk(() =>{
-    post('core/user/file/delete/', {"id": rows.value[e].id}).then(() => {
+    post('core/user/files/delete/', {"id": rows.value[e].id}).then(() => {
       onRequest()
     }).catch(err => {
       $q.notify({

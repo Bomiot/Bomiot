@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bomiot"
-version = "0.7.0"
+version = "0.8.0"
 description = "One App you can do everything"
 authors = ["Bomiot <Singosgu@gmail.com>"]
 readme = "README.md"
@@ -26,16 +26,18 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4.0"
-django = "~4.2.16"
+django = "~4.2.23"
 django-cors-headers = "~4.4.0"
 pyjwt = ">=2.10.1"
 django-filter = "~24.3"
 djangorestframework-csv = "~3.0.2"
+bomiot-token = ">=0.6.9"
 orjson = "~3.10.7"
 djangorestframework = "~3.15.2"
 django-apscheduler = "~0.7.0"
 daphne = "~4.1.2"
 twisted = {extras = ["http2", "tls"], version = "~24.7.0"}
+asgivalid = ">=0.5.6"
 pandas = "~2.2.3"
 watchdog = "~6.0.0"
 tomlkit = "~0.13.2"

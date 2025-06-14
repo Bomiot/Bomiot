@@ -7,6 +7,8 @@ export default {
   title: 'Bomiot',
   description: 'GreaterWMS开源仓库管理系统',
   keywords: 'greaterwms, 聚商汇wms,wms-system,open source wms system,开源wms,开源仓库管理软件,warehouse management system, free wms',
+  expireNotice: `授权Key将在{days}天内到期，请使用'bomiot keys'重新获取授权key`,
+  expired: "授权Key已过期，请使用'bomiot keys'重新获取授权key",
   gohome: '回到首页',
   cancel: '取消',
   submit: '提交',

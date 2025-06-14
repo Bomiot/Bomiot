@@ -5,7 +5,6 @@ import sys
 import shutil
 from pathlib import Path
 from .init import create_file
-import pkg_resources
 from configparser import ConfigParser
 from .copyfile import copy_files
 from bomiot.server.server.pkgcheck import pkg_check, cwd_check, ignore_pkg, ignore_cwd

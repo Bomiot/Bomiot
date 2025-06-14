@@ -73,19 +73,19 @@ parser_project.add_argument('folder', default='',
 
 # project
 parser_project = subparsers.add_parser(
-    'project', help='project workspace, default to bomiot')
+    'project', help='Project workspace, default to bomiot')
 parser_project.add_argument('folder', default='',
                          nargs='?', type=str, help='project workspace folder')
 
 # plugins
 parser_plugins = subparsers.add_parser(
-    'plugins', help='plugins workspace, default to bomiot')
+    'plugins', help='Plugins workspace, default to bomiot')
 parser_plugins.add_argument('folder', default='',
                          nargs='?', type=str, help='plugins workspace folder')
 
 # deploy
 parser_deploy = subparsers.add_parser(
-    'deploy', help='deploy project')
+    'deploy', help='Deploy project')
 parser_deploy.add_argument('folder', default='',
                          nargs='?', type=str, help='deploy project')
 
@@ -125,9 +125,16 @@ parser_dumpdata.add_argument(
 
 # marketplace
 parser_project = subparsers.add_parser(
-    'market', help='copy project from marketplace')
+    'market', help='Copy project from marketplace')
 parser_project.add_argument('folder', default='',
                          nargs='?', type=str, help='project marketplace folder')
+
+# init auth keys
+parser_project = subparsers.add_parser(
+    'keys', help='Init auth keys')
+parser_project.add_argument('folder', default='',
+                         nargs='?', type=str, help='auth key get')
+
 
 # show help info when no args
 if len(sys.argv[1:]) == 0:
@@ -162,7 +169,7 @@ def cmd():
     elif command == 'initadmin':
         from bomiot.cmd.initadmin import init_admin
         init_admin()
-        # init admin
+    # init admin
     elif command == 'initpwd':
         from bomiot.cmd.initpwd import init_password
         init_password()
@@ -170,9 +177,14 @@ def cmd():
     elif command == 'new':
         from bomiot.cmd.createapp import new_app
         new_app(args.folder)
+    # marketplace
     elif command == 'market':
         from bomiot.cmd.market import copy_project
         copy_project(args.folder)
+    # init auth keys
+    elif command == 'keys':
+        from bomiot.cmd.create_key import auth_key_refresh
+        auth_key_refresh()
     else:
         from bomiot.server.manage import manage
         manage()

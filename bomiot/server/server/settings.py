@@ -3,7 +3,7 @@ from django.core.management.utils import get_random_secret_key
 import os
 import sys
 from configparser import ConfigParser
-import pkg_resources
+import importlib.metadata
 from .pkgcheck import pkg_check, cwd_check, ignore_pkg, ignore_cwd
 import importlib.util
 from os import listdir
@@ -42,8 +42,8 @@ INSTALLED_APPS = [
     'bomiot.server.core',
 ]
 
-
-res_pkg_list = list(set([pkg.key for pkg in pkg_resources.working_set]).difference(set(ignore_pkg())))
+all_packages = [dist.metadata['Name'] for dist in importlib.metadata.distributions()]
+res_pkg_list = list(set([name.lower() for name in all_packages]).difference(set(ignore_pkg())))
 pkg_squared = list(map(lambda data: pkg_check(data), res_pkg_list))
 filtered_pkg_squared = list(filter(lambda x: x is not None, pkg_squared))
 
@@ -51,15 +51,13 @@ current_path = list(set([p for p in listdir(WORKING_SPACE) if isdir(p)]).differe
 cur_squared = list(map(lambda data: cwd_check(data), current_path))
 filtered_current_path = list(filter(lambda y: y is not None, cur_squared))
 
-LOCALE_PATHS = []
 
 if len(filtered_pkg_squared) > 0:
     for module in filtered_pkg_squared:
-        module_path = importlib.util.find_spec(PROJECT_NAME).origin
+        module_path = importlib.util.find_spec(module).origin
         list_module_path = Path(module_path).resolve().parent
         pkg_config_check = ConfigParser()
-        pkg_config_check.read(join(list_module_path), 'bomiotconf.ini', encoding='utf-8')
-        LOCALE_PATHS.append(join(list_module_path, 'locale'))
+        pkg_config_check.read(join(list_module_path, 'bomiotconf.ini'), encoding='utf-8')
         app_mode = pkg_config_check.get('mode', 'name', fallback='plugins')
         if app_mode == 'plugins':
             try:
@@ -74,7 +72,6 @@ if len(filtered_current_path) > 0:
     for module_name in filtered_current_path:
         app_mode_config = ConfigParser()
         app_mode_config.read(join(join(WORKING_SPACE, module_name), 'bomiotconf.ini'), encoding='utf-8')
-        LOCALE_PATHS.append(join(join(WORKING_SPACE, module_name), 'locale'))
         app_mode = app_mode_config.get('mode', 'name')
         if app_mode == 'plugins':
             try:
@@ -96,6 +93,7 @@ if len(filtered_current_path) > 0:
 
 
 MIDDLEWARE = [
+    'django.middleware.gzip.GZipMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -273,6 +271,10 @@ CORS_ALLOW_HEADERS = (
     'event-sign'
 )
 
+CORS_EXPOSE_HEADERS = [
+    "expire"
+]
+
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 
@@ -423,6 +425,13 @@ REST_FRAMEWORK = {
     },
 }
 
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-snowflake",
+    }
+}
+
 INTERNAL_IPS = [
     '127.0.0.1',
     'localhost'
@@ -435,3 +444,15 @@ ALLOCATION_SECONDS = CONFIG.getint('throttle', 'allocation_seconds', fallback=1)
 THROTTLE_SECONDS = CONFIG.getint('throttle', 'throttle_seconds', fallback=10)
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = None
+
+FILE_SIZE = CONFIG.getint('file', 'file_size', fallback=102400000)
+FILE_EXTENSION = CONFIG.get('file', 'file_extension', fallback='py,png,jpg,jpeg,gif,bmp,webp,txt,md,html,htm,js,css,json,xml,csv,xlsx,xls,ppt,pptx,doc,docx,pdf').replace(" ", "").split(',')
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = CONFIG.get('mail', 'email_host', fallback='')
+EMAIL_PORT = CONFIG.getint('mail', 'email_from', fallback=465)
+EMAIL_HOST_USER = CONFIG.get('mail', 'email_host_user', fallback='')
+EMAIL_HOST_PASSWORD = CONFIG.get('mail', 'email_host_password', fallback='')
+DEFAULT_FROM_EMAIL = CONFIG.get('mail', 'default_from_email', fallback='')
+EMAIL_FROM = CONFIG.get('mail', 'email_from', fallback='')
+EMAIL_USE_SSL = CONFIG.getboolean('mail', 'email_use_ssl', fallback=True)

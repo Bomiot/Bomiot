@@ -1,11 +1,14 @@
 <template>
   <div class="q-pa-md">
       <q-uploader
+        ref="uploaderRef"
         :url="getUrl"
         label="Individual upload"
         :headers="[{name: 'token', value: token}, {name: 'language', value: lang}]"
         multiple
         :style="{ height: ScreenHeight, width: ScreenWidth, maxHeight: ScreenHeight }"
+        @uploaded="onUploaded"
+        @error="onError"
       >
       <template v-slot:header="scope">
         <div class="row no-wrap items-center q-pa-sm q-gutter-xs" :style="{ backgroundColor: CardBackground }">
@@ -40,17 +43,16 @@
               <q-item-label class="full-width ellipsis">
                 {{ file.name }}
               </q-item-label>
-
               <q-item-label caption>
-                <div v-show="file.__status === 'idle'">
+                <p v-if="file.__status === 'idle'">
                   {{ t('upload.status') }} {{ t('upload.idle') }}
-                </div>
-                <div v-show="file.__status === 'failed'" style="background: red; color: white">
-                  {{ t('upload.status') }} {{ t('upload.failed') }}
-                </div>
-                <div v-show="file.__status === 'uploaded'" style="background: green; color: white">
-                  {{ t('upload.status') }} {{ t('upload.uploaded') }}
-                </div>
+                </p>
+                <p v-else-if="file.__status === 'uploaded'" style="background: green; color: white">
+                  {{ t('upload.status') }} {{ file.notice }}
+                </p>
+                <p v-else style="background: red; color: white">
+                  {{ t('upload.status') }} {{ file.notice }}
+                </p>
               </q-item-label>
 
               <q-item-label caption>
@@ -68,6 +70,20 @@
 
             <q-item-section top side>
               <q-btn
+                v-if="$q.dark.isActive"
+                class="gt-xs"
+                size="12px"
+                flat
+                dense
+                round
+                icon="delete"
+                color="white"
+                @click="scope.removeFile(file)"
+              >
+                <q-tooltip class="bg-indigo" :offset="[10, 10]" content-style="font-size: 12px">{{ t('upload.delete') }}</q-tooltip>
+              </q-btn>
+              <q-btn
+                v-else
                 class="gt-xs"
                 size="12px"
                 flat
@@ -100,12 +116,37 @@ const $q = useQuasar()
 const tokenStore = useTokenStore()
 const langStore = useLanguageStore()
 
+const uploaderRef = ref(null)
+
 const token = computed(() => tokenStore.token)
 const lang = computed(() => langStore.langGet)
 
 const ScreenHeight = ref($q.screen.height * 0.85 + '' + 'px')
 const ScreenWidth = ref($q.screen.width * 0.825 + '' + 'px')
 const CardBackground = ref($q.dark.isActive? '#1D1D1D' : '#1972D2')
+
+function onUploaded(response) {
+  if (JSON.parse(response.xhr.responseText).msg) {
+    uploaderRef.value.files.forEach(item => {
+      if (item.name === response.files[0].name) {
+        item.notice = JSON.parse(response.xhr.responseText).msg
+        item.__status = 'uploaded'
+      }
+    })
+  }
+  if (JSON.parse(response.xhr.responseText).detail) {
+    uploaderRef.value.files.forEach(item => {
+      if (item.name === response.files[0].name) {
+        item.notice = JSON.parse(response.xhr.responseText).detail
+        item.__status = 'failed '
+      }
+    })
+  }
+}
+
+function onError(error) {
+  console.error('Upload error:', error)
+}
 
 function getUrl (e) {
   if (e) {
@@ -115,7 +156,6 @@ function getUrl (e) {
     } else {
       return 'core/user/upload/'
     }
-    
   }
 }
 

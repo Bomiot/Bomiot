@@ -39,6 +39,7 @@ const menuStore = useMenuDataStore()
 
 const menuLinks = computed(() => [
   { tab: 'standard', title: t('menuLink.home'), icon: 'home', link: '/' },
+  { tab: 'standard', title: 'README', icon: 'menu_book', link: '/readme' },
   { tab: 'standard', title: t('menuLink.user'), icon: 'people', link: '/user' },
   { tab: 'standard', title: t('menuLink.team'), icon: 'diversity_3', link: '/team' },
   { tab: 'standard', title: t('menuLink.department'), icon: 'diversity_2', link: '/department' },
@@ -46,7 +47,6 @@ const menuLinks = computed(() => [
   { tab: 'standard', title: t('doc.center'), icon: 'download', link: '/doc' },
   { tab: 'standard', title: 'PyPi', icon: 'cloud_sync', link: '/pypi' },
   { tab: 'standard', title: 'PyPi Stats', icon: 'pie_chart', link: '/pypicharts' },
-  { tab: 'standard', title: '操作手册', icon: 'menu_book', link: '/readme' },
   { tab: 'server', title: 'PID', icon: 'account_tree', link: '/pid' },
   { tab: 'server', title: 'CPU', icon: 'select_all', link: '/cpu' },
   { tab: 'server', title: 'Memory', icon: 'memory', link: '/memory' },

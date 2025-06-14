@@ -64,15 +64,6 @@ def bomiot_signal_callback(**kwargs):
     feedback = receiver_callback(kwargs, value)
     return feedback
 
-@receiver(bomiot_signals)
-def file_signal_callback(**kwargs):
-    """
-    Signal receiver to handle file signal
-    """
-    if kwargs.get('models') == 'Files':
-        data = kwargs.get('msg')
-        receiver_file_callback(data, 'file_get')
-    return
 
 @receiver(bomiot_signals)
 def server_signal_callback(**kwargs):
@@ -80,16 +71,18 @@ def server_signal_callback(**kwargs):
     Signal receiver to handle server signal
     """
     data = kwargs.get('msg')
-    if kwargs.get('models') == 'Pids':
-        receiver_server_callback(data, 'pid_get')
-    elif kwargs.get('models') == 'Network':
-        receiver_server_callback(data, 'network_get')
-    elif kwargs.get('models') == 'Disk':
-        receiver_server_callback(data, 'disk_get')
-    elif kwargs.get('models') == 'Memory':
-        receiver_server_callback(data, 'memory_get')
-    elif kwargs.get('models') == 'CPU':
-        receiver_server_callback(data, 'cpu_get')
+    if data.get('models') == 'Pids':
+        receiver_server_callback(data.get('data'), 'pid_get')
+    elif data.get('models') == 'Network':
+        receiver_server_callback(data.get('data'), 'network_get')
+    elif data.get('models') == 'Disk':
+        receiver_server_callback(data.get('data'), 'disk_get')
+    elif data.get('models') == 'Memory':
+        receiver_server_callback(data.get('data'), 'memory_get')
+    elif data.get('models') == 'CPU':
+        receiver_server_callback(data.get('data'), 'cpu_get')
+    elif data.get('models') == 'Files':
+        receiver_file_callback(data.get('data'), 'file_get')
     else:
         return
     return

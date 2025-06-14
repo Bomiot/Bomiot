@@ -115,6 +115,7 @@ const columns = computed(() => [
   },
   { name: 'api', label: 'API', field: 'api' },
   { name: 'func_name', label: 'Function Name', field: 'func_name' },
+  { name: 'name', label: 'Name', field: 'name' },
   { name: 'action', label: t('action'), align: 'right' }
 ])
 

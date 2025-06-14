@@ -58,6 +58,6 @@ def url_ignore():
             '/admin/django_apscheduler/djangojob/<path:object_id>/', '/admin/django_apscheduler/djangojobexecution/', '/admin/django_apscheduler/djangojobexecution/add/', '/admin/django_apscheduler/djangojobexecution/<path:object_id>/history/',
             '/admin/django_apscheduler/djangojobexecution/<path:object_id>/delete/', '/admin/django_apscheduler/djangojobexecution/<path:object_id>/change/', '/admin/django_apscheduler/djangojobexecution/<path:object_id>/',
             '/admin/core/user/<id>/password/', '/admin/core/user/', '/admin/core/user/add/', '/admin/core/user/<path:object_id>/history/', '/admin/core/user/<path:object_id>/delete/', '/admin/core/user/<path:object_id>/change/',
-            '/admin/core/user/<path:object_id>/', '/admin/(?P<app_label>auth|django_apscheduler|core)/', '/admin/(?P<url>.*)', '/', '/login/', '/logout/', '/register/', '/checktoken/', '/favicon.ico', '/css/.*',
-            '/js/.*', '/assets/.*', '/statics/.*', '/fonts/.*', '/icons/.*', '/static/(?P<path>.*)', '/media/(?P<path>.*)'
+            '/admin/core/user/<path:object_id>/', '/admin/(?P<app_label>auth|django_apscheduler|core)/', '/admin/(?P<url>.*)', '/', '/login/', '/logout/', '/register/', '/checktoken/', '/favicon.ico', '/css/.*', '/md/<str:mddocs>',
+            '/js/.*', '/assets/.*', '/statics/.*', '/fonts/.*', '/icons/.*', '/static/(?P<path>.*)', '/media/(?P<path>.*)', '/silk/', '/silk/stats/', '/silk/stats/requests/', '/silk/stats/queries/', '/silk/stats/memory/', '/silk/stats/requests/<int:request_id>/', '/silk/stats/queries/<int:query_id>/', '/silk/stats/memory/<int:memory_id>/'
             ]

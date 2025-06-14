@@ -5,7 +5,7 @@ import sys
 import shutil
 from pathlib import Path
 from .init import create_file
-import pkg_resources
+import importlib
 from configparser import ConfigParser
 from .copyfile import copy_files
 
@@ -23,7 +23,7 @@ def project(folder: str):
         if exists(project_path):
             print('Project directory already exists')
         else:
-            if sys.argv[2] in [pkg.key for pkg in pkg_resources.working_set]:
+            if sys.argv[2] in [dist.metadata['Name'] for dist in importlib.metadata.distributions()]:
                 print('Project directory already exists')
             else:
                 makedirs(project_path)
@@ -53,8 +53,8 @@ def project(folder: str):
                 setup_config.set('project', 'name', folder)
                 setup_config.write(open(join(join(getcwd()), 'setup.ini'), "wt"))
 
-                copy_files(join(current_path.parent.parent, 'templates'), join(project_path, 'templates'))
                 copy_files(join(join(current_path.parent.parent, 'server'), 'media'), join(project_path, 'media'))
                 copy_files(join(join(current_path.parent.parent, 'server'), 'language'), join(project_path, 'language'))
-
+                copy_files(join(current_path.parent.parent, 'templates'), join(project_path, 'templates'))
+                
                 print(f'Initialized project workspace {sys.argv[2]}')

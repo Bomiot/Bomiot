@@ -123,7 +123,7 @@
           v-model="data.value"
           autofocus
           @keyup.enter="submitData()"
-          :rules="[val => val.length > 1 || t('example.title')]"
+          :rules="[val => val.length > 1 || t('example.error')]"
         /> </q-card-section>
       <q-item-label header>{{ t('example.status') }}</q-item-label>
       <q-card-section class="q-pt-none">
@@ -131,7 +131,7 @@
           dense
           v-model="data.status"
           @keyup.enter="submitData()"
-          :rules="[val => val.length > 1 || t('example.title')]"
+          :rules="[val => val.length > 1 || t('example.error')]"
         /></q-card-section>
       <q-item-label header>{{ t('example.description') }}</q-item-label>
       <q-card-section class="q-pt-none">
@@ -139,7 +139,7 @@
           dense
           v-model="data.description"
           @keyup.enter="submitData()"
-          :rules="[val => val.length > 1 || t('example.title')]"
+          :rules="[val => val.length > 1 || t('example.error')]"
           />
       </q-card-section>
       <q-card-actions align="right">
@@ -213,7 +213,7 @@ function onRequest(props) {
   get({
     url: 'core/example/',
     params: {
-      params: JSON.stringify({ data__value: search.value }),
+      params: JSON.stringify({ data__value__icontains: search.value }),
       page: requestData.pagination.page,
       max_page: requestData.pagination.rowsPerPage
     }

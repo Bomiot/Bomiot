@@ -9,8 +9,9 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from functools import reduce
 
 from . import serializers, models, filter
-from .page import CorePageNumberPagination
+from .page import CorePageNumberPagination, PermissionPageNumberPagination, APIPageNumberPagination
 from .permission import NormalPermission
+from .utils import readable_file_size
 from rest_framework.filters import OrderingFilter
 from rest_framework.exceptions import MethodNotAllowed
 from django_filters.rest_framework import DjangoFilterBackend
@@ -73,9 +74,27 @@ class PermissionList(viewsets.ModelViewSet):
         list:
             Response a permission data list（all）
     """
-    queryset = models.Permission.objects.all()
+    pagination_class = PermissionPageNumberPagination
+    authentication_classes = []
+    permission_classes = [NormalPermission, ]
     filter_backends = [DjangoFilterBackend, OrderingFilter, ]
     ordering_fields = ['id', "created_time", "updated_time", ]
+    filter_class = filter.PermissionFilter
+
+    def get_queryset(self):
+        if self.request.user:
+            return models.Permission.objects.filter().order_by('-id')
+        else:
+            return models.Permission.objects.none()
+
+    def get_serializer_class(self):
+        if self.action in ['list']:
+            return serializers.PermissionSerializer
+        else:
+            raise MethodNotAllowed(self.request.method)
+        
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
 
 
 class UserCreate(viewsets.ModelViewSet):
@@ -325,17 +344,31 @@ class UserUpload(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         data = self.request.FILES
+        exists(join(settings.MEDIA_ROOT, self.request.auth.username)) or os.makedirs(join(settings.MEDIA_ROOT, self.request.auth.username))
         for file_name in data:
             file_obj = self.request.FILES.get(file_name)
-            file_data = file_obj.read()
-            file_path = join(join(settings.MEDIA_ROOT, str(self.request.auth.username)), file_obj.name)
-            with open(file_path, 'wb') as f:
-                f.write(file_data)
-            f.close()
-            context = {}
-            msg = others_message_return(self.request.META.get('HTTP_LANGUAGE', ''), "Success upload files")
-            context['msg'] = f"{msg} {file_obj.name}"
-            return Response(context, status=200)
+            file_extension = file_obj.name.split('.')[-1].lower()
+            if file_extension not in settings.FILE_EXTENSION:
+                detail = others_message_return(self.request.META.get('HTTP_LANGUAGE', ''), "File type not allowed")
+                context = {'detail': f"{detail} {file_obj.name}"}
+                raise APIException(context)
+            if file_obj.size <= settings.FILE_SIZE:
+                file_data = file_obj.read()
+                file_path = join(join(settings.MEDIA_ROOT, str(self.request.auth.username)), file_obj.name)
+                with open(file_path, 'wb') as f:
+                    f.write(file_data)
+                f.close()
+                context = {}
+                msg = others_message_return(self.request.META.get('HTTP_LANGUAGE', ''), "Success upload files")
+                context['msg'] = f"{msg} {file_obj.name}"
+                return Response(context, status=200)
+            else:
+                file_size = readable_file_size(file_obj.size)
+                file_size_limit = readable_file_size(settings.FILE_SIZE)
+                detail = others_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
+                                                         "File size exceeds limit")
+                context['detail'] = f"{detail} {file_size}/{file_size_limit}"
+                raise APIException(context)
 
 
 class FilePage(CorePageNumberPagination):
@@ -372,7 +405,7 @@ class UserFiles(viewsets.ModelViewSet):
             if self.request.auth.is_superuser is True:
                 return models.Files.objects.filter(**query_data).order_by('-updated_time')
             else:
-                share_user = '<->' + str(self.request.auth.id) + self.request.auth.username
+                share_user = '<->' + str(self.request.auth.id) + "<->" + self.request.auth.username
                 return models.Files.objects.filter(
                                             Q(owner=self.request.auth.username, **query_data)
                                             |
@@ -409,7 +442,7 @@ class FileShare(viewsets.ModelViewSet):
 
     def get_users_data(self, data):
         user_data = User.objects.filter(id=data).first()
-        return "<->" + str(data) + user_data.username
+        return "<->" + str(data) + "<->" + user_data.username
 
     def create(self, request, **kwargs):
         data = self.request.data
@@ -424,7 +457,7 @@ class FileShare(viewsets.ModelViewSet):
                                                          "Can not share file which is not your own"))
             else:
                 users_list = data.get('users')
-                data_list = list(map(lambda data: self.get_users_data(data.get('id')), users_list))
+                data_list = list(map(lambda data: self.get_users_data(data), users_list))
                 shared_to_data = ",".join(data_list)
                 file_data.shared_to = shared_to_data
                 file_data.save()
@@ -469,25 +502,11 @@ class DeleteFile(viewsets.ModelViewSet):
                                                "Success delete file"), status=200)
 
 
-class TeamPage(CorePageNumberPagination):
-
-    def get_permission_return_data(self, data) -> dict:
-        return {"label": permission_message_return(self.request.META.get('HTTP_LANGUAGE', ''), data.name),
-                "value": data.name}
-
-    def query_data_add(self) -> list:
-        permission_list = models.Permission.objects.all()
-        permission_data_list = list(map(lambda data: self.get_permission_return_data(data), permission_list))
-        return [
-            ("permission", permission_data_list)
-        ]
-
 class TeamList(viewsets.ModelViewSet):
     """
         list:
             Response a team data list（all）
     """
-    pagination_class = TeamPage
     filter_backends = [DjangoFilterBackend, OrderingFilter, ]
     ordering_fields = ['id', "name", "created_time", "updated_time", ]
     filter_class = filter.TeamFilter
@@ -795,9 +814,10 @@ class APIList(viewsets.ModelViewSet):
         list:
             Response a api data list（all）
     """
+    pagination_class = APIPageNumberPagination
     permission_classes = [NormalPermission, ]
     filter_backends = [DjangoFilterBackend, OrderingFilter, ]
-    ordering_fields = ['id', "func_name", "created_time", "updated_time", ]
+    ordering_fields = ['id', "api", "func_name", "created_time", "updated_time", ]
     filter_class = filter.APIFilter
 
     def get_queryset(self):
@@ -805,8 +825,8 @@ class APIList(viewsets.ModelViewSet):
             query_data = {'is_delete': False}
             search = self.request.query_params.get('search')
             if search:
-                query_data['func_name__icontains'] = search
-            return models.API.objects.filter(**query_data).order_by('-id')
+                query_data['api__icontains'] = search
+            return models.API.objects.filter(**query_data).order_by('id')
         else:
             return models.API.objects.none()
 

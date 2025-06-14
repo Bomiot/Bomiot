@@ -4,7 +4,7 @@ import shutil
 from pathlib import Path
 from tomlkit import parse, dumps
 from configparser import ConfigParser
-
+from .create_key import auth_key_get
 
 def create_file(folder: str):
     """
@@ -16,13 +16,12 @@ def create_file(folder: str):
     file_path = join(current_path.parent, 'file')
     if folder == '':
         folder = 'bomiot'
-    if exists(join(working_space, 'setup.ini')) is False:
-        shutil.copy2(join(file_path, 'setup.ini'), working_space)
-        if folder != 'bomiot':
-            setup_config = ConfigParser()
-            setup_config.read(join(working_space, 'setup.ini'), encoding='utf-8')
-            setup_config.set('project', 'name', folder)
-            setup_config.write(open(join(working_space, 'setup.ini'), "wt"))
+    shutil.copy2(join(file_path, 'setup.ini'), working_space)
+    if folder != 'bomiot':
+        setup_config = ConfigParser()
+        setup_config.read(join(working_space, 'setup.ini'), encoding='utf-8')
+        setup_config.set('project', 'name', folder)
+        setup_config.write(open(join(working_space, 'setup.ini'), "wt"))
     if exists(join(working_space, 'pyproject.toml')) is False:
         if folder != 'bmoiot':
             with open(join(file_path, 'pyproject.toml'), 'r', encoding='utf-8') as pip_file:
@@ -31,7 +30,7 @@ def create_file(folder: str):
             deploy_pip['tool']['poetry']['version'] = '0.0.1'
             with open(join(working_space, 'pyproject.toml'), 'w', encoding='utf-8') as user_pip_file:
                 user_pip_file.write(dumps(deploy_pip))
-
+    auth_key_get()
     if exists(join(working_space, '.gitignore')) is False:
         shutil.copy2(join(file_path, '.gitignore'), working_space)
 
@@ -53,4 +52,10 @@ def create_file(folder: str):
     working_config.set('space', 'name', working_space)
     working_config.write(open(working_path, "wt"))
 
-    print("Welcome to bomiot")
+    print('')
+    print("  $$$$$$    $$$$$   $$$       $$$  $$   $$$$$   $$$$$$")
+    print("  $$   $$  $$   $$  $$ $     $ $$  $$  $$   $$    $$")
+    print("  $$$$$$$  $$   $$  $$  $   $  $$  $$  $$   $$    $$")
+    print("  $$   $$  $$   $$  $$   $ $   $$  $$  $$   $$    $$")
+    print("  $$$$$$    $$$$$   $$    $    $$  $$   $$$$$     $$")
+    print('')

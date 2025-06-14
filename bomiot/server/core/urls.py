@@ -11,9 +11,8 @@ from bomiot.server.function import asn
 from bomiot.server.function import dn
 from bomiot.server.function import purchase
 from bomiot.server.function import bar
-from bomiot.server.core.scheduler import sm
-from bomiot.server.core.observer import ob
-from bomiot.server.core.server_monitor import start_monitoring
+from bomiot.server.function import fee
+from bomiot.server.function import driver
 
 
 urlpatterns = [
@@ -139,12 +138,20 @@ urlpatterns += [
 ]
 
 urlpatterns += [
+    path(r'fee/', fee.FeeList.as_view({"get": "list"}), name="Get Fee List"),
+    path(r'fee/create/', fee.FeeCreate.as_view({"post": "create"}), name="Create Fee"),
+    path(r'fee/update/', fee.FeeUpdate.as_view({"post": "create"}), name="Update Fee"),
+    path(r'fee/delete/', fee.FeeDelete.as_view({"post": "create"}), name="Delete Fee")
+]
+
+urlpatterns += [
+    path(r'driver/', driver.DriverList.as_view({"get": "list"}), name="Get Driver List"),
+    path(r'driver/create/', driver.DriverCreate.as_view({"post": "create"}), name="Create Driver"),
+    path(r'driver/update/', driver.DriverUpdate.as_view({"post": "create"}), name="Update Driver"),
+    path(r'driver/delete/', driver.DriverDelete.as_view({"post": "create"}), name="Delete Driver")
+]
+
+urlpatterns += [
     path(r'api/', views.APIList.as_view({"get": "list"})),
     path(r'api/change/', views.APIChange.as_view({"post": "create"})),
 ]
-
-# Start Scheduler
-if os.environ.get('RUN_MAIN') == 'true':
-    start_monitoring()
-    sm.start()
-    ob.start()

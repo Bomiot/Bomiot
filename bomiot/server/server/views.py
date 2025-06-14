@@ -2,7 +2,7 @@ import json, orjson
 import mimetypes
 import os
 from django.conf import settings
-from django.http import StreamingHttpResponse, JsonResponse
+from django.http import StreamingHttpResponse, JsonResponse, HttpResponse
 from wsgiref.util import FileWrapper
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -16,7 +16,6 @@ from os import listdir
 import importlib.util
 from pathlib import Path
 from django.urls import get_resolver, URLPattern, URLResolver
-import pkg_resources
 
 User = get_user_model()
 
@@ -62,27 +61,31 @@ def check_token(request):
     return JsonResponse(context)
 
 
-def favicon(request):
-    if settings.PROJECT_NAME == 'bomiot' or settings.PROJECT_NAME == '':
-        path = join(join(join(join(join(settings.BASE_DIR.parent, 'templates'), 'dist'), 'spa'), 'icons'), 'logo.png')
+def mdurl(request, mddocs):
+    language = request.META.get('HTTP_LANUAGE', '')
+    if not mddocs.endswith('.md'):
+        return JsonResponse({'detail': others_message_return(language, 'Only support markdown file')})
+    folder_path = Path(settings.MEDIA_ROOT)
+    all_files = [f.name for f in folder_path.iterdir() if f.is_file()]
+    start_words = mddocs.split('.')
+    md_check_list_all = []
+    md_check_list_only = []
+    for i in all_files:
+        if i == mddocs:
+            md_check_list_only.append(i)
+        else:
+            if i.startswith(start_words[0]) and i.endswith('.md'):
+                md_check_list_all.append(i)
+    if len(md_check_list_only) == 1:
+        return HttpResponse(f"media/{mddocs}")
     else:
-        check_path = False
-        current_path = [p for p in listdir(settings.WORKING_SPACE) if isdir(p)]
-        for module_name in current_path:
-            if module_name == settings.PROJECT_NAME:
-                project_path = join(settings.WORKING_SPACE, settings.PROJECT_NAME)
-                path = join(join(join(join(join(project_path, 'templates'), 'dist'), 'spa'), 'icons'), 'logo.png')
-                check_path = True
-            else:
-                continue
-        if check_path is False:
-            for module in [pkg.key for pkg in pkg_resources.working_set]:
-                if module == settings.PROJECT_NAME:
-                    project_path = importlib.util.find_spec(settings.PROJECT_NAME).origin
-                    list_project_path = Path(project_path).resolve().parent
-                    path = join(join(join(join(join(list_project_path, 'templates'), 'dist'), 'spa'), 'icons'), 'logo.png')
-                else:
-                    continue
+        if len(md_check_list_all) == 0:
+            return JsonResponse({'detail': others_message_return(language, 'Markdown file not found')})
+        return HttpResponse(f"media/{md_check_list_all[0]}")
+    
+    
+def favicon(request):
+    path = join(join(settings.MEDIA_ROOT, 'img'), 'logo.png')
     content_type, encoding = mimetypes.guess_type(path)
     resp = StreamingHttpResponse(FileWrapper(open(path, 'rb')), content_type=content_type)
     resp['Cache-Control'] = 'max-age=864000000000'
@@ -115,7 +118,9 @@ def statics(request):
             else:
                 continue
         if check_path is False:
-            for module in [pkg.key for pkg in pkg_resources.working_set]:
+            all_packages = [dist.metadata['Name'] for dist in importlib.metadata.distributions()]
+            res_pkg_list = list(set([name.lower() for name in all_packages]))
+            for module in [pkg for pkg in res_pkg_list]:
                 if module == settings.PROJECT_NAME:
                     project_path = importlib.util.find_spec(settings.PROJECT_NAME).origin
                     list_project_path = Path(project_path).resolve().parent
@@ -148,31 +153,38 @@ def get_all_url(resolver=None, pre='/'):
         if isinstance(r, URLResolver):
             yield from get_all_url(r, pre + str(r.pattern))
 
-
-def permission_check(data):
-    api_list = url_ignore()
+def permission_check(data, perm_obj_dict, api_list, user_objs):
     if str(data[0]) not in api_list and str(data[1]) != 'None':
-        if Permission.objects.filter(api=str(data[0]), name=str(data[1])).exists() is False:
-            Permission.objects.create(api=str(data[0]), name=str(data[1]))
-        user_data = User.objects.filter(is_superuser=True)
-        for i in user_data:
-            i.permission[str(data[1])] = str(data[0])
-        User.objects.bulk_update(user_data, ['permission'])
-        return data
+        perm_obj, created = perm_obj_dict.get((str(data[0]), str(data[1])))
+        if not perm_obj:
+            perm_obj = Permission(api=str(data[0]), name=str(data[1]))
+            perm_obj_dict[(str(data[0]), str(data[1]))] = perm_obj
+        for user in user_objs:
+            user.permission[str(data[1])] = str(data[0])
+        return perm_obj
 
 def init_permission():
     try:
-        Permission.objects.filter().delete()
-        user_data = list(User.objects.filter(is_superuser=True))
+        Permission.objects.all().delete()
+        user_objs = list(User.objects.filter(is_superuser=True))
         media_root = settings.MEDIA_ROOT
-        for i in user_data:
-            user_folder = join(media_root, i.username)
+        for user in user_objs:
+            user_folder = join(media_root, user.username)
             if not exists(user_folder):
                 os.makedirs(user_folder)
-            i.permission = {}
-        User.objects.bulk_update(user_data, ['permission'])
-
-        api_list = (permission_check(data) for data in get_all_url())
-        list(api_list)
+            user.permission = {}
+        all_api_info = list(get_all_url())
+        api_list = set(url_ignore())
+        perm_obj_dict = {}
+        perm_objs = []
+        for data in all_api_info:
+            if str(data[0]) not in api_list and str(data[1]) != 'None':
+                perm_obj = Permission(api=str(data[0]), name=str(data[1]))
+                perm_objs.append(perm_obj)
+                for user in user_objs:
+                    user.permission[str(data[1])] = str(data[0])
+        if perm_objs:
+            Permission.objects.bulk_create(perm_objs, batch_size=200)
+        User.objects.bulk_update(user_objs, ['permission'], batch_size=100)
     except Exception as e:
         print(f"Error initializing permissions: {e}")

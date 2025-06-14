@@ -136,12 +136,14 @@ import { useI18n } from 'vue-i18n'
 import { get, post } from 'boot/axios'
 import { useTokenStore } from 'stores/token'
 import { useLanguageStore } from 'stores/language'
+import { usePermissionStore } from 'stores/permission'
 import emitter from 'boot/bus.js'
 
 const { t } = useI18n()
 const $q = useQuasar()
 const tokenStore = useTokenStore()
 const langStore = useLanguageStore()
+const permissionList = usePermissionStore()
 
 const columns = computed(() => [
   {
@@ -158,7 +160,6 @@ const columns = computed(() => [
 
 const token = computed(() => tokenStore.token)
 const rows = ref([])
-const permissionList = ref([])
 const search = ref('')
 const rowsCount = ref(0)
 
@@ -201,7 +202,6 @@ function onRequest(props) {
       .then((res) => {
         rows.value = res.results
         rowsCount.value = res.count
-        permissionList.value = res.permission
       })
       .catch((err) => {
         $q.notify({
@@ -276,7 +276,7 @@ function setPermission(e) {
       type: 'checkbox',
       model: Object.keys(rows.value[e].permission),
       inline: true,
-      items: permissionList.value
+      items: permissionList.permissionGet
     },
     cancel: true
   })
@@ -330,7 +330,6 @@ function listenToEvent() {
   emitter.on('needLogin', (payload) => {
     if (payload) {
       rows.value = []
-      permissionList.value = []
       search.value = ''
       rowsCount.value = 0
     }

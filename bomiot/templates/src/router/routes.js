@@ -5,7 +5,7 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', name: 'home', component: () => import('pages/IndexPage.vue') },
-      { path: 'readme', component: () => import('pages/ReadMe.vue') },
+      { path: 'readme', component: () => import('components/md/ReadMe.vue') },
       { path: 'upload', component: () => import('pages/UploadCenter.vue') },
       { path: 'doc', component: () => import('pages/DocCenter.vue') },
       { path: 'table', component: () => import('pages/TableReader.vue') },

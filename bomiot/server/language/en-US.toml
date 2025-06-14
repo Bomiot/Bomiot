@@ -65,6 +65,18 @@
 "Create Bar"="Create Bar"
 "Update Bar"="Update Bar"
 "Delete Bar"="Delete Bar"
+"Get Fee List"="Get Fee List"
+"Create Fee"="Create Fee"
+"Update Fee"="Update Fee"
+"Delete Fee"="Delete Fee"
+"Get Driver List"="Get Driver List"
+"Create Driver"="Create Driver"
+"Update Driver"="Update Driver"
+"Delete Driver"="Delete Driver"
+"Get Example List"="Get Example List"
+"Create Example"="Create Example"
+"Update Example"="Update Example"
+"Delete Example"="Delete Example"
 
 
 
@@ -132,3 +144,6 @@
 "Network Info"="Network Info"
 "Bytes Sent"="Bytes Sent"
 "Bytes Received"="Bytes Received"
+"Success upload files"="Success upload files"
+"File type not allowed"="File type not allowed"
+"File size exceeds limit"="File size exceeds limit"

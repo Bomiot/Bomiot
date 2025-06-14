@@ -99,15 +99,19 @@
 
 
 <script setup>
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useAppNameStore } from 'stores/appName'
 import { userightDrawerStore } from "stores/rightDrawer"
 import { useleftDrawerStore } from "stores/leftDrawer"
 import { useTokenStore } from "stores/token"
+import { useExpireStore } from "stores/expire"
+import { usePermissionStore } from 'src/stores/permission'
+import { useLanguageStore } from 'stores/language'
 import { useI18n } from "vue-i18n"
 import { useQuasar, openURL } from "quasar"
 import { useRouter } from 'vue-router'
 import { post } from 'boot/axios'
+import axios from 'axios'
 import DarkMode from 'components/dark/DarkMode.vue'
 import LangChoice from 'components/lang/LangChoice.vue'
 import TabList from 'components/TabList.vue'
@@ -121,6 +125,9 @@ const appNameStore = useAppNameStore()
 const rightDrawerStore = userightDrawerStore()
 const leftDrawerStore = useleftDrawerStore()
 const tokenStore = useTokenStore()
+const expireStore = useExpireStore()
+const permissionStore = usePermissionStore()
+const langStore = useLanguageStore()
 
 const loginForm = ref(false)
 const isPwd = ref(true)
@@ -167,13 +174,53 @@ function openLink (e) {
   openURL(e)
 }
 
+function getUrl () {
+  var domain = window.location.hostname
+  if (domain === 'localhost' || domain === '127.0.0.1' ) {
+    return 'http://127.0.0.1:8008/core/user/permission/'
+  } else {
+    return 'core/user/permission/'
+  }
+}
+
+function getPermission() {
+  var url = getUrl()
+  axios.get(url, {
+    params: {},
+    headers: {
+      'token': tokenStore.tokenGet,
+      'language': langStore.langData
+    }
+  })
+  .then((res) => {
+    permissionStore.permissionChange(res.data.results)
+  })
+}
+
 onMounted(() => {
   tokenStore.tokenCheck()
   listenToEvent()
+  var expire_date = expireStore.expireDayGet
+  if (expire_date <= 0) {
+    $q.notify({
+      type: 'error',
+      timeout: 10000,
+      message: t('expired')
+    })
+  }
+  if (expire_date > 0 && expire_date <= 3) {
+    $q.notify({
+      type: 'warning',
+      timeout: 10000,
+      message: t('expireNotice', { days: expire_date })
+    })
+  }
+  getPermission()
 })
 
 onBeforeUnmount(() => {
   emitter.off('needLogin')
+  emitter.off('expire')
 })
 
 function listenToEvent() {
@@ -181,8 +228,19 @@ function listenToEvent() {
     if (payload) {
       tokenStore.tokenChange('')
     }
+  })
+  emitter.on('expire', (payload) => {
+    if (payload) {
+      expireStore.expireChange(payload)
+    }
   });
 }
+
+watch(() => langStore.langData, val => {
+  if (val) {
+    getPermission()
+  }
+})
 
 </script>
 

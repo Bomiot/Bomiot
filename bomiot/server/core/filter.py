@@ -63,6 +63,16 @@ class UserFilter(FilterSet):
         filter_overrides = JSONFIELD_FILTER_OVERRIDE
 
 
+class PermissionFilter(FilterSet):
+    """
+    Permission filter
+    """
+    class Meta:
+        model = models.Permission
+        fields = '__all__'
+        filter_overrides = JSONFIELD_FILTER_OVERRIDE
+
+
 class FileFilter(FilterSet):
     """
     File filter
@@ -270,5 +280,25 @@ class BarFilter(FilterSet):
     """
     class Meta:
         model = models.Bar
+        fields = '__all__'
+        filter_overrides = JSONFIELD_FILTER_OVERRIDE
+
+
+class FeeFilter(FilterSet):
+    """
+    Fee filter
+    """
+    class Meta:
+        model = models.Fee
+        fields = '__all__'
+        filter_overrides = JSONFIELD_FILTER_OVERRIDE
+
+
+class DriverFilter(FilterSet):
+    """
+    Driver filter
+    """
+    class Meta:
+        model = models.Driver
         fields = '__all__'
         filter_overrides = JSONFIELD_FILTER_OVERRIDE

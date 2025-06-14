@@ -6,7 +6,7 @@ import shutil
 from pathlib import Path
 from .init import create_file
 from configparser import ConfigParser
-import pkg_resources
+import importlib
 from .copyfile import copy_files
 from .changeapps import create_plugins_apps_py
 
@@ -24,7 +24,7 @@ def plugins(folder: str):
         if exists(plugins_path):
             print('Plugins directory already exists')
         else:
-            if sys.argv[2] in [pkg.key for pkg in pkg_resources.working_set]:
+            if sys.argv[2] in [dist.metadata['Name'] for dist in importlib.metadata.distributions()]:
                 print('Plugins directory already exists')
             else:
                 os.makedirs(plugins_path)

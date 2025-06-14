@@ -65,31 +65,34 @@ class MyHandler(FileSystemEventHandler):
         detail = Path(data)
         user_check = User.objects.filter(username=detail.parent.name)
         if user_check.exists():
-            old_instance = Files.objects.filter(name=detail.name, owner=detail.parent.name).first()
-            new_instance = Files.objects.filter(name=detail.name, owner=detail.parent.name).first()
-            new_instance.size=readable_file_size(detail.stat().st_size)
-            new_instance.save()
-            instance = Files.objects.filter(id=old_instance.id).first()
-            data_before_update = model_to_dict(old_instance)
-            data_after_update = model_to_dict(instance)
-            data_before_update['created_time'] = old_instance.created_time
-            data_after_update['created_time'] = instance.created_time
-            data_before_update['updated_time'] = old_instance.updated_time
-            data_after_update['updated_time'] = instance.updated_time
-            updated_fields = compare_dicts(data_before_update, data_after_update)
-            bomiot_signals.send(msg={
-                'models': 'Files',
-                'type': 'update',
-                'data': {
-                    'id': instance.id,
-                    'name': instance.name,
-                    'type': instance.type,
-                    'size': instance.size,
-                    'owner': instance.owner,
-                    'shared_to': instance.shared_to
-                },
-                'updated_fields': updated_fields
-            })
+            file_data_check = Files.objects.filter(name=detail.name, owner=detail.parent.name)
+            if file_data_check.exists():
+                old_instance = file_data_check.first()
+                new_instance = Files.objects.filter(name=detail.name, owner=detail.parent.name).first()
+                new_instance.size=readable_file_size(detail.stat().st_size)
+                new_instance.is_delete = False
+                new_instance.save()
+                instance = Files.objects.filter(id=old_instance.id).first()
+                data_before_update = model_to_dict(old_instance)
+                data_after_update = model_to_dict(instance)
+                data_before_update['created_time'] = old_instance.created_time
+                data_after_update['created_time'] = instance.created_time
+                data_before_update['updated_time'] = old_instance.updated_time
+                data_after_update['updated_time'] = instance.updated_time
+                updated_fields = compare_dicts(data_before_update, data_after_update)
+                bomiot_signals.send(msg={
+                    'models': 'Files',
+                    'type': 'update',
+                    'data': {
+                        'id': instance.id,
+                        'name': instance.name,
+                        'type': instance.type,
+                        'size': instance.size,
+                        'owner': instance.owner,
+                        'shared_to': instance.shared_to
+                    },
+                    'updated_fields': updated_fields
+                })
 
     def deleted_file(self, data):
         detail = Path(data)

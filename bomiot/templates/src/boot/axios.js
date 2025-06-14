@@ -9,14 +9,14 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    let token = '';
+    let token = ''
     if (LocalStorage.has('token')) {
-      var tokenCheck = JSON.parse(LocalStorage.getItem('token'));
+      var tokenCheck = JSON.parse(LocalStorage.getItem('token'))
       if (tokenCheck !== '') {
         for (const key in tokenCheck) {
           if (key === 'token') {
-            const value = tokenCheck[key];
-            token = value;
+            const value = tokenCheck[key]
+            token = value
           }
         }
       } else {
@@ -25,35 +25,36 @@ api.interceptors.request.use(
             type: 'warning',
             message: 'Please Login First'
           })
-          return Promise.reject(new Error('Please Login First'));
+          return Promise.reject(new Error('Please Login First'))
         }
       }
     }
-    config.headers.token = token;
-    let lang = 'en-US';
+    config.headers.token = token
+    let lang = 'en-US'
     if (LocalStorage.has('language')) {
-      const langCheck = JSON.parse(LocalStorage.getItem('language'));
+      const langCheck = JSON.parse(LocalStorage.getItem('language'))
       if (langCheck !== '') {
         for (const key in langCheck) {
           if (key === 'langData') {
-            const LangValue = langCheck[key];
-            lang = LangValue;
+            const LangValue = langCheck[key]
+            lang = LangValue
           }
         }
       }
     }
-    config.headers.language = lang;
-    Loading.show();
-    return config;
+    config.headers.language = lang
+    Loading.show()
+    return config
   },
   function (error) {
-    Loading.hide();
-    return Promise.reject(error);
+    Loading.hide()
+    return Promise.reject(error)
   }
 );
 
 api.interceptors.response.use(
-  function (response) {
+  (response) => {
+    emitter.emit('expire', parseInt(response.headers.expire))
     if (response.data.detail) {
       Notify.create({
         type: 'warning',
