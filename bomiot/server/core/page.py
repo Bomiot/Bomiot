@@ -3,6 +3,7 @@ import orjson
 import time
 from os.path import join, exists
 from tomlkit import parse
+import random
 
 from collections import OrderedDict
 from rest_framework.pagination import PageNumberPagination
@@ -75,7 +76,7 @@ class PermissionPageNumberPagination(PageNumberPagination):
     page_size = 1000
     page_size_query_param = "max_page"
     max_page_size = 10000
-    time_ns = int(time.time_ns()) + 1
+    time_ns = int(time.time_ns()) + random.randint(0, 10000)
 
     def get_previous_link(self):
         """
@@ -235,7 +236,7 @@ class APIPageNumberPagination(PageNumberPagination):
     page_size = 30
     page_size_query_param = "max_page"
     max_page_size = 1000
-    time_ns = int(time.time_ns()) + 2
+    time_ns = int(time.time_ns()) + random.randint(0, 10000)
 
     def get_previous_link(self):
         """

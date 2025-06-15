@@ -15,8 +15,7 @@ if os.path.exists(join(getcwd(), 'setup.ini')) is False:
     shutil.copy2(join(join(join(current_path.parent.parent.parent, 'cmd'), 'file'), 'setup.ini'), join(getcwd()))
     config = ConfigParser()
     config.read(join(getcwd(), 'setup.ini'))
-    config.set('site', 'name', 'bomiot')
-    config.set('db_name', 'name', 'bomiot')
+    config.set('project', 'name', 'bomiot')
     with open(join(getcwd(), 'setup.ini'), 'w') as setup_file:
         config.write(setup_file)
 

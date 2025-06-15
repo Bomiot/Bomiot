@@ -474,14 +474,6 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
-"@lexmin0412/markdown-it-echarts@^0.1.5":
-  version "0.1.5"
-  resolved "https://registry.npmmirror.com/@lexmin0412/markdown-it-echarts/-/markdown-it-echarts-0.1.5.tgz#a5e4f1c20a1313bffdef0a8aca0a0e91ebe45995"
-  integrity sha512-b4pSiNhIVpbHccDGnib6lK83vty3KEj4sUCShfwmM4lhA/2684790gKqGNEAV2w/h7euAoD6rBTxMU18YOHljQ==
-  dependencies:
-    echarts "^5.6.0"
-    markdown-it "^14.1.0"
-
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
   resolved "https://registry.npmmirror.com/@nodelib/fs.scandir/-/fs.scandir-2.1.5.tgz#7619c2eb21b25483f6d167548b4cfd5a7488c3d5"
@@ -2777,13 +2769,13 @@ markdown-it-attrs@^4.1.6:
   resolved "https://registry.npmmirror.com/markdown-it-attrs/-/markdown-it-attrs-4.3.1.tgz#1e1f9bd2c87276d8f4ed74ad4268df428b7deee6"
   integrity sha512-/ko6cba+H6gdZ0DOw7BbNMZtfuJTRp9g/IrGIuz8lYc/EfnmWRpaR3CFPnNbVz0LDvF8Gf1hFGPqrQqq7De0rg==
 
-markdown-it-code-copy@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.npmmirror.com/markdown-it-code-copy/-/markdown-it-code-copy-0.1.2.tgz#603907325a9bcdf1a1f56c9f3accd68f84994d7d"
-  integrity sha512-r9efPsnFSb2zW5dDZz89lpGgxv0lwyKMp3QDtBy+14Mk7tA2Ipfk4r3AJc/4z67LyLkiK/91juSnQWT2ft95RA==
+markdown-it-code-copy@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.npmmirror.com/markdown-it-code-copy/-/markdown-it-code-copy-0.2.2.tgz#dbe9146ee547ba1a5073fe825d34118ac5934e9a"
+  integrity sha512-V9A8SDFtuz5JMhTgFtBPoDSu8czv14SmI/mVQcLuAiV1JejuqhczRXbOZLkrsSatDx12t3/tXQcA7lJdxoCW1A==
   dependencies:
     clipboard "^2.0.6"
-    lodash "^4.17.15"
+    lodash.merge "^4.6.2"
 
 markdown-it-container@^4.0.0:
   version "4.0.0"
@@ -2839,7 +2831,7 @@ markdown-it-task-lists@^2.1.1:
   resolved "https://registry.npmmirror.com/markdown-it-task-lists/-/markdown-it-task-lists-2.1.1.tgz#f68f4d2ac2bad5a2c373ba93081a1a6848417088"
   integrity sha512-TxFAc76Jnhb2OUu+n3yz9RMu4CwGfaT788br6HhEDlvWfdeJcLUsxk1Hgw2yJio0OXsxv7pyIPmvECY7bMbluA==
 
-markdown-it@^14.0.0, markdown-it@^14.1.0:
+markdown-it@^14.0.0:
   version "14.1.0"
   resolved "https://registry.npmmirror.com/markdown-it/-/markdown-it-14.1.0.tgz#3c3c5992883c633db4714ccb4d7b5935d98b7d45"
   integrity sha512-a54IwgWPaeBCAAsv13YgmALOF1elABB08FxO9i+r4VFk5Vl4pKokRPeX8u5TCgSsPi6ec1otfLjdOpVcgbpshg==

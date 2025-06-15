@@ -1,11 +1,11 @@
 <template>
   <q-page class="flex flex-top">
-    <div id="markdownData" v-html="markdownDom" style="margin-top: 25px; width: 95%; max-width: 95%"></div>
+    <div id="markdownData" class='markdownStyle' v-html="markdownDom" style="margin-top: 25px; width: 95%; max-width: 95%"></div>
   </q-page>
 </template>
 
 <script setup>
-import { computed, onBeforeUnmount, onMounted, watch, ref, nextTick } from 'vue'
+import { computed, onBeforeUnmount, onMounted, watch, ref } from 'vue'
 import { useMDDataStore } from "stores/mdDocs"
 import { useAppNameStore } from "stores/appName"
 import { userightDrawerStore } from "stores/rightDrawer"
@@ -24,7 +24,6 @@ import markdownItDeflist from 'markdown-it-deflist'
 import markdownItAbbr from 'markdown-it-abbr'
 import markdownItMergeCells from 'markdown-it-merge-cells'
 import markdownItCodeCopy from 'markdown-it-code-copy'
-import markdownItEcharts from '@lexmin0412/markdown-it-echarts';
 import 'highlight.js/styles/monokai.css'
 import { useMeta, useQuasar } from "quasar"
 import { useLanguageStore } from 'stores/language'
@@ -45,32 +44,24 @@ const description = ref('')
 const keywords = ref('')
 const echartsInstances = new Map()
 
-function renderEcharts(theme) {
-  document.querySelectorAll('.echarts').forEach(el => {
-    if (echartsInstances.has(el)) {
-      echarts.dispose(echartsInstances.get(el));
-      echartsInstances.delete(el);
-    }
-    const option = JSON.parse(decodeURIComponent(el.dataset.option));
-    const chart = echarts.init(el, theme);
-    chart.setOption(option);
-    echartsInstances.set(el, chart);
-  });
-}
-
 function MDHtml() {
   if ($q.dark.isActive) {
     const md = new MarkdownIt({
       html: true,
       linkify: true,
       brakes: true,
-      typography: true
-    })
+      typography: true,
+  })
     md.use(markdownItAttrs)
     md.use(markdownItKatex)
     md.use(emoji)
     md.use(markdownItMergeCells)
-    md.use(markdownItCodeCopy)
+    md.use(markdownItCodeCopy, {
+      containerClass: 'markdown-copy-code-container',
+      buttonClass: 'markdown-copy-code-button',
+      copySVGClass: 'markdown-copy-code-copy',
+      doneSVGClass: 'markdown-copy-code-done'
+    })
     md.use(markdownItContainer, 'warning', {
       validate: function (params) {
         return params
@@ -91,11 +82,6 @@ function MDHtml() {
     md.use(markdownItFootnote)
     md.use(markdownItTaskLists, {})
     md.use(markdownItHighlight)
-    md.use(markdownItEcharts, {
-      className: 'echarts',
-      width: '80%',
-      height: '400px'
-    })
     const html = md.render(source.value)
     source.value.split('\r').some((item => {
       if (item.length > 4) {
@@ -110,21 +96,23 @@ function MDHtml() {
       }
     }))
     markdownDom.value = html
-    nextTick(() => {
-      const theme = $q.dark.isActive ? 'dark' : 'light';
-      renderEcharts(theme);
-    })
   } else {
     const md = new MarkdownIt({
       html: true,
       linkify: true,
-      typography: true
+      brakes: true,
+      typography: true,
     })
     md.use(markdownItAttrs)
     md.use(markdownItKatex)
     md.use(emoji)
     md.use(markdownItMergeCells)
-    md.use(markdownItCodeCopy)
+    md.use(markdownItCodeCopy, {
+      containerClass: 'markdown-copy-code-container',
+      buttonClass: 'markdown-copy-code-button',
+      copySVGClass: 'markdown-copy-code-copy',
+      doneSVGClass: 'markdown-copy-code-done'
+    })
     md.use(markdownItContainer, 'warning', {
       validate: function (params) {
         return params
@@ -145,11 +133,6 @@ function MDHtml() {
     md.use(markdownItFootnote)
     md.use(markdownItTaskLists, {})
     md.use(markdownItHighlight)
-    md.use(markdownItEcharts, {
-      className: 'echarts',
-      width: '80%',
-      height: '400px'
-    })
     const html = md.render(source.value)
     source.value.split('\r').some((item => {
       if (item.length > 4) {
@@ -164,10 +147,6 @@ function MDHtml() {
       }
     }))
     markdownDom.value = html
-    nextTick(() => {
-      const theme = $q.dark.isActive ? 'dark' : 'light';
-      renderEcharts(theme);
-    })
   }
 }
 
@@ -225,9 +204,6 @@ onBeforeUnmount(() => {
 watch(() => $q.dark.isActive, val => {
   darkShow.value = val
   mdDataChange()
-  nextTick(() => {
-    renderEcharts(val ? 'dark' : 'light');
-  })
 })
 
 watch(() => langStore.langData, val => {

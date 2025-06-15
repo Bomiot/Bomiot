@@ -5,6 +5,15 @@
   <h1>Bomiot</h1>
   <p>一个APP，你可以做任何事</p>
 
+```mermaid
+graph TD;
+  A-->B;
+  A-->C;
+  B-->D;
+  C-->D;
+```
+
+
 <!-- Badges -->
 ![License: APLv2](https://img.shields.io/github/license/Bomiot/Bomiot)
 ![Release Version (latest Version)](https://img.shields.io/github/v/release/Bomiot/Bomiot?color=orange&include_prereleases)
