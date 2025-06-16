@@ -50,6 +50,7 @@ export default {
   updated_time: '更新时间',
   action: '操作',
   confirmnotice: '删除数据不可逆，请确认操作！！！',
+  contents: '目录',
   menuTab: {
     standard: '基础',
     server: '服务器',

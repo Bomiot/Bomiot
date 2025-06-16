@@ -50,6 +50,7 @@ export default {
   updated_time: 'Updated Time',
   action: 'Action',
   confirmnotice: 'Delete data can not revert, please confirm you want to delete it!!!',
+  contents: 'Contents',
   menuTab: {
     standard: 'Standard',
     server: 'Server',

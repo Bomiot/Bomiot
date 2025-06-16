@@ -1,13 +1,23 @@
 <template>
   <q-page class="flex flex-top">
-    <div id="markdownData" class='markdownStyle' v-html="markdownDom" style="margin-top: 25px; width: 95%; max-width: 95%"></div>
+    <div id="markdownData" :class="[$q.dark.isActive ? 'markdownStyle-dark' : 'markdownStyle', { 'fade-in': markdownDom }]" v-html="markdownDom" style="margin-top: 25px; width: 80%; max-width: 80%"></div>
+    <div :class="[$q.dark.isActive ? 'toc-container-dark' : 'toc-container']" v-if="toc.length > 0">
+      <div class="toc-title">{{ t('contents') }}</div>
+      <div class="toc-content">
+        <div v-for="(item, index) in toc"
+             :key="index"
+             :class="['toc-item', `toc-level-${item.level}`]">
+          {{ item.text }}
+        </div>
+      </div>
+    </div>
   </q-page>
 </template>
 
 <script setup>
 import { computed, onBeforeUnmount, onMounted, watch, ref } from 'vue'
 import { useMDDataStore } from "stores/mdDocs"
-import { useAppNameStore } from "stores/appName"
+// import { useAppNameStore } from "stores/appName"
 import { userightDrawerStore } from "stores/rightDrawer"
 import { get } from 'boot/axios'
 import MarkdownIt from 'markdown-it'
@@ -22,27 +32,45 @@ import markdownItIns from 'markdown-it-ins'
 import markdownItMark from 'markdown-it-mark'
 import markdownItDeflist from 'markdown-it-deflist'
 import markdownItAbbr from 'markdown-it-abbr'
-import markdownItMergeCells from 'markdown-it-merge-cells'
 import markdownItCodeCopy from 'markdown-it-code-copy'
 import 'highlight.js/styles/monokai.css'
 import { useMeta, useQuasar } from "quasar"
 import { useLanguageStore } from 'stores/language'
-import * as echarts from 'echarts'
+import hljs from 'highlight.js'
+import { useI18n } from "vue-i18n"
 
-
+const { t } = useI18n()
 const $q = useQuasar()
 const mdStore = useMDDataStore()
 const langStore = useLanguageStore()
-const appNameStore = useAppNameStore()
+// const appNameStore = useAppNameStore()
 const rightDrawerStore = userightDrawerStore()
 
-const source = computed(() => mdStore.mdDocs)
+const source = computed(() => mdStore.mdDocsGet)
 const markdownDom = ref('')
 const darkShow = ref(false)
 const title = ref('')
 const description = ref('')
 const keywords = ref('')
-const echartsInstances = new Map()
+const toc = ref([])
+
+function generateToc(html) {
+  const parser = new DOMParser()
+  const doc = parser.parseFromString(html, 'text/html')
+  const headings = doc.querySelectorAll('h1, h2, h3, h4, h5, h6')
+  const tocItems = []
+
+  headings.forEach((heading, index) => {
+    const level = parseInt(heading.tagName.charAt(1))
+    const text = heading.textContent
+    const id = `heading-${index}`
+    heading.id = id
+    heading.style.scrollMarginTop = '80px'
+    tocItems.push({ level, text, id })
+  })
+
+  toc.value = tocItems
+}
 
 function MDHtml() {
   if ($q.dark.isActive) {
@@ -51,16 +79,27 @@ function MDHtml() {
       linkify: true,
       brakes: true,
       typography: true,
-  })
+      highlight: function (str, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+          try {
+            return hljs.highlight(str, { language: lang }).value;
+          } catch (error) {
+            console.warn('Highlight error:', error);
+          }
+        }
+        return '';
+      }
+    })
     md.use(markdownItAttrs)
     md.use(markdownItKatex)
     md.use(emoji)
-    md.use(markdownItMergeCells)
     md.use(markdownItCodeCopy, {
       containerClass: 'markdown-copy-code-container',
       buttonClass: 'markdown-copy-code-button',
       copySVGClass: 'markdown-copy-code-copy',
-      doneSVGClass: 'markdown-copy-code-done'
+      doneSVGClass: 'markdown-copy-code-done',
+      copyIcon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>',
+      doneIcon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
     })
     md.use(markdownItContainer, 'warning', {
       validate: function (params) {
@@ -83,35 +122,38 @@ function MDHtml() {
     md.use(markdownItTaskLists, {})
     md.use(markdownItHighlight)
     const html = md.render(source.value)
-    source.value.split('\r').some((item => {
-      if (item.length > 4) {
-        item.split('#').some((res => {
-          if (res.length > 4) {
-            title.value = `${appNameStore.appName} | ${res}`
-            description.value = `${appNameStore.appName} | ${res}`
-            keywords.value = `${appNameStore.appName} | ${res}`
-          }
-        }))
-        return true
-      }
-    }))
-    markdownDom.value = html
+    generateToc(html)
+    markdownDom.value = ''
+    setTimeout(() => {
+      markdownDom.value = html
+    }, 225)
   } else {
     const md = new MarkdownIt({
       html: true,
       linkify: true,
       brakes: true,
       typography: true,
+      highlight: function (str, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+          try {
+            return hljs.highlight(str, { language: lang }).value;
+          } catch (error) {
+            console.warn('Highlight error:', error);
+          }
+        }
+        return '';
+      }
     })
     md.use(markdownItAttrs)
     md.use(markdownItKatex)
     md.use(emoji)
-    md.use(markdownItMergeCells)
     md.use(markdownItCodeCopy, {
       containerClass: 'markdown-copy-code-container',
       buttonClass: 'markdown-copy-code-button',
       copySVGClass: 'markdown-copy-code-copy',
-      doneSVGClass: 'markdown-copy-code-done'
+      doneSVGClass: 'markdown-copy-code-done',
+      copyIcon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>',
+      doneIcon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>'
     })
     md.use(markdownItContainer, 'warning', {
       validate: function (params) {
@@ -134,31 +176,33 @@ function MDHtml() {
     md.use(markdownItTaskLists, {})
     md.use(markdownItHighlight)
     const html = md.render(source.value)
-    source.value.split('\r').some((item => {
-      if (item.length > 4) {
-        item.split('#').some((res => {
-          if (res.length > 4) {
-            title.value = `${appNameStore.appName} | ${res}`
-            description.value = `${appNameStore.appName} | ${res}`
-            keywords.value = `${appNameStore.appName} | ${res}`
-          }
-        }))
-        return true
-      }
-    }))
-    markdownDom.value = html
+    generateToc(html)
+    markdownDom.value = ''
+    setTimeout(() => {
+      markdownDom.value = html
+    }, 225)
   }
 }
 
 function mdDataChange() {
   get({
     url: `md/README.${langStore.langData}.md`,
-    params: {}
+    params: {},
+    headers: {
+      'Cache-Control': 'no-cache',
+      'Pragma': 'no-cache'
+    },
+    timestamp: new Date().getTime()
   }).then(res => {
     if (!res.detail) {
       get({
         url: res,
-        params: {}
+        params: {},
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        },
+        timestamp: new Date().getTime()
       }).then(res => {
         mdStore.mdDocsChange(res)
         MDHtml()
@@ -195,8 +239,6 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   rightDrawerStore.controlRightDrawer(false)
-  echartsInstances.forEach(chart => echarts.dispose(chart));
-  echartsInstances.clear();
   rightDrawerStore.controlRightDrawer(false)
 })
 

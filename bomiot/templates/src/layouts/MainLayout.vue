@@ -1,6 +1,6 @@
 <template>
   <q-layout view="hHh lpR fFf">
-    <q-header :class="{'bg-grey-10': $q.dark.isActive, 'main-headers-sun': !$q.dark.isActive}">
+    <q-header :class="[$q.dark.isActive ? 'bg-grey-10' : 'main-headers-sun']">
       <transition
         appear
         enter-active-class="animated fadeIn slower delay-10s"

@@ -1,5 +1,3 @@
-###### Bomiot README
-
 <div align="center">
   <img src="media/img/logo.png" alt="Bomiot logo" width="200" height="auto" />
   <h1>Bomiot</h1>

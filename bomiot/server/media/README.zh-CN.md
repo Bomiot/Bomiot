@@ -1,18 +1,7 @@
-###### Bomiot README
-
 <div align="center">
   <img src="media/img/logo.png" alt="Bomiot logo" width="200" height="auto" />
   <h1>Bomiot</h1>
   <p>一个APP，你可以做任何事</p>
-
-```mermaid
-graph TD;
-  A-->B;
-  A-->C;
-  B-->D;
-  C-->D;
-```
-
 
 <!-- Badges -->
 ![License: APLv2](https://img.shields.io/github/license/Bomiot/Bomiot)
@@ -87,12 +76,12 @@ poetry add bomiot
 bomiot init
 ~~~
 
-新建项目
+### 新建项目
 ~~~shell
 bomiot project test
 ~~~
 
-新建一个项目中的app
+### 新建一个项目中的app
 ~~~shell
 bomiot new app_test
 ~~~
