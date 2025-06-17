@@ -1,6 +1,6 @@
 {
   "name": "template",
-  "version": "0.0.1",
+  "version": "0.8.4",
   "description": "Bomiot",
   "productName": "Bomiot",
   "author": "Bomiot <Singosgu@gmail.com>",
@@ -15,8 +15,6 @@
     "postinstall": "quasar prepare"
   },
   "dependencies": {
-    "@babel/plugin-transform-runtime": "^7.27.4",
-    "@babel/preset-env": "^7.27.2",
     "@quasar/extras": "^1.16.4",
     "axios": "^1.2.1",
     "echarts": "^5.6.0",

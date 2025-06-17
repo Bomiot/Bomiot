@@ -25,7 +25,7 @@ SECRET_KEY = get_random_secret_key()
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*', '127.0.0.1', 'localhost']
 AUTH_USER_MODEL = "core.User"
 
 INSTALLED_APPS = [
@@ -50,7 +50,6 @@ filtered_pkg_squared = list(filter(lambda x: x is not None, pkg_squared))
 current_path = list(set([p for p in listdir(WORKING_SPACE) if isdir(p)]).difference(set(ignore_cwd())))
 cur_squared = list(map(lambda data: cwd_check(data), current_path))
 filtered_current_path = list(filter(lambda y: y is not None, cur_squared))
-
 
 if len(filtered_pkg_squared) > 0:
     for module in filtered_pkg_squared:
@@ -91,6 +90,7 @@ if len(filtered_current_path) > 0:
                     except:
                         pass
 
+print(INSTALLED_APPS)
 
 MIDDLEWARE = [
     'django.middleware.gzip.GZipMiddleware',
@@ -442,6 +442,8 @@ JWT_SALT = 'ds()udsjo@jlsdosjf)wjd_#(#)$'
 
 ALLOCATION_SECONDS = CONFIG.getint('throttle', 'allocation_seconds', fallback=1)
 THROTTLE_SECONDS = CONFIG.getint('throttle', 'throttle_seconds', fallback=10)
+
+REQUEST_LIMIT = CONFIG.getint('request', 'limit', fallback=2)
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = None
 

@@ -6,7 +6,7 @@ import shutil
 from pathlib import Path
 from .init import create_file
 from configparser import ConfigParser
-import importlib
+import importlib.metadata
 from .copyfile import copy_files
 from .changeapps import create_plugins_apps_py
 

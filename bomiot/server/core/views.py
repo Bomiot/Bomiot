@@ -281,11 +281,13 @@ class UserLock(viewsets.ModelViewSet):
                     else:
                         if user_data.is_active is True:
                             user_data.is_active = False
+                            user_data.request_limit = 0
                             user_data.save()
                             return Response(msg_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
                                                                "Success lock User"), status=200)
                         else:
                             user_data.is_active = True
+                            user_data.request_limit = 0
                             user_data.save()
                             return Response(msg_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
                                                                "Success unlock User"), status=200)

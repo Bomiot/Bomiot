@@ -1,0 +1,1 @@
+import{Z as e}from"./index-Bv7wNieA.js";const r=e("permission",{state:()=>({permission:[]}),getters:{permissionGet(s){return s.permission}},actions:{permissionChange(s){this.permission=s}},persist:{enable:!0}});export{r as u};

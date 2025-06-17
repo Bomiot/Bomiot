@@ -1,11 +1,11 @@
-from os.path import join, exists, isfile, isdir
-from os import makedirs, getcwd, listdir
+from os.path import join, exists
+from os import makedirs, getcwd
 import os
 import sys
 import shutil
 from pathlib import Path
 from .init import create_file
-import importlib
+import importlib.metadata
 from configparser import ConfigParser
 from .copyfile import copy_files
 

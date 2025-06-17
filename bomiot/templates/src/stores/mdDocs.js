@@ -4,15 +4,15 @@ import { defineStore } from 'pinia'
 export const useMDDataStore = defineStore('markdownDocs', {
   state: () => ({
     mdDocs: "'# Hi!! GreaterWMS'",
-    tocRouter: ''
+    docName: ''
   }),
 
   getters: {
     mdDocsGet (state) {
       return state.mdDocs
     },
-    tocRouterGet (state) {
-      return state.tocRouter
+    docNameGet (state) {
+      return state.docName
     },
   },
 
@@ -20,8 +20,8 @@ export const useMDDataStore = defineStore('markdownDocs', {
     mdDocsChange(e) {
       this.mdDocs = e
     },
-    tocRouterChange(e) {
-      this.tocRouter = e
+    docNameChange(e) {
+      this.docName = e
     },
   }
 })

@@ -5,7 +5,11 @@ import { LocalStorage, Notify, Loading } from 'quasar';
 
 const api = axios.create({
   // baseURL: 'http://127.0.0.1:8008', // Replace with your actual API URL
-});
+  withCredentials: true, // This allows cookies to be sent with requests
+  headers: {
+    'Referrer-Policy': 'origin-when-cross-origin'
+  }
+})
 
 api.interceptors.request.use(
   (config) => {

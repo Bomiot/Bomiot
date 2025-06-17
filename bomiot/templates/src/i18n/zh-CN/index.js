@@ -51,6 +51,7 @@ export default {
   action: '操作',
   confirmnotice: '删除数据不可逆，请确认操作！！！',
   contents: '目录',
+  copySuccess: '复制成功',
   menuTab: {
     standard: '基础',
     server: '服务器',

@@ -51,6 +51,7 @@ export default {
   action: 'Action',
   confirmnotice: 'Delete data can not revert, please confirm you want to delete it!!!',
   contents: 'Contents',
+  copySuccess: 'Copy Success',
   menuTab: {
     standard: 'Standard',
     server: 'Server',

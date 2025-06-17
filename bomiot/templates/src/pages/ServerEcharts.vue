@@ -124,6 +124,6 @@ watch(() => langStore.langData, val => {
 
 <style scoped>
 .full-width {
-  width: 100%;
+  width: 98%;
 }
 </style>

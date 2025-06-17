@@ -43,7 +43,16 @@ def logins(request):
             else:
                 return JsonResponse(login_message_return(request.META.get('HTTP_LANGUAGE', ''), 'User is not active'))
         else:
-            return JsonResponse(login_message_return(request.META.get('HTTP_LANGUAGE', ''), 'User or Password error'))
+            user_data = user_check.first()
+            if user_data.request_limit < settings.REQUEST_LIMIT:
+                user_data.request_limit += 1
+                user_data.save()
+                return JsonResponse(login_message_return(request.META.get('HTTP_LANGUAGE', ''), 'User or Password error'))
+            else:
+                user_data.is_active = False
+                user_data.request_limit = 0
+                user_data.save()
+                return JsonResponse(login_message_return(request.META.get('HTTP_LANGUAGE', ''), 'User is not active'))
 
 
 @login_required
