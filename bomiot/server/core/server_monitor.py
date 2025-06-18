@@ -204,7 +204,6 @@ class ServerManager:
             pypi_list.sort(key=lambda x: x.date, reverse=True)
             PyPi.objects.bulk_create(pypi_list, batch_size=200)
 
-
     def monitor_server(self):
         """Monitor server status"""
         while True:

@@ -90,8 +90,6 @@ if len(filtered_current_path) > 0:
                     except:
                         pass
 
-print(INSTALLED_APPS)
-
 MIDDLEWARE = [
     'django.middleware.gzip.GZipMiddleware',
     'django.middleware.security.SecurityMiddleware',

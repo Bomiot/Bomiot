@@ -911,7 +911,7 @@ class PyPiList(viewsets.ModelViewSet):
 class PyPiChartsPage(CorePageNumberPagination):
     def __init__(self, *args, **kwargs):
         self.pypi_data = {}
-        self.pypi_data['title'] = 'PyPi Downloads Pie Chart'
+        self.pypi_data['title'] = 'Bomiot PyPi Downloads Pie Chart'
         self.pypi_data['xAxis_list'] = []
         self.with_mirrors_list = []
         self.without_mirrors_list = []
