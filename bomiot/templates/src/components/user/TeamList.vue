@@ -202,6 +202,7 @@ function onRequest(props) {
       .then((res) => {
         rows.value = res.results
         rowsCount.value = res.count
+        permissionList.permissionChange(res.permission_list)
       })
       .catch((err) => {
         $q.notify({
@@ -226,8 +227,8 @@ function createTeam() {
     },
     cancel: true
   })
-    .onOk((data) => {
-      post('core/team/create/', { name: data })
+    .onOk(async (data) => {
+      await post('core/team/create/', { name: data })
         .then(() => {
           onRequest()
         })
@@ -253,8 +254,8 @@ function changTeam(e) {
     },
     cancel: true
   })
-    .onOk((data) => {
-      post('core/team/change/', { id: rows.value[e].id, name: data })
+    .onOk(async (data) => {
+      await post('core/team/change/', { id: rows.value[e].id, name: data })
         .then(() => {
           onRequest()
         })
@@ -280,8 +281,8 @@ function setPermission(e) {
     },
     cancel: true
   })
-    .onOk((data) => {
-      post('core/team/setpermission/', { id: rows.value[e].id, permission: data })
+    .onOk(async (data) => {
+      await post('core/team/setpermission/', { id: rows.value[e].id, permission: data })
         .then(() => {
           onRequest()
         })
@@ -302,8 +303,8 @@ function deleteTeam(e) {
     message: t('confirmnotice'),
     cancel: true
   })
-    .onOk(() => {
-      post('core/team/delete/', { id: rows.value[e].id })
+    .onOk(async () => {
+      await post('core/team/delete/', { id: rows.value[e].id })
         .then(() => {
           onRequest()
         })

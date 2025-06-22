@@ -60,7 +60,10 @@ def bomiot_signal_callback(**kwargs):
     Signal receiver to handle the received signal
     """
     path = kwargs.get('request').path
-    value = API.objects.filter(api=path).first().func_name
+    api_obj = API.objects.filter(api=path).first()
+    if api_obj is None:
+        return None
+    value = api_obj.func_name
     feedback = receiver_callback(kwargs, value)
     return feedback
 

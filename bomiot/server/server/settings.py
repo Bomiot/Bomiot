@@ -13,12 +13,14 @@ from os.path import join, isdir, exists, isfile
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-CONFIG = ConfigParser()
 WORKING_SPACE_CONFIG = ConfigParser()
 WORKING_SPACE_CONFIG.read(join(BASE_DIR, 'workspace.ini'), encoding='utf-8')
 WORKING_SPACE = WORKING_SPACE_CONFIG.get('space', 'name', fallback='Create your working space first')
 sys.path.insert(0, WORKING_SPACE)
-CONFIG.read(join(WORKING_SPACE, 'setup.ini'), encoding='utf-8')
+
+CONFIG = ConfigParser()
+setup_ini_path = join(WORKING_SPACE, 'setup.ini')
+CONFIG.read(setup_ini_path, encoding='utf-8')
 PROJECT_NAME = CONFIG.get('project', 'name', fallback='bomiot')
 
 SECRET_KEY = get_random_secret_key()
@@ -51,44 +53,90 @@ current_path = list(set([p for p in listdir(WORKING_SPACE) if isdir(p)]).differe
 cur_squared = list(map(lambda data: cwd_check(data), current_path))
 filtered_current_path = list(filter(lambda y: y is not None, cur_squared))
 
-if len(filtered_pkg_squared) > 0:
-    for module in filtered_pkg_squared:
-        module_path = importlib.util.find_spec(module).origin
-        list_module_path = Path(module_path).resolve().parent
-        pkg_config_check = ConfigParser()
-        pkg_config_check.read(join(list_module_path, 'bomiotconf.ini'), encoding='utf-8')
-        app_mode = pkg_config_check.get('mode', 'name', fallback='plugins')
-        if app_mode == 'plugins':
-            try:
-                if isfile(join(list_module_path, 'apps.py')):
-                    if module not in INSTALLED_APPS:
-                        INSTALLED_APPS.append(f'{module}')
-            except:
+def load_dynamic_apps() -> None:
+    global INSTALLED_APPS
+    load_apps_from_project()
+    load_apps_from_working_space()
+    load_apps_from_packages()
+    
+
+def load_apps_from_packages() -> None:
+    global INSTALLED_APPS
+    all_packages = [dist.metadata['Name'] for dist in importlib.metadata.distributions()]
+    res_pkg_list = list(set([name.lower() for name in all_packages]).difference(set(ignore_pkg())))
+    for module in res_pkg_list:
+        spec = importlib.util.find_spec(module)
+        if not spec:
+            continue
+        module_path = spec.origin
+        if not module_path:
+            continue
+        module_dir = Path(module_path).resolve().parent
+        config_path = join(module_dir, 'bomiotconf.ini')
+        pkg_config = ConfigParser()
+        if pkg_config.read(config_path, encoding='utf-8'):
+            app_mode = pkg_config.get('mode', 'name', fallback='plugins')
+            if app_mode == 'plugins':
+                apps_py_path = join(module_dir, 'apps.py')
+                if isfile(apps_py_path):
+                    app_name = module
+                    if app_name not in INSTALLED_APPS:
+                        INSTALLED_APPS.append(app_name)
+                    else:
+                        continue
+                else:
+                    continue
+            else:
                 continue
+        else:
+            continue
 
-
-if len(filtered_current_path) > 0:
-    for module_name in filtered_current_path:
+def load_apps_from_working_space() -> None:
+    global INSTALLED_APPS
+    current_path = [
+        p for p in listdir(WORKING_SPACE) 
+        if isdir(join(WORKING_SPACE, p)) and p not in ignore_cwd()
+    ]
+    for module_name in current_path:
+        module_dir = join(WORKING_SPACE, module_name)
+        config_path = join(module_dir, 'bomiotconf.ini')
         app_mode_config = ConfigParser()
-        app_mode_config.read(join(join(WORKING_SPACE, module_name), 'bomiotconf.ini'), encoding='utf-8')
+        if not app_mode_config.read(config_path, encoding='utf-8'):
+            continue
         app_mode = app_mode_config.get('mode', 'name')
         if app_mode == 'plugins':
-            try:
-                if isfile(join(join(WORKING_SPACE, module_name), 'apps.py')):
-                    if module_name not in INSTALLED_APPS:
-                        INSTALLED_APPS.append(module_name)
-            except:
+            apps_py_path = join(module_dir, 'apps.py')
+            if isfile(apps_py_path):
+                if module_name not in INSTALLED_APPS:
+                    INSTALLED_APPS.append(module_name)
+                else:
+                    continue
+            else:
                 continue
-        elif app_mode == 'project':
-            if module_name == PROJECT_NAME:
-                project_path = join(WORKING_SPACE, PROJECT_NAME)
-                for app in listdir(project_path):
-                    try:
-                        if isfile(join(join(project_path, app), 'apps.py')):
-                            if f'{PROJECT_NAME}.{app}' not in INSTALLED_APPS:
-                                INSTALLED_APPS.append(f'{PROJECT_NAME}.{app}')
-                    except:
-                        pass
+        else:
+            continue
+
+def load_apps_from_project() -> None:
+    global INSTALLED_APPS, PROJECT_NAME
+    if not PROJECT_NAME or PROJECT_NAME not in [p for p in listdir(WORKING_SPACE) if isdir(p)]:
+        return
+    project_path = join(WORKING_SPACE, PROJECT_NAME)
+    app_dirs = [
+        app for app in listdir(project_path) 
+        if isdir(join(project_path, app))
+    ]
+    for app in app_dirs:
+        apps_py_path = join(project_path, app, 'apps.py')
+        if isfile(apps_py_path):
+            app_name = f'{PROJECT_NAME}.{app}'
+            if app_name not in INSTALLED_APPS:
+                INSTALLED_APPS.append(app_name)
+            else:
+                continue
+        else:
+            continue
+
+load_dynamic_apps()
 
 MIDDLEWARE = [
     'django.middleware.gzip.GZipMiddleware',
@@ -106,11 +154,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'bomiot.server.server.urls'
 
-TEMPLATES_PATH = join(BASE_DIR.parent, 'templates')
-
-if PROJECT_NAME in [p for p in listdir(WORKING_SPACE) if isdir(p)]:
-    TEMPLATES_PATH = join(join(WORKING_SPACE, PROJECT_NAME), 'templates')
-
+TEMPLATES_PATH = join(WORKING_SPACE, PROJECT_NAME)
 
 TEMPLATES = [
     {
@@ -152,9 +196,24 @@ if db_engine == 'sqlite':
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': DB_PATH,
+            'CONN_MAX_AGE': 60,
             'OPTIONS': {
-                'timeout': 20,
+                'timeout': 60,
             }
+        }
+    }
+elif db_engine == 'mysql':
+    DATABASES = {
+        'default': {
+            'ENGINE': DATABASE_MAP[CONFIG['database']['engine']],
+            'NAME': CONFIG['database']['name'],
+            'USER': CONFIG['database']['user'],
+            'PASSWORD': CONFIG['database']['password'],
+            'HOST': CONFIG['database']['host'],
+            'PORT': CONFIG['database']['port'],
+            'OPTIONS': {
+                'charset': 'utf8mb4',
+            },
         }
     }
 else:
@@ -306,7 +365,7 @@ LOGGING = {
             "class": "logging.handlers.RotatingFileHandler",
             "filename": SERVER_LOGS_FILE,
             "maxBytes": 1024 * 1024 * 100,  # 100 MB
-            "backupCount": 5,  # 最多备份5个
+            "backupCount": 5,
             "formatter": "standard",
             "encoding": "utf-8",
         },
@@ -315,7 +374,7 @@ LOGGING = {
             "class": "logging.handlers.RotatingFileHandler",
             "filename": ERROR_LOGS_FILE,
             "maxBytes": 1024 * 1024 * 100,  # 100 MB
-            "backupCount": 3,  # 最多备份3个
+            "backupCount": 3,
             "formatter": "standard",
             "encoding": "utf-8",
         },
@@ -331,6 +390,11 @@ LOGGING = {
             "handlers": ["console", "error", "file"],
             "level": "INFO",
         },
+        'apscheduler': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
         "django": {
             "handlers": ["console", "error", "file"],
             "level": "INFO",
@@ -340,20 +404,12 @@ LOGGING = {
             'handlers': ["console", "error", "file"],
             'propagate': False,
             'level': "INFO"
-        },
-        "uvicorn.error": {
-            "level": "INFO",
-            "handlers": ["console", "error", "file"],
-        },
-        "uvicorn.access": {
-            "handlers": ["console", "error", "file"],
-            "level": "INFO"
-        },
+        }
     },
 }
 
 REST_FRAMEWORK = {
-    # AttributeError: ‘AutoSchema’ object has no attribute ‘get_link’
+    # AttributeError: 'AutoSchema' object has no attribute 'get_link'
     # DEFAULT SET:
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.openapi.AutoSchema',
     # EXCEPTION:

@@ -21,3 +21,22 @@ install.sh
 setup.ini
 /.history
 auth_key.py
+*.egg
+*.egg-info
+*.whl
+*.tar.gz
+*.zip
+*.tar
+*.gz
+*.rar
+*.7z
+*.db
+*.sqlite3
+*.log
+*.pid
+__pycache__
+
+# 进程管理脚本（可选，如果不想提交到仓库）
+# scripts/process_manager.py
+# scripts/cleanup_processes.bat
+# scripts/cleanup_processes.sh

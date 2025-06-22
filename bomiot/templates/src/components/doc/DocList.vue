@@ -196,8 +196,8 @@ function shareFile (e) {
       items: userList.value
     },
     cancel: true,
-  }).onOk(data => {
-    post('core/user/files/share/', {"id": rows.value[e].id, "users": data}).then(() => {
+  }).onOk(async (data) => {
+    await post('core/user/files/share/', {"id": rows.value[e].id, "users": data}).then(() => {
       onRequest()
     }).catch(err => {
       $q.notify({
@@ -228,8 +228,8 @@ function deleteFile(e) {
     title: t('doc.deletefile'),
     message: t('doc.deletefilenotice'),
     cancel: true,
-  }).onOk(() =>{
-    post('core/user/files/delete/', {"id": rows.value[e].id}).then(() => {
+  }).onOk(async () =>{
+    await post('core/user/files/delete/', {"id": rows.value[e].id}).then(() => {
       onRequest()
     }).catch(err => {
       $q.notify({

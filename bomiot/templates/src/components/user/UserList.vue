@@ -256,7 +256,7 @@ function onRequest(props) {
   }
 }
 
-function createUser() {
+async function createUser() {
   $q.dialog({
     dark: $q.dark.isActive,
     title: t('newUser'),
@@ -268,8 +268,8 @@ function createUser() {
     },
     cancel: true
   })
-    .onOk((data) => {
-      post('core/user/create/', { username: data })
+    .onOk(async (data) => {
+      await post('core/user/create/', { username: data })
         .then(() => {
           onRequest()
         })
@@ -295,8 +295,8 @@ function changPWD(e) {
     },
     cancel: true
   })
-    .onOk((data) => {
-      post('core/user/changepwd/', { id: rows.value[e].id, pwd: data })
+    .onOk(async (data) => {
+      await post('core/user/changepwd/', { id: rows.value[e].id, pwd: data })
         .then(() => {})
         .catch((err) => {
           $q.notify({
@@ -320,8 +320,8 @@ function setTeam(e) {
     },
     cancel: true
   })
-    .onOk((data) => {
-      post('core/user/team/', { id: rows.value[e].id, team_id: data })
+    .onOk(async (data) => {
+      await post('core/user/team/', { id: rows.value[e].id, team_id: data })
         .then(() => {
           onRequest()
         })
@@ -347,8 +347,8 @@ function setDepartment(e) {
     },
     cancel: true
   })
-    .onOk((data) => {
-      post('core/user/department/', { id: rows.value[e].id, department_id: data })
+    .onOk(async (data) => {
+      await post('core/user/department/', { id: rows.value[e].id, department_id: data })
         .then(() => {
           onRequest()
         })
@@ -362,8 +362,8 @@ function setDepartment(e) {
     })
 }
 
-function lockUser(e) {
-  post('core/user/lock/', { id: rows.value[e].id })
+async function lockUser(e) {
+  await post('core/user/lock/', { id: rows.value[e].id })
     .then(() => {
       onRequest()
     })
@@ -383,8 +383,8 @@ function deleteUser(e) {
     message: t('confirmnotice'),
     cancel: true
   })
-    .onOk(() => {
-      post('core/user/delete/', { id: rows.value[e].id })
+    .onOk(async () => {
+      await post('core/user/delete/', { id: rows.value[e].id })
         .then(() => {
           onRequest()
         })

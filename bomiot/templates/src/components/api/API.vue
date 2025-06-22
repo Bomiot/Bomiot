@@ -188,8 +188,8 @@ function changAPI(e) {
     },
     cancel: true
   })
-    .onOk((data) => {
-      post('core/api/change/', { id: rows.value[e].id, func_name: data })
+    .onOk(async (data) => {
+      await post('core/api/change/', { id: rows.value[e].id, func_name: data })
         .then(() => {
           onRequest()
         })

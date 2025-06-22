@@ -238,7 +238,6 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   rightDrawerStore.controlRightDrawer(false)
-  rightDrawerStore.controlRightDrawer(false)
 })
 
 

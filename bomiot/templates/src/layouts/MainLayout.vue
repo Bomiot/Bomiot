@@ -105,13 +105,11 @@ import { userightDrawerStore } from "stores/rightDrawer"
 import { useleftDrawerStore } from "stores/leftDrawer"
 import { useTokenStore } from "stores/token"
 import { useExpireStore } from "stores/expire"
-import { usePermissionStore } from 'src/stores/permission'
 import { useLanguageStore } from 'stores/language'
 import { useI18n } from "vue-i18n"
 import { useQuasar, openURL } from "quasar"
 import { useRouter } from 'vue-router'
 import { post } from 'boot/axios'
-import axios from 'axios'
 import DarkMode from 'components/dark/DarkMode.vue'
 import LangChoice from 'components/lang/LangChoice.vue'
 import TabList from 'components/TabList.vue'
@@ -126,7 +124,6 @@ const rightDrawerStore = userightDrawerStore()
 const leftDrawerStore = useleftDrawerStore()
 const tokenStore = useTokenStore()
 const expireStore = useExpireStore()
-const permissionStore = usePermissionStore()
 const langStore = useLanguageStore()
 
 const loginForm = ref(false)
@@ -143,9 +140,9 @@ function cancelLogin () {
   }
 }
 
-function submitLogin () {
+async function submitLogin () {
   if (loginData.value.username !== '' && loginData.value.password !== '') {
-    post('login/', loginData.value).then((res) =>{
+    await post('login/', loginData.value).then((res) =>{
       if (!res.login) {
         tokenStore.tokenChange(res.token)
         emitter.emit('needLogin', false)
@@ -174,29 +171,6 @@ function openLink (e) {
   openURL(e)
 }
 
-function getUrl () {
-  var domain = window.location.hostname
-  if (domain === 'localhost' || domain === '127.0.0.1' ) {
-    return 'http://127.0.0.1:8008/core/user/permission/'
-  } else {
-    return 'core/user/permission/'
-  }
-}
-
-function getPermission() {
-  var url = getUrl()
-  axios.get(url, {
-    params: {},
-    headers: {
-      'token': tokenStore.tokenGet,
-      'language': langStore.langData
-    }
-  })
-  .then((res) => {
-    permissionStore.permissionChange(res.data.results)
-  })
-}
-
 onMounted(() => {
   tokenStore.tokenCheck()
   listenToEvent()
@@ -215,7 +189,6 @@ onMounted(() => {
       message: t('expireNotice', { days: expire_date })
     })
   }
-  getPermission()
 })
 
 onBeforeUnmount(() => {
@@ -238,7 +211,7 @@ function listenToEvent() {
 
 watch(() => langStore.langData, val => {
   if (val) {
-    getPermission()
+    return
   }
 })
 

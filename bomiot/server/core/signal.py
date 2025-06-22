@@ -1,5 +1,7 @@
 from django.dispatch import Signal, receiver
 import importlib
+import inspect
+from .utils import sync_write_file
 
 class BomiotSignal(Signal):
     """
@@ -42,8 +44,17 @@ def bomiot_signal_callback(sender, **kwargs):
     Signal receiver to handle the received job signal
     """
     if kwargs.get('msg', '').get('models', '') == 'Function':
-        # Import the module dynamically using the sender's module name
-        # and call the function with the same name as the sender
-        job_func = importlib.import_module(f'{sender.__module__}')
-        job_function = getattr(job_func, sender.__name__)
-        job_function()
+        if sender == sync_write_file:
+            sync_write_file(
+                kwargs.get('file_path'),
+                kwargs.get('file_data')
+            )
+        else:
+            job_func = importlib.import_module(f'{sender.__module__}')
+            job_function = getattr(job_func, sender.__name__)
+            sig = inspect.signature(job_function)
+            if sig.parameters:
+                func_kwargs = {k: v for k, v in kwargs.items() if k in sig.parameters}
+                job_function(**func_kwargs)
+            else:
+                job_function()

@@ -212,8 +212,8 @@ function createDepartment() {
     },
     cancel: true
   })
-    .onOk((data) => {
-      post('core/department/create/', { name: data })
+    .onOk(async (data) => {
+      await post('core/department/create/', { name: data })
         .then(() => {
           onRequest()
         })
@@ -239,8 +239,8 @@ function changDepartment(e) {
     },
     cancel: true
   })
-    .onOk((data) => {
-      post('core/department/change/', { id: rows.value[e].id, name: data })
+    .onOk(async (data) => {
+      await post('core/department/change/', { id: rows.value[e].id, name: data })
         .then(() => {
           onRequest()
         })
@@ -261,8 +261,8 @@ function deleteDepartment(e) {
     message: t('confirmnotice'),
     cancel: true
   })
-    .onOk(() => {
-      post('core/department/delete/', { id: rows.value[e].id })
+    .onOk(async () => {
+      await post('core/department/delete/', { id: rows.value[e].id })
         .then(() => {
           onRequest()
         })

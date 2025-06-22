@@ -119,8 +119,8 @@
   line-height: 1.6;
   color: #333;
   opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  transform: translateY(500px);
+  transition: opacity 1s ease, transform 1s ease;
 
   &.fade-in {
     opacity: 1;
@@ -134,13 +134,9 @@
     line-height: 1.6;
     color: #fff;
     opacity: 0;
-    transform: translateY(20px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    transform: translateY(500px);
+    transition: opacity 1s ease, transform 1s ease;
   
-    &.fade-in {
-      opacity: 1;
-      transform: translateY(0);
-    }
   }
 
   h1, h2, h3, h4, h5, h6 {

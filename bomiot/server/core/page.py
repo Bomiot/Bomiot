@@ -150,6 +150,87 @@ class PermissionPageNumberPagination(PageNumberPagination):
         return Response(OrderedDict(response_data))
 
 
+class TeamPageNumberPagination(PageNumberPagination):
+    page_query_param = 'page'
+    page_size = 30
+    page_size_query_param = "max_page"
+    max_page_size = 1000
+    time_ns = int(time.time_ns()) + random.randint(0, 10000)
+
+    def get_previous_link(self):
+        """
+        get previous link
+        :return: previous link whole URL or None
+        """
+        if not self.page.has_previous():
+            return None
+        return self._build_absolute_url(self.page.previous_page_number())
+
+    def get_next_link(self):
+        """
+        get next link
+        :return: next link whole URL or None
+        """
+        if not self.page.has_next():
+            return None
+        return self._build_absolute_url(self.page.next_page_number())
+
+    def _build_absolute_url(self, page_number):
+        """
+        resoleve absolute URL
+        :param page_number: page number
+        :return: full URL
+        """
+        url = self.request.build_absolute_uri()
+        ssl_scheme = self.request.scheme
+        url_parts = str(url).split(':', 1)
+
+        if url_parts[0] == ssl_scheme:
+            return replace_query_param(url, self.page_query_param, page_number)
+        else:
+            # Fix URL SSL scheme
+            corrected_url = f"{ssl_scheme}:{url_parts[1]}"
+            return replace_query_param(corrected_url, self.page_query_param, page_number)
+        
+    def query_data_add(self) -> list:
+        return []
+    
+    def get_permission_return_data(self, data) -> dict:
+        permission_message = cache.get("permission_message", version=self.time_ns)
+        if data.name in permission_message:
+            return {
+                "label": permission_message.get(data.name),
+                "value": data.name
+            }
+        else:
+            return {
+                "label": data.name,
+                "value": data.name
+            }
+
+    def get_paginated_response(self, data):
+        language = self.request.META.get('HTTP_LANGUAGE', 'en-US')
+        message_path = join(settings.LANGUAGE_DIR, language + '.toml')
+        message_dict = {}
+        if exists(message_path):
+            with open(message_path, 'r', encoding='utf-8') as message:
+                message_data = parse(message.read())
+        message_dict = message_data['permission']
+        cache.set('permission_message', orjson.loads(orjson.dumps(message_dict).decode("utf-8")), version=self.time_ns)
+        permission_list = Permission.objects.filter()
+        permission_data_list = list(map(lambda x: self.get_permission_return_data(x), permission_list))
+        cache.delete("permission_message", version=self.time_ns)
+        response_data = [
+            ('count', self.page.paginator.count),
+            ('next', self.get_next_link()),
+            ('previous', self.get_previous_link()),
+            ('permission_list', permission_data_list),
+            ('results', data)
+        ]
+        response_data += self.query_data_add()
+        return Response(OrderedDict(response_data))
+
+
 class DataCorePageNumberPagination(PageNumberPagination):
     page_query_param = 'page'
     page_size = 30

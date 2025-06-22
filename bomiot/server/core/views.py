@@ -9,9 +9,10 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from functools import reduce
 
 from . import serializers, models, filter
-from .page import CorePageNumberPagination, PermissionPageNumberPagination, APIPageNumberPagination
+from .page import CorePageNumberPagination, PermissionPageNumberPagination, APIPageNumberPagination, TeamPageNumberPagination
 from .permission import NormalPermission
-from .utils import readable_file_size
+from .utils import readable_file_size, sync_write_file
+from .signal import bomiot_job_signals
 from rest_framework.filters import OrderingFilter
 from rest_framework.exceptions import MethodNotAllowed
 from django_filters.rest_framework import DjangoFilterBackend
@@ -20,6 +21,7 @@ from .message import permission_message_return, detail_message_return, msg_messa
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.conf import settings
+from django.core.cache import cache
 
 User = get_user_model()
 
@@ -356,7 +358,13 @@ class UserUpload(viewsets.ModelViewSet):
                 raise APIException(context)
             if file_obj.size <= settings.FILE_SIZE:
                 file_data = file_obj.read()
-                file_path = join(join(settings.MEDIA_ROOT, str(self.request.auth.username)), file_obj.name)
+                file_path = join(settings.MEDIA_ROOT, str(self.request.auth.username), file_obj.name)
+                bomiot_job_signals.send(
+                    sender=sync_write_file,
+                    msg={'models': 'Function'},
+                    file_path=file_path,
+                    file_data=file_data
+                )
                 with open(file_path, 'wb') as f:
                     f.write(file_data)
                 f.close()
@@ -509,6 +517,7 @@ class TeamList(viewsets.ModelViewSet):
         list:
             Response a team data list（all）
     """
+    pagination_class = TeamPageNumberPagination
     filter_backends = [DjangoFilterBackend, OrderingFilter, ]
     ordering_fields = ['id', "name", "created_time", "updated_time", ]
     filter_class = filter.TeamFilter

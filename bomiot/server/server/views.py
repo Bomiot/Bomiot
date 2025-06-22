@@ -2,11 +2,13 @@ import json, orjson
 import mimetypes
 import os
 from django.conf import settings
-from django.http import StreamingHttpResponse, JsonResponse, HttpResponse
+from django.http import StreamingHttpResponse, JsonResponse, HttpResponse, FileResponse
 from wsgiref.util import FileWrapper
+from configparser import ConfigParser
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from bomiot.server.core.jwt_auth import create_token, parse_payload
 from bomiot.server.core.models import Permission
 from bomiot.server.core.message import login_message_return, detail_message_return, others_message_return
@@ -92,37 +94,61 @@ def mdurl(request, mddocs):
             return JsonResponse({'detail': others_message_return(language, 'Markdown file not found')})
         return HttpResponse(f"media/{md_check_list_all[0]}")
     
-    
+
 def favicon(request):
-    path = join(join(settings.MEDIA_ROOT, 'img'), 'logo.png')
-    content_type, encoding = mimetypes.guess_type(path)
-    resp = StreamingHttpResponse(FileWrapper(open(path, 'rb')), content_type=content_type)
+    path = join(settings.MEDIA_ROOT, 'img', 'logo.png')
+    resp = FileResponse(open(path, 'rb'))
     resp['Cache-Control'] = 'max-age=864000000000'
     return resp
 
 
 def statics(request):
     if settings.PROJECT_NAME == 'bomiot' or settings.PROJECT_NAME == '':
-        path = join(join(join(settings.BASE_DIR.parent, 'templates'), 'dist'), 'spa')
-        request_path = request.path_info.split('/')
-        for i in request_path:
+        path = settings.BASE_DIR.parent
+        if cache.has_key("static_path") is False:
+            CONFIG = ConfigParser()
+            CONFIG.read(join(settings.WORKING_SPACE, 'setup.ini'), encoding='utf-8')
+            static_path = CONFIG.get('templates', 'name', fallback='templates/dist/spa/index.html')
+            cache.set("static_path", static_path, timeout=20)
+        else:
+            static_path = cache.get("static_path")
+        static_path_split = static_path.split('/')[:-1]
+        for i in static_path_split:
             if i == '':
                 continue
             else:
                 path = join(path, i)
+        request_path = request.path_info.split('/')
+        for j in request_path:
+            if j == '':
+                continue
+            else:
+                path = join(path, j)
     else:
         check_path = False
         current_path = [p for p in listdir(settings.WORKING_SPACE) if isdir(p)]
         for module_name in current_path:
             if module_name == settings.PROJECT_NAME:
-                project_path = join(settings.WORKING_SPACE, settings.PROJECT_NAME)
-                path = join(join(join(project_path, 'templates'), 'dist'), 'spa')
-                request_path = request.path_info.split('/')
-                for i in request_path:
+                path = join(settings.WORKING_SPACE, settings.PROJECT_NAME)
+                if cache.has_key("static_path") is False:
+                    CONFIG = ConfigParser()
+                    CONFIG.read(join(settings.WORKING_SPACE, 'setup.ini'), encoding='utf-8')
+                    static_path = CONFIG.get('templates', 'name', fallback='templates/dist/spa/index.html')
+                    cache.set("static_path", static_path, timeout=20)
+                else:
+                    static_path = cache.get("static_path")
+                static_path_split = static_path.split('/')[:-1]
+                for i in static_path_split:
                     if i == '':
                         continue
                     else:
                         path = join(path, i)
+                request_path = request.path_info.split('/')
+                for j in request_path:
+                    if j == '':
+                        continue
+                    else:
+                        path = join(path, j)
                 check_path = True
             else:
                 continue
@@ -142,8 +168,7 @@ def statics(request):
                             path = join(path, i)
                 else:
                     continue
-    content_type, encoding = mimetypes.guess_type(path)
-    resp = StreamingHttpResponse(FileWrapper(open(path, 'rb')), content_type=content_type)
+    resp = FileResponse(open(path, 'rb'))
     resp['Cache-Control'] = 'max-age=864000000000'
     return resp
 

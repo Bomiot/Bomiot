@@ -1,4 +1,0 @@
-
-ADMINS = [
-    'admin'
-]

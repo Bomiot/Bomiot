@@ -2,7 +2,6 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models.signals import post_save, pre_save, post_delete
-from django.contrib.postgres.indexes import GinIndex
 from django.forms import model_to_dict
 from .utils import compare_dicts
 from .signal import bomiot_signals
@@ -31,9 +30,6 @@ class User(AbstractUser, CoreModel):
         verbose_name = settings.BASE_DB_TABLE + ' User'
         verbose_name_plural = verbose_name
         ordering = ['-id']
-        indexes = [
-            GinIndex(fields=['permission'], name="user_permission_gin_index")
-        ]
 
 
 class Permission(CoreModel):
@@ -95,8 +91,8 @@ class Files(CoreModel):
     name = models.CharField(default='', max_length=255, blank=True, verbose_name="File Name")
     type = models.CharField(default='', max_length=255, blank=True, verbose_name="Type")
     size = models.CharField(default='', max_length=255, blank=True, verbose_name="Size")
-    owner = models.CharField(default='', max_length=255, verbose_name="Owner")
-    shared_to = models.CharField(default='', max_length=255, verbose_name="Shared To")
+    owner = models.CharField(default='', max_length=255, blank=True, verbose_name="Owner")
+    shared_to = models.CharField(default='', max_length=255, blank=True, verbose_name="Shared To")
 
     class Meta:
         db_table = settings.BASE_DB_TABLE + '_files'
@@ -121,7 +117,7 @@ class Message(CoreModel):
 class Pids(CoreModel):
     pid = models.IntegerField(primary_key=True, editable=False, verbose_name="PID")
     name = models.CharField(default='', max_length=255, blank=True, verbose_name="PID Name")
-    memory = models.IntegerField(default=0, verbose_name="Memory")
+    memory = models.BigIntegerField(default=0, verbose_name="Memory")
     create_time = models.DateTimeField(auto_now_add=False, auto_now=False, blank=True, verbose_name="Create Time")
     memory_usage = models.FloatField(default=0, verbose_name="Memory Usage")
     cpu_usage = models.FloatField(default=0, verbose_name="CPU Usage")
@@ -149,13 +145,13 @@ class CPU(CoreModel):
 
 
 class Memory(CoreModel):
-    total = models.IntegerField(default=0, verbose_name="Total Memory")
-    used = models.IntegerField(default=0, verbose_name="Used Memory")
-    free = models.IntegerField(default=0, verbose_name="Free Memory")
+    total = models.BigIntegerField(default=0, verbose_name="Total Memory")
+    used = models.BigIntegerField(default=0, verbose_name="Used Memory")
+    free = models.BigIntegerField(default=0, verbose_name="Free Memory")
     percent = models.FloatField(default=0, verbose_name="Percent")
-    swap_total = models.IntegerField(default=0, verbose_name="Swap Total Memory")
-    swap_used = models.IntegerField(default=0, verbose_name="Swap Used Memory")
-    swap_free = models.IntegerField(default=0, verbose_name="Swap Free Memory")
+    swap_total = models.BigIntegerField(default=0, verbose_name="Swap Total Memory")
+    swap_used = models.BigIntegerField(default=0, verbose_name="Swap Used Memory")
+    swap_free = models.BigIntegerField(default=0, verbose_name="Swap Free Memory")
     swap_percent = models.FloatField(default=0, verbose_name="Swap Percent")
 
     class Meta:
@@ -168,9 +164,9 @@ class Memory(CoreModel):
 class Disk(CoreModel):
     device = models.CharField(default='', max_length=255, verbose_name="Device")
     mountpoint = models.CharField(default='', max_length=255, verbose_name="Mountpoint")
-    total = models.IntegerField(default=0, verbose_name="Total")
-    used = models.IntegerField(default=0, verbose_name="Used")
-    free = models.IntegerField(default=0, verbose_name="Free")
+    total = models.BigIntegerField(default=0, verbose_name="Total")
+    used = models.BigIntegerField(default=0, verbose_name="Used")
+    free = models.BigIntegerField(default=0, verbose_name="Free")
     percent = models.FloatField(default=0, verbose_name="Percent")
 
     class Meta:
@@ -181,35 +177,12 @@ class Disk(CoreModel):
 
 
 class Network(CoreModel):
-    bytes_sent = models.IntegerField(default=0, verbose_name="Bytes Sent")
-    bytes_recv = models.IntegerField(default=0, verbose_name="Bytes Received")
+    bytes_sent = models.BigIntegerField(default=0, verbose_name="Bytes Sent")
+    bytes_recv = models.BigIntegerField(default=0, verbose_name="Bytes Received")
 
     class Meta:
         db_table = settings.BASE_DB_TABLE + '_network'
         verbose_name = settings.BASE_DB_TABLE + ' Network'
-        verbose_name_plural = verbose_name
-        ordering = ['-id']
-
-
-class Example(CoreModel):
-    data = models.JSONField()
-
-    class Meta:
-        db_table = settings.BASE_DB_TABLE + '_example'
-        verbose_name = settings.BASE_DB_TABLE + ' Example'
-        verbose_name_plural = verbose_name
-        ordering = ['-id']
-        indexes = [
-            GinIndex(fields=['data'], name="example_data_gin_index")
-        ]
-
-
-class Department(CoreModel):
-    name = models.CharField(default='', max_length=255, verbose_name="Department Name")
-
-    class Meta:
-        db_table = settings.BASE_DB_TABLE + '_department'
-        verbose_name = settings.BASE_DB_TABLE + ' Department'
         verbose_name_plural = verbose_name
         ordering = ['-id']
 
@@ -223,9 +196,26 @@ class Team(CoreModel):
         verbose_name = settings.BASE_DB_TABLE + ' Team'
         verbose_name_plural = verbose_name
         ordering = ['-id']
-        indexes = [
-            GinIndex(fields=['permission'], name="team_permission_gin_index")
-        ]
+
+
+class Example(CoreModel):
+    data = models.JSONField()
+
+    class Meta:
+        db_table = settings.BASE_DB_TABLE + '_example'
+        verbose_name = settings.BASE_DB_TABLE + ' Example'
+        verbose_name_plural = verbose_name
+        ordering = ['-id']
+
+
+class Department(CoreModel):
+    name = models.CharField(default='', max_length=255, verbose_name="Department Name")
+
+    class Meta:
+        db_table = settings.BASE_DB_TABLE + '_department'
+        verbose_name = settings.BASE_DB_TABLE + ' Department'
+        verbose_name_plural = verbose_name
+        ordering = ['-id']
 
 
 class Goods(CoreModel):
@@ -236,9 +226,6 @@ class Goods(CoreModel):
         verbose_name = settings.BASE_DB_TABLE + ' Goods'
         verbose_name_plural = verbose_name
         ordering = ['-id']
-        indexes = [
-            GinIndex(fields=['data'], name="goods_data_gin_index")
-        ]
 
 
 class Bin(CoreModel):
@@ -249,9 +236,6 @@ class Bin(CoreModel):
         verbose_name = settings.BASE_DB_TABLE + ' Bin'
         verbose_name_plural = verbose_name
         ordering = ['-id']
-        indexes = [
-            GinIndex(fields=['data'], name="bin_data_gin_index")
-        ]
 
 
 class Stock(CoreModel):
@@ -262,9 +246,6 @@ class Stock(CoreModel):
         verbose_name = settings.BASE_DB_TABLE + ' Stock'
         verbose_name_plural = verbose_name
         ordering = ['-id']
-        indexes = [
-            GinIndex(fields=['data'], name="stock_data_gin_index")
-        ]
 
 
 class Capital(CoreModel):
@@ -275,9 +256,6 @@ class Capital(CoreModel):
         verbose_name = settings.BASE_DB_TABLE + ' Capital'
         verbose_name_plural = verbose_name
         ordering = ['-id']
-        indexes = [
-            GinIndex(fields=['data'], name="capital_data_gin_index")
-        ]
 
 
 class Supplier(CoreModel):
@@ -288,9 +266,6 @@ class Supplier(CoreModel):
         verbose_name = settings.BASE_DB_TABLE + ' Supplier'
         verbose_name_plural = verbose_name
         ordering = ['-id']
-        indexes = [
-            GinIndex(fields=['data'], name="supplier_data_gin_index")
-        ]
 
 
 class Customer(CoreModel):
@@ -301,9 +276,6 @@ class Customer(CoreModel):
         verbose_name = settings.BASE_DB_TABLE + ' Customer'
         verbose_name_plural = verbose_name
         ordering = ['-id']
-        indexes = [
-            GinIndex(fields=['data'], name="customer_data_gin_index")
-        ]
 
 
 class ASN(CoreModel):
@@ -314,9 +286,6 @@ class ASN(CoreModel):
         verbose_name = settings.BASE_DB_TABLE + ' ASN'
         verbose_name_plural = verbose_name
         ordering = ['-id']
-        indexes = [
-            GinIndex(fields=['data'], name="asn_data_gin_index")
-        ]
 
 
 class DN(CoreModel):
@@ -327,9 +296,6 @@ class DN(CoreModel):
         verbose_name = settings.BASE_DB_TABLE + ' DN'
         verbose_name_plural = verbose_name
         ordering = ['-id']
-        indexes = [
-            GinIndex(fields=['data'], name="dn_data_gin_index")
-        ]
 
 
 class Purchase(CoreModel):
@@ -340,9 +306,6 @@ class Purchase(CoreModel):
         verbose_name = settings.BASE_DB_TABLE + ' Purchase'
         verbose_name_plural = verbose_name
         ordering = ['-id']
-        indexes = [
-            GinIndex(fields=['data'], name="purchase_data_gin_index")
-        ]
 
 
 class Bar(CoreModel):
@@ -353,9 +316,6 @@ class Bar(CoreModel):
         verbose_name = settings.BASE_DB_TABLE + ' Bar'
         verbose_name_plural = verbose_name
         ordering = ['-id']
-        indexes = [
-            GinIndex(fields=['data'], name="bar_data_gin_index")
-        ]
 
 
 class Fee(CoreModel):
@@ -366,9 +326,6 @@ class Fee(CoreModel):
         verbose_name = settings.BASE_DB_TABLE + ' Fee'
         verbose_name_plural = verbose_name
         ordering = ['-id']
-        indexes = [
-            GinIndex(fields=['data'], name="fee_data_gin_index")
-        ]
 
 
 class Driver(CoreModel):
@@ -379,9 +336,7 @@ class Driver(CoreModel):
         verbose_name = settings.BASE_DB_TABLE + ' Driver'
         verbose_name_plural = verbose_name
         ordering = ['-id']
-        indexes = [
-            GinIndex(fields=['data'], name="driver_data_gin_index")
-        ]
+
 
 class PyPi(CoreModel):
     category = models.CharField(max_length=255, verbose_name="Category")

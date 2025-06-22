@@ -14,16 +14,14 @@ def create_file(folder: str):
     current_path = Path(__file__).resolve()
     working_space = join(getcwd())
     file_path = join(current_path.parent, 'file')
-    if folder == '':
-        folder = 'bomiot'
-    shutil.copy2(join(file_path, 'setup.ini'), working_space)
-    if folder != 'bomiot':
+    if folder != '':
+        shutil.copy2(join(file_path, 'setup.ini'), working_space)
         setup_config = ConfigParser()
         setup_config.read(join(working_space, 'setup.ini'), encoding='utf-8')
         setup_config.set('project', 'name', folder)
         setup_config.write(open(join(working_space, 'setup.ini'), "wt"))
     if exists(join(working_space, 'pyproject.toml')) is False:
-        if folder != 'bmoiot':
+        if folder != '':
             with open(join(file_path, 'pyproject.toml'), 'r', encoding='utf-8') as pip_file:
                 deploy_pip = parse(pip_file.read())
             deploy_pip['tool']['poetry']['name'] = folder

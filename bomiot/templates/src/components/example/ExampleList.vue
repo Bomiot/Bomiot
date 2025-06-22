@@ -256,8 +256,8 @@ function cancelSubmit() {
   data.value = {}
 }
 
-function submitData(e) {
-  post(`core/example/${e}/`, data.value)
+async function submitData(e) {
+  await post(`core/example/${e}/`, data.value)
   .then(() => {
     onRequest()
     cancelSubmit()

@@ -18,11 +18,3 @@ if os.path.exists(join(getcwd(), 'setup.ini')) is False:
     config.set('project', 'name', 'bomiot')
     with open(join(getcwd(), 'setup.ini'), 'w') as setup_file:
         config.write(setup_file)
-
-print('')
-print("  $$$$$$    $$$$$   $$$       $$$  $$   $$$$$   $$$$$$")
-print("  $$   $$  $$   $$  $$ $     $ $$  $$  $$   $$    $$")
-print("  $$$$$$$  $$   $$  $$  $   $  $$  $$  $$   $$    $$")
-print("  $$   $$  $$   $$  $$   $ $   $$  $$  $$   $$    $$")
-print("  $$$$$$    $$$$$   $$    $    $$  $$   $$$$$     $$")
-print('')

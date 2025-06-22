@@ -109,7 +109,8 @@ import { useQuasar } from 'quasar'
 import { useI18n } from "vue-i18n"
 import { useTokenStore } from 'stores/token'
 import { useLanguageStore } from 'stores/language'
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch } from "vue"
+import { baseURL } from 'boot/axios'
 
 const { t } = useI18n()
 const $q = useQuasar()
@@ -152,7 +153,7 @@ function getUrl (e) {
   if (e) {
     var domain = window.location.hostname;
     if (domain === 'localhost') {
-      return 'http://127.0.0.1:8008/core/user/upload/'
+      return `${baseURL}/core/user/upload/`
     } else {
       return 'core/user/upload/'
     }

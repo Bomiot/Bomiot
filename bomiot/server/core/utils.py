@@ -1,10 +1,13 @@
 import orjson
 import ast
+import aiofiles
+import asyncio
 import pandas as pd
 from django.conf import settings
 from os.path import join
 import importlib.util
 import importlib
+from pathlib import Path
 from .message import msg_message_return
 
 def get_job_id(task):
@@ -349,3 +352,28 @@ def receiver_server_callback(data, method) -> dict:
                 print(f"{receiver_path} don't have {receiver_check[1]['method']} method")
     else:
         return
+    
+async def async_write_file(file_path, file_data):
+    """
+    Async write file
+    """
+    try:
+        Path(file_path).parent.mkdir(parents=True, exist_ok=True)
+        async with aiofiles.open(file_path, 'wb') as f:
+            await f.write(file_data)
+        return True
+    except Exception as e:
+        print(f"Error writing file {file_path}: {str(e)}")
+        return False
+
+def sync_write_file(file_path, file_data):
+    """
+    Sync use asyncio to async write file
+    """
+    try:
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        result = loop.run_until_complete(async_write_file(file_path, file_data))
+        return result
+    finally:
+        loop.close()
