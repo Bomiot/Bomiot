@@ -16,6 +16,7 @@ jobs:
       matrix:
         python-version: ["3.9"]
         node-version: ["18.x"]
+        db: [sqlite, mysql, postgresql, oracle]
         target: [x86_64]
     steps:
       - uses: actions/checkout@v4
@@ -56,6 +57,31 @@ jobs:
         run: |
           bomiot init
           bomiot project test
+      
+      - name: Install DB drivers
+        run: |
+          if [ "${{ matrix.db }}" = "mysql" ]; then
+            uv pip install mysqlclient
+          elif [ "${{ matrix.db }}" = "postgresql" ]; then
+            uv pip install psycopg2
+          elif [ "${{ matrix.db }}" = "oracle" ]; then
+            uv pip install cx_Oracle
+          fi
+  
+      - name: Generate DB config
+        run: |
+          if [ "${{ matrix.db }}" = "sqlite" ]; then
+            echo -e "[database]\nengine = sqlite\nname = db.sqlite3" > setup.ini
+          elif [ "${{ matrix.db }}" = "mysql" ]; then
+            echo -e "[database]\nengine = mysql\nname = bomiot\ndb_user = bomiot\ndb_password = bomiot\ndb_host = 127.0.0.1\ndb_port = 3306" > setup.ini
+          elif [ "${{ matrix.db }}" = "postgresql" ]; then
+            echo -e "[database]\nengine = postgresql\nname = bomiot\ndb_user = bomiot\ndb_password = bomiot\ndb_host = 127.0.0.1\ndb_port = 5432" > setup.ini
+          elif [ "${{ matrix.db }}" = "oracle" ]; then
+            echo -e "[database]\nengine = oracle\nname = FREEPDB1\ndb_user = bomiot\ndb_password = bomiot\ndb_host = 127.0.0.1\ndb_port = 1521" > setup.ini
+          fi
+      
+      - name: Migrate database
+        run: |
           bomiot migrate
           bomiot initadmin
 
@@ -85,7 +111,6 @@ jobs:
         with:
           name: wheels-${{ github.job }}-${{ matrix.target }}-${{ matrix.python-version }}
           path: dist
-
 
   merge:
     name: Building Single Artifact
@@ -126,3 +151,40 @@ jobs:
         run: |
           uv pip install --upgrade twine
           twine upload --skip-existing *
+
+services:
+  mysql:
+    image: mysql:8
+    env:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bomiot
+      MYSQL_USER: bomiot
+      MYSQL_PASSWORD: bomiot
+    ports:
+      - 3306:3306
+    options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=5s --health-retries=5
+
+  postgres:
+    image: postgres:15
+    env:
+      POSTGRES_DB: bomiot
+      POSTGRES_USER: bomiot
+      POSTGRES_PASSWORD: bomiot
+    ports:
+      - 5432:5432
+    options: >-
+      --health-cmd="pg_isready -U bomiot"
+      --health-interval=10s
+      --health-timeout=5s
+      --health-retries=5
+
+  # Oracle 使用 community 版本镜像
+  oracle:
+    image: gvenzl/oracle-free:23-slim
+    env:
+      ORACLE_PASSWORD: bomiot
+      APP_USER: bomiot
+      APP_USER_PASSWORD: bomiot
+    ports:
+      - 1521:1521
+    options: --health-cmd="echo 'SELECT 1 FROM DUAL;' | sqlplus -L bomiot/bomiot@localhost/FREEPDB1" --health-interval=10s --health-timeout=5s --health-retries=10
