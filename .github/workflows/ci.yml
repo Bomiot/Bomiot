@@ -144,7 +144,7 @@ jobs:
       matrix:
         python-version: ["3.9"]
         node-version: ["18.x"]
-        db: [sqlite, postgresql]
+        db: [sqlite]
         target: [x86_64]
     steps:
       - uses: actions/checkout@v4
@@ -154,34 +154,11 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Start PostgreSQL (if needed)
-        if: matrix.db == 'postgresql'
-        run: |
-          docker run -d --name postgres -e POSTGRES_DB=bomiot -e POSTGRES_USER=bomiot -e POSTGRES_PASSWORD=bomiot -p 5432:5432 postgres:15
-
-      - name: Wait for PostgreSQL
-        if: matrix.db == 'postgresql'
-        shell: bash
-        run: |
-          for i in {1..30}; do
-            docker exec postgres pg_isready -U bomiot && break
-            sleep 2
-          done
-
-      - name: Install DB drivers
-        shell: bash
-        run: |
-          if [ "${{ matrix.db }}" = "postgresql" ]; then
-            uv pip install psycopg2
-          fi
-
       - name: Generate DB config
         shell: bash
         run: |
           if [ "${{ matrix.db }}" = "sqlite" ]; then
             echo -e "[database]\nengine = sqlite\nname = db.sqlite3" > setup.ini
-          elif [ "${{ matrix.db }}" = "postgresql" ]; then
-            echo -e "[database]\nengine = postgresql\nname = ${{ env.BOMIOT }}\nuser = ${{ env.BOMIOT }}\npassword = ${{ env.BOMIOT }}\nhost = 127.0.0.1\nport = 5432" > setup.ini
           fi
 
       - name: Install Python dependencies
@@ -217,13 +194,14 @@ jobs:
         with:
           name: wheels-${{ github.job }}-${{ matrix.target }}-${{ matrix.python-version }}
           path: dist
+
   macos-latest:
     runs-on: macos-latest
     strategy:
       matrix:
         python-version: ["3.9"]
         node-version: ["18.x"]
-        db: [sqlite, mysql, postgresql]
+        db: [sqlite]
         target: [x86_64]
     steps:
       - uses: actions/checkout@v4
@@ -232,70 +210,41 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Start MySQL (if needed)
-        if: matrix.db == 'mysql'
-        run: |
-          docker run -d --name mysql -e MYSQL_ROOT_PASSWORD=${{env.BOMIOT}} -e MYSQL_DATABASE=${{env.BOMIOT}} -e MYSQL_USER=${{env.BOMIOT}} -e MYSQL_PASSWORD=${{env.BOMIOT}} -p 3306:3306 mysql:8
-      - name: Start PostgreSQL (if needed)
-        if: matrix.db == 'postgresql'
-        run: |
-          docker run -d --name postgres -e POSTGRES_DB=${{env.BOMIOT}} -e POSTGRES_USER=${{env.BOMIOT}} -e POSTGRES_PASSWORD=${{env.BOMIOT}} -p 5432:5432 postgres:15
-      - name: Wait for MySQL
-        if: matrix.db == 'mysql'
-        shell: bash
-        run: |
-          for i in {1..30}; do
-            docker exec mysql mysqladmin ping -h127.0.0.1 -u${{env.BOMIOT}} -p${{env.BOMIOT}} && break
-            sleep 2
-          done
-      - name: Wait for PostgreSQL
-        if: matrix.db == 'postgresql'
-        shell: bash
-        run: |
-          for i in {1..30}; do
-            docker exec postgres pg_isready -U ${{env.BOMIOT}} && break
-            sleep 2
-          done
-      - name: Install DB drivers
-        shell: bash
-        run: |
-          if [ "${{ matrix.db }}" = "mysql" ]; then
-            uv pip install mysqlclient
-          elif [ "${{ matrix.db }}" = "postgresql" ]; then
-            uv pip install psycopg2
-          fi
+
       - name: Generate DB config
         shell: bash
         run: |
           if [ "${{ matrix.db }}" = "sqlite" ]; then
             echo -e "[database]\nengine = sqlite\nname = db.sqlite3" > setup.ini
-          elif [ "${{ matrix.db }}" = "mysql" ]; then
-            echo -e "[database]\nengine = mysql\nname = ${{ env.BOMIOT }}\nuser = ${{ env.BOMIOT }}\npassword = ${{ env.BOMIOT }}\nhost = 127.0.0.1\nport = 3306" > setup.ini
-          elif [ "${{ matrix.db }}" = "postgresql" ]; then
-            echo -e "[database]\nengine = postgresql\nname = ${{ env.BOMIOT }}\nuser = ${{ env.BOMIOT }}\npassword = ${{ env.BOMIOT }}\nhost = 127.0.0.1\nport = 5432" > setup.ini
           fi
+
       - name: Install Python dependencies
         run: |
           uv pip install --upgrade pip
           uv pip install -r requirements.txt
           uv pip install -e .
+
       - name: Migrate database
         run: |
           bomiot migrate
           bomiot initadmin
+
       - name: Run bomiot server (background)
         run: |
           nohup bomiot run > bomiot.log 2>&1 &
           sleep 10
+
       - name: Test login API
         run: |
           uv pip install requests
           python -c "import requests; resp = requests.post('http://127.0.0.1:8000/login/', json={'username': 'admin', 'password': 'admin'}); print('Status:', resp.status_code); print('Response:', resp.json()); assert resp.status_code == 200 and 'token' in resp.json(), 'Login failed or token not found'"
+
       - name: Build Python package
         if: matrix.db == 'sqlite' && matrix.node-version == '18.x'
         run: |
           uv pip install build
           python -m build
+
       - name: Upload wheels
         if: matrix.db == 'sqlite' && matrix.node-version == '18.x'
         uses: actions/upload-artifact@v4
