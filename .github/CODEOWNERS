@@ -1,0 +1,58 @@
+# These owners will be the default owners for everything in
+# the repo. Unless a later match takes precedence,
+# @Singosgu will be requested for review when someone opens a pull request.
+*       @Singosgu
+
+# Order is important; the last matching pattern takes precedence
+# over conflicting patterns.
+
+# Frontend files (Vue.js/Quasar)
+*.vue          @Singosgu
+*.js           @Singosgu
+*.ts           @Singosgu
+*.css          @Singosgu
+*.scss         @Singosgu
+bomiot/templates/ @Singosgu
+
+# Backend files (Django/Python)
+*.py           @Singosgu
+*.pyx          @Singosgu
+*.c            @Singosgu
+*.cpp          @Singosgu
+bomiot/server/ @Singosgu
+bomiot/cmd/    @Singosgu
+
+# Documentation
+*.md           @Singosgu
+docs/          @Singosgu
+README*.md     @Singosgu
+
+# Configuration files
+*.yml          @Singosgu
+*.yaml         @Singosgu
+*.toml         @Singosgu
+*.ini          @Singosgu
+*.cfg          @Singosgu
+setup.ini      @Singosgu
+bomiotconf.ini @Singosgu
+
+# Docker files
+Dockerfile     @Singosgu
+docker-compose.yml @Singosgu
+
+# CI/CD
+.github/       @Singosgu
+
+# Tests
+tests/         @Singosgu
+test_*.py      @Singosgu
+
+# Database
+dbs/           @Singosgu
+*.sqlite3      @Singosgu
+
+# Logs
+logs/          @Singosgu
+
+# Deployment
+deploy/        @Singosgu 

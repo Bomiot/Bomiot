@@ -1,26 +1,40 @@
 ---
 name: Feature request
-about: Suggest an idea for this project
-title: "[FR]"
-labels: enhancement
-assignees: ''
+about: Suggest an idea for Bomiot
+title: '[FEATURE] '
+labels: ['enhancement', 'needs-triage']
+assignees: ['@Singosgu']
 
 ---
 
-**Is your feature request the result of a bug?**
-Please link it here.
+**Is your feature request related to a problem? Please describe.**
+A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
 
-**Problem**
-A clear and concise description of what the problem is. e.g. I'm always frustrated when [...]
-
-**Suggested solution**
+**Describe the solution you'd like**
 A clear and concise description of what you want to happen.
 
 **Describe alternatives you've considered**
 A clear and concise description of any alternative solutions or features you've considered.
 
-**Examples of other systems**
-Show how other software handles your FR if you have examples.
+**Feature Category**
+Please select the category that best fits your feature request:
+- [ ] **Core Framework**: Django backend improvements
+- [ ] **Frontend**: Vue.js/Quasar UI improvements
+- [ ] **Plugin System**: Plugin development or management
+- [ ] **Documentation**: Documentation management features
+- [ ] **Task Management**: Scheduled tasks and job management
+- [ ] **Permission System**: Authentication and authorization
+- [ ] **Internationalization**: i18n and localization features
+- [ ] **System Monitoring**: Performance and health monitoring
+- [ ] **CLI Tools**: Command line interface improvements
+- [ ] **Deployment**: Deployment and DevOps features
+- [ ] **Other**: Please specify
 
-**Do you want to develop this?**
-If so please describe briefly how you would like to implement it (so we can give advice) and if you have experience in the needed technology (you do not need to be a pro - this is just as a information for us).
+**Additional context**
+Add any other context or screenshots about the feature request here.
+
+**Checklist**
+- [ ] I have searched existing issues to avoid duplicates
+- [ ] This feature would be useful to other Bomiot users
+- [ ] I can provide additional context if needed
+- [ ] I have checked the [Bomiot Wiki](https://github.com/Bomiot/Bomiot/wiki) for existing solutions
