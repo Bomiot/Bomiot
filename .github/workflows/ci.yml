@@ -154,6 +154,16 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install Python dependencies
+        run: |
+          uv pip install --upgrade pip
+          uv pip install -r requirements.txt
+          uv pip install -e .
+
+      - name: Add Python Scripts to PATH
+        run: echo "$pythonLocation\\Scripts" >> $GITHUB_PATH
+        shell: pwsh
+
       - name: Init bomiot project
         run: |
           bomiot init
@@ -165,12 +175,6 @@ jobs:
           if [ "${{ matrix.db }}" = "sqlite" ]; then
             echo -e "[database]\nengine = sqlite\nname = db.sqlite3" > setup.ini
           fi
-
-      - name: Install Python dependencies
-        run: |
-          uv pip install --upgrade pip
-          uv pip install -r requirements.txt
-          uv pip install -e .
 
       - name: Migrate database
         run: |
