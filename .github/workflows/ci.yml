@@ -182,6 +182,7 @@ jobs:
           bomiot initadmin
 
       - name: Run bomiot server (background)
+        shell: cmd
         run: |
           start /b bomiot run
           timeout /t 10
