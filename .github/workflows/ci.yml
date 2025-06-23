@@ -37,16 +37,14 @@ jobs:
           cache: yarn
           cache-dependency-path: bomiot/templates/yarn.lock
       
+      - name: Add ~/.local/bin to PATH
+        run: echo "$HOME/.local/bin" >> $GITHUB_PATH   
+
       - name: Install Quasar CLI
         run: |
           yarn config set cache-folder ~/.cache/yarn
           yarn config set node-linker node-modules
           yarn global add @quasar/cli@latest
-
-      - name: Test Quasar Cli
-        run: |
-          quasar --version
-          quasar info
 
       - name: Install Python dependencies
         run: |
@@ -54,15 +52,17 @@ jobs:
           uv pip install -r requirements.txt
           uv pip install -e .
 
-      - name: Add ~/.local/bin to PATH
-        run: echo "$HOME/.local/bin" >> $GITHUB_PATH
+      - name: Init bomiot project
+        run: |
+          bomiot init
+          bomiot project test
+          bomiot migrate
+          bomiot initadmin
 
-      - name: Test Python dependencies
-        run: bomiot --version
-
-      - name: Install frontend dependencies
-        working-directory: bomiot/templates
-        run: yarn install --frozen-lockfile
+      - name: Test bomiot project
+        working-directory: test
+        run: |
+          bomiot run
 
       - name: Build Python package
         run: |
