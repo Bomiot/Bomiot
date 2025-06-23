@@ -199,7 +199,7 @@ jobs:
         working-directory: test/templates
         run: |
           yarn install --frozen-lockfile
-          quasar build
+          npx quasar build
 
       - name: Build Python package
         if: matrix.db == 'sqlite' && matrix.node-version == '18.x'
