@@ -154,6 +154,11 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Init bomiot project
+        run: |
+          bomiot init
+          bomiot project test
+
       - name: Generate DB config
         shell: bash
         run: |
@@ -210,6 +215,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+
+      - name: Init bomiot project
+        run: |
+          bomiot init
+          bomiot project test
 
       - name: Generate DB config
         shell: bash
