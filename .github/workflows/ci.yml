@@ -73,11 +73,11 @@ jobs:
           if [ "${{ matrix.db }}" = "sqlite" ]; then
             echo -e "[database]\nengine = sqlite\nname = db.sqlite3" > setup.ini
           elif [ "${{ matrix.db }}" = "mysql" ]; then
-            echo -e "[database]\nengine = mysql\nname = bomiot\ndb_user = bomiot\ndb_password = bomiot\ndb_host = 127.0.0.1\ndb_port = 3306" > setup.ini
+            echo -e "[database]\nengine = mysql\nname = bomiot\nuser = bomiot\npassword = bomiot\nhost = 127.0.0.1\nport = 3306" > setup.ini
           elif [ "${{ matrix.db }}" = "postgresql" ]; then
-            echo -e "[database]\nengine = postgresql\nname = bomiot\ndb_user = bomiot\ndb_password = bomiot\ndb_host = 127.0.0.1\ndb_port = 5432" > setup.ini
+            echo -e "[database]\nengine = postgresql\nname = bomiot\nuser = bomiot\npassword = bomiot\nhost = 127.0.0.1\nport = 5432" > setup.ini
           elif [ "${{ matrix.db }}" = "oracle" ]; then
-            echo -e "[database]\nengine = oracle\nname = FREEPDB1\ndb_user = bomiot\ndb_password = bomiot\ndb_host = 127.0.0.1\ndb_port = 1521" > setup.ini
+            echo -e "[database]\nengine = oracle\nname = FREEPDB1\nuser = bomiot\npassword = bomiot\nhost = 127.0.0.1\nport = 1521" > setup.ini
           fi
       
       - name: Migrate database
