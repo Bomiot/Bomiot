@@ -182,9 +182,9 @@ jobs:
           bomiot initadmin
 
       - name: Run bomiot server (background)
-        shell: cmd
+        shell: bash
         run: |
-          start /b bomiot run
+          bomiot run &
           timeout /t 10
 
       - name: Test login API
