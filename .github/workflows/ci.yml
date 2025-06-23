@@ -37,7 +37,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: yarn
-          cache-dependency-path: ${{ env.bomiot }}/templates/yarn.lock
+          cache-dependency-path: ${{ env.BOMIOT }}/templates/yarn.lock
       
       - name: Add ~/.local/bin to PATH
         run: echo "$HOME/.local/bin" >> $GITHUB_PATH   
