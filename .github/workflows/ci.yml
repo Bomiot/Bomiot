@@ -15,9 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9"]
-        node-version: ["18.x"]
-        db: [sqlite]
+        python-version: ["3.9","3.10","3.11","3.12","3.13"]
+        node-version: ["18.x","20.x","22.x","24.x"]
+        db: [sqlite, mysql, postgresql)]
         target: [x86_64]
     steps:
       - uses: actions/checkout@v4
@@ -142,8 +142,8 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        python-version: ["3.9"]
-        node-version: ["18.x"]
+        python-version: ["3.9","3.10","3.11","3.12","3.13"]
+        node-version: ["18.x","20.x","22.x","24.x"]
         db: [sqlite]
         target: [x86_64]
     steps:
@@ -218,8 +218,8 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        python-version: ["3.9"]
-        node-version: ["18.x"]
+        python-version: ["3.9","3.10","3.11","3.12","3.13"]
+        node-version: ["18.x","20.x","22.x","24.x"]
         db: [sqlite]
         target: [x86_64]
     steps:
@@ -333,4 +333,4 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: |
           uv pip install --upgrade twine
-          twine upload --skip-existing dist/*.whl dist/*.tar.gz
+          twine upload --skip-existing *.whl *.tar.gz
