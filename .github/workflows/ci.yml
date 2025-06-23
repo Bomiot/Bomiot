@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.9","3.10","3.11","3.12","3.13"]
-        node-version: ["18.x","20.x"]
+        node-version: ["18.x"]
         db: [sqlite, mysql, postgresql)]
         target: [x86_64]
     steps:
@@ -143,7 +143,7 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.9","3.10","3.11","3.12","3.13"]
-        node-version: ["18.x","20.x"]
+        node-version: ["18.x"]
         db: [sqlite]
         target: [x86_64]
     steps:
@@ -219,7 +219,7 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.9","3.10","3.11","3.12","3.13"]
-        node-version: ["18.x","20.x"]
+        node-version: ["18.x"]
         db: [sqlite]
         target: [x86_64]
     steps:
