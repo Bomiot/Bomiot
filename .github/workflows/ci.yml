@@ -41,7 +41,7 @@ jobs:
         run: |
           yarn config set cache-folder ~/.cache/yarn
           yarn config set node-linker node-modules
-          yarn add -g @quasar/cli@latest
+          yarn global add @quasar/cli@latest
 
       - name: Test Quasar Cli
         run: |
