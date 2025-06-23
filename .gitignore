@@ -1,4 +1,4 @@
-# Created by .ignore support plugin (hsz.mobi)
+# Created by .ignore support plugin (Elvis.Shi)
 /.idea
 /.vscode
 /.vagrant
@@ -35,8 +35,12 @@ auth_key.py
 *.log
 *.pid
 __pycache__
-
-# 进程管理脚本（可选，如果不想提交到仓库）
-# scripts/process_manager.py
-# scripts/cleanup_processes.bat
-# scripts/cleanup_processes.sh
+/.github/workflows/logs/
+/.github/artifacts/
+ci-logs/
+/temp/
+/*.tmp
+/*.temp
+/*.swp
+/*.swo
+/*.log

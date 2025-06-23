@@ -1,40 +1,43 @@
 ---
-name: Feature request
-about: Suggest an idea for Bomiot
-title: '[FEATURE] '
-labels: ['enhancement', 'needs-triage']
+name: "✨ Feature Request"
+about: "Suggest a new feature or improvement for Bomiot."
+labels: ['✨ enhancement', 'needs-triage']
 assignees: ['@Singosgu']
-
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+# ✨ Feature Request
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+## 📝 Description
+Describe the problem or feature you would like to see.
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+## 🚀 Proposed Solution
+How would you like Bomiot to solve this?
 
-**Feature Category**
-Please select the category that best fits your feature request:
-- [ ] **Core Framework**: Django backend improvements
-- [ ] **Frontend**: Vue.js/Quasar UI improvements
-- [ ] **Plugin System**: Plugin development or management
-- [ ] **Documentation**: Documentation management features
-- [ ] **Task Management**: Scheduled tasks and job management
-- [ ] **Permission System**: Authentication and authorization
-- [ ] **Internationalization**: i18n and localization features
-- [ ] **System Monitoring**: Performance and health monitoring
-- [ ] **CLI Tools**: Command line interface improvements
-- [ ] **Deployment**: Deployment and DevOps features
-- [ ] **Other**: Please specify
+## 🔄 Alternatives Considered
+Have you considered any alternative solutions or workarounds?
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+## 🏷️ Affected Areas (select all that apply)
+- [ ] 🖥️ backend
+- [ ] 🎨 frontend
+- [ ] 🔌 plugin
+- [ ] 📝 documentation
+- [ ] 🌐 i18n
+- [ ] 🔒 permission
+- [ ] 🗂️ task-management
+- [ ] 📈 monitoring
+- [ ] 🚀 deployment
+- [ ] ⚙️ performance
+- [ ] 🔐 security
+- [ ] 🧪 testing
+- [ ] 🧹 chore
+- [ ] 📦 dependencies
+- [ ] ♻️ refactor
+- [ ] Other:
 
-**Checklist**
-- [ ] I have searched existing issues to avoid duplicates
-- [ ] This feature would be useful to other Bomiot users
-- [ ] I can provide additional context if needed
-- [ ] I have checked the [Bomiot Wiki](https://github.com/Bomiot/Bomiot/wiki) for existing solutions
+## 💬 Additional Context
+Add any other context, screenshots, or design sketches here.
+
+## ✅ Checklist
+- [ ] I have searched existing issues and found no duplicates
+- [ ] This feature would be useful to other users
+- [ ] I can provide more context or help with implementation
