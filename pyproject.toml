@@ -27,7 +27,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = ">=3.9,<4.0"
 django = "~4.2.23"
-django-cors-headers = "~4.4.0"
+django-cors-headers = ">=4.4,<4.8"
 pyjwt = ">=2.10.1"
 django-filter = "~24.3"
 djangorestframework-csv = "~3.0.2"
