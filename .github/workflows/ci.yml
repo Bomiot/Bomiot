@@ -154,6 +154,19 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: yarn
+          cache-dependency-path: ${{ env.BOMIOT }}/templates/yarn.lock
+
+      - name: Install Quasar CLI
+        run: |
+          yarn config set cache-folder ~/.cache/yarn
+          yarn config set node-linker node-modules
+          yarn global add @quasar/cli@latest
+
       - name: Install Python dependencies
         run: |
           uv pip install --upgrade pip
@@ -181,16 +194,12 @@ jobs:
           bomiot migrate
           bomiot initadmin
 
-      - name: Run bomiot server (background)
-        shell: bash
+      - name: Test bomiot project template
+        if: matrix.db == 'sqlite' && matrix.node-version == '18.x'
+        working-directory: test/templates
         run: |
-          bomiot run &
-          timeout /t 10
-
-      - name: Test login API
-        run: |
-          uv pip install requests
-          python -c "import requests; resp = requests.post('http://127.0.0.1:8000/login/', json={'username': 'admin', 'password': 'admin'}); print('Status:', resp.status_code); print('Response:', resp.json()); assert resp.status_code == 200 and 'token' in resp.json(), 'Login failed or token not found'"
+          yarn install --frozen-lockfile
+          quasar build
 
       - name: Build Python package
         if: matrix.db == 'sqlite' && matrix.node-version == '18.x'
@@ -220,7 +229,20 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: yarn
+          cache-dependency-path: ${{ env.BOMIOT }}/templates/yarn.lock
+
+      - name: Install Quasar CLI
+        run: |
+          yarn config set cache-folder ~/.cache/yarn
+          yarn config set node-linker node-modules
+          yarn global add @quasar/cli@latest
+
       - name: Install Python dependencies
         run: |
           uv pip install --upgrade pip
@@ -243,6 +265,13 @@ jobs:
         run: |
           bomiot migrate
           bomiot initadmin
+
+      - name: Test bomiot project template
+        if: matrix.db == 'sqlite' && matrix.node-version == '18.x'
+        working-directory: test/templates
+        run: |
+          yarn install --frozen-lockfile
+          quasar build
 
       - name: Run bomiot server (background)
         run: |
