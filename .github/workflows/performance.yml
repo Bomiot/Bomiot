@@ -29,7 +29,7 @@ jobs:
           pytest --benchmark-only --benchmark-sort=mean
 
       - name: Upload performance results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: performance-results
           path: .benchmarks/ 
