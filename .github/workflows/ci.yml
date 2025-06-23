@@ -111,6 +111,43 @@ jobs:
         with:
           name: wheels-${{ github.job }}-${{ matrix.target }}-${{ matrix.python-version }}
           path: dist
+    
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: bomiot
+          MYSQL_USER: bomiot
+          MYSQL_PASSWORD: bomiot
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=5s --health-retries=5
+
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: bomiot
+          POSTGRES_USER: bomiot
+          POSTGRES_PASSWORD: bomiot
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U bomiot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+      # Oracle 使用 community 版本镜像
+      oracle:
+        image: gvenzl/oracle-free:23-slim
+        env:
+          ORACLE_PASSWORD: bomiot
+          APP_USER: bomiot
+          APP_USER_PASSWORD: bomiot
+        ports:
+          - 1521:1521
+        options: --health-cmd="echo 'SELECT 1 FROM DUAL;' | sqlplus -L bomiot/bomiot@localhost/FREEPDB1" --health-interval=10s --health-timeout=5s --health-retries=10
 
   merge:
     name: Building Single Artifact
@@ -152,39 +189,3 @@ jobs:
           uv pip install --upgrade twine
           twine upload --skip-existing *
 
-services:
-  mysql:
-    image: mysql:8
-    env:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: bomiot
-      MYSQL_USER: bomiot
-      MYSQL_PASSWORD: bomiot
-    ports:
-      - 3306:3306
-    options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-timeout=5s --health-retries=5
-
-  postgres:
-    image: postgres:15
-    env:
-      POSTGRES_DB: bomiot
-      POSTGRES_USER: bomiot
-      POSTGRES_PASSWORD: bomiot
-    ports:
-      - 5432:5432
-    options: >-
-      --health-cmd="pg_isready -U bomiot"
-      --health-interval=10s
-      --health-timeout=5s
-      --health-retries=5
-
-  # Oracle 使用 community 版本镜像
-  oracle:
-    image: gvenzl/oracle-free:23-slim
-    env:
-      ORACLE_PASSWORD: bomiot
-      APP_USER: bomiot
-      APP_USER_PASSWORD: bomiot
-    ports:
-      - 1521:1521
-    options: --health-cmd="echo 'SELECT 1 FROM DUAL;' | sqlplus -L bomiot/bomiot@localhost/FREEPDB1" --health-interval=10s --health-timeout=5s --health-retries=10
