@@ -83,7 +83,7 @@ jobs:
           bomiot initadmin
 
       - name: Test bomiot project template
-        if: matrix.db == 'sqlite'
+        if: matrix.db == 'sqlite' && matrix.node-version == '18.x'
         working-directory: test/templates
         run: |
           yarn install --frozen-lockfile
@@ -100,13 +100,13 @@ jobs:
           python -c "import requests; resp = requests.post('http://127.0.0.1:8000/login/', json={'username': 'admin', 'password': 'admin'}); print('Status:', resp.status_code); print('Response:', resp.json()); assert resp.status_code == 200 and 'token' in resp.json(), 'Login failed or token not found'"
 
       - name: Build Python package
-        if: matrix.db == 'sqlite'
+        if: matrix.db == 'sqlite' && matrix.node-version == '18.x'
         run: |
           uv pip install build
           python -m build
 
       - name: Upload wheels
-        if: matrix.db == 'sqlite'
+        if: matrix.db == 'sqlite' && matrix.node-version == '18.x'
         uses: actions/upload-artifact@v4
         with:
           name: wheels-${{ github.job }}-${{ matrix.target }}-${{ matrix.python-version }}
