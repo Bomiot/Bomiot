@@ -60,9 +60,20 @@ jobs:
           bomiot initadmin
 
       - name: Test bomiot project
-        working-directory: test
+        working-directory: test/templates
         run: |
-          bomiot run
+          yarn install --frozen-lockfile
+          quasar build
+
+      - name: Run bomiot server (background)
+        run: |
+          nohup bomiot run > bomiot.log 2>&1 &
+          sleep 10
+
+      - name: Test login API
+        run: |
+          pip install requests
+          python -c "import requests; resp = requests.post('http://127.0.0.1:8000/login/', json={'username': 'admin', 'password': 'admin'}); print('Status:', resp.status_code); print('Response:', resp.json()); assert resp.status_code == 200 and 'token' in resp.json(), 'Login failed or token not found'"
 
       - name: Build Python package
         run: |
@@ -74,6 +85,8 @@ jobs:
         with:
           name: wheels-${{ github.job }}-${{ matrix.target }}-${{ matrix.python-version }}
           path: dist
+
+
   merge:
     name: Building Single Artifact
     runs-on: ubuntu-latest
