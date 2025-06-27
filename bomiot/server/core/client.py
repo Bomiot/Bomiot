@@ -2,13 +2,13 @@ import psutil
 
 from rest_framework import viewsets
 
-from . import serializers, models, filter
-from .page import CorePageNumberPagination
-from .permission import NormalPermission
+from bomiot.server.core import serializers, models, filter
+from bomiot.server.core.page import CorePageNumberPagination
+from bomiot.server.core.permission import NormalPermission
 from rest_framework.filters import OrderingFilter
 from rest_framework.exceptions import MethodNotAllowed
 from django_filters.rest_framework import DjangoFilterBackend
-from .message import others_message_return
+from bomiot.server.core.message import others_message_return
 
 from django.db.models import Sum
 

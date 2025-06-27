@@ -1,5 +1,5 @@
-from .jwt_auth import parse_payload
-from .message import login_message_return
+from bomiot.server.core.jwt_auth import parse_payload
+from bomiot.server.core.message import login_message_return
 from rest_framework.exceptions import APIException
 from django.utils.deprecation import MiddlewareMixin
 

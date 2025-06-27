@@ -4,14 +4,14 @@ import os
 import sys
 from configparser import ConfigParser
 import importlib.metadata
-from .pkgcheck import pkg_check, cwd_check, ignore_pkg, ignore_cwd
+import bomiot
+from bomiot.server.server.pkgcheck import pkg_check, cwd_check, ignore_pkg, ignore_cwd
 import importlib.util
 from os import listdir
 from os.path import join, isdir, exists, isfile
 
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-
+BASE_DIR = join(Path(bomiot.__file__).resolve().parent, 'server')
 
 WORKING_SPACE_CONFIG = ConfigParser()
 WORKING_SPACE_CONFIG.read(join(BASE_DIR, 'workspace.ini'), encoding='utf-8')
@@ -493,6 +493,27 @@ INTERNAL_IPS = [
 
 USER_JWT_TIME = CONFIG.getint('jwt', 'user_jwt_time', fallback=1000000)
 JWT_SALT = 'ds()udsjo@jlsdosjf)wjd_#(#)$'
+
+KEY_PATH = join(WORKING_SPACE, 'auth_key.py')
+KEY = ''
+if exists(KEY_PATH):
+    try:
+        with open(KEY_PATH, 'r', encoding='utf-8') as f:
+            content = f.read()
+        lines = content.split('\n')
+        for line in lines:
+            line = line.strip()
+            if line.startswith('KEY') and '=' in line:
+                key_value = line.split('=', 1)[1].strip()
+                if key_value.startswith("'") and key_value.endswith("'"):
+                    key_value = key_value[1:-1]
+                elif key_value.startswith('"') and key_value.endswith('"'):
+                    key_value = key_value[1:-1]
+                KEY = key_value
+                break
+    except Exception as e:
+        print(f"Error reading auth_key.py: {e}")
+        KEY = ''
 
 ALLOCATION_SECONDS = CONFIG.getint('throttle', 'allocation_seconds', fallback=1)
 THROTTLE_SECONDS = CONFIG.getint('throttle', 'throttle_seconds', fallback=10)

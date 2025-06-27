@@ -1,10 +1,6 @@
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.db.models.signals import post_save, pre_save, post_delete
-from django.forms import model_to_dict
-from .utils import compare_dicts
-from .signal import bomiot_signals
 
 
 class CoreModel(models.Model):
@@ -41,6 +37,16 @@ class Permission(CoreModel):
         verbose_name = settings.BASE_DB_TABLE + ' Permission'
         verbose_name_plural = verbose_name
         ordering = ['-id']
+
+
+class UvicornProcess(CoreModel):
+    pid = models.IntegerField(default=0, verbose_name="Uvicorn Process")
+
+    class Meta:
+        db_table = settings.BASE_DB_TABLE + '_uvicornprocess'
+        verbose_name = settings.BASE_DB_TABLE + ' Uvicorn Process'
+        verbose_name_plural = verbose_name
+        ordering = ['id']
 
 
 class API(CoreModel):

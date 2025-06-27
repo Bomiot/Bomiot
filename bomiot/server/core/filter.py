@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import JSONField
 from django_filters import CharFilter, NumberFilter, DateFilter, DateTimeFilter, BooleanFilter, RangeFilter
 from django_filters import FilterSet
-from . import models
+from bomiot.server.core import models
 
 # Get user model
 User = get_user_model()

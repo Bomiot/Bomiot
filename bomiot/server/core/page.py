@@ -11,10 +11,10 @@ from rest_framework.response import Response
 from rest_framework.utils.urls import replace_query_param
 from django.conf import settings
 from django.core.cache import cache
-from .utils import flatten_json, all_fields_empty
-from .signal import bomiot_data_signals
-from .models import Permission
-from .message import permission_message_return
+from bomiot.server.core.utils import flatten_json, all_fields_empty
+from bomiot.server.core.signal import bomiot_data_signals
+from bomiot.server.core.models import Permission
+from bomiot.server.core.message import permission_message_return
 
 class CorePageNumberPagination(PageNumberPagination):
     page_query_param = 'page'

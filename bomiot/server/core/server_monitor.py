@@ -4,9 +4,9 @@ import threading
 import pypistats
 import orjson
 from datetime import datetime, timedelta
-from .models import Pids, PyPi, CPU, Memory, Disk, Network
-from .utils import readable_file_size
-from .signal import bomiot_signals
+from bomiot.server.core.models import Pids, PyPi, CPU, Memory, Disk, Network
+from bomiot.server.core.utils import readable_file_size
+from bomiot.server.core.signal import bomiot_signals
 
 pypi_stats_list = []
 
@@ -32,7 +32,7 @@ class ServerManager:
                    min_cpu_frequency=f"{cpu_freq.min:.2f} MHz",
                    max_cpu_frequency=f"{cpu_freq.max:.2f} MHz"
                    )
-        bomiot_signals.send(msg={
+        bomiot_signals.send(sender=CPU, msg={
             'models': 'CPU',
             'type': 'created',
             'data': {
@@ -63,7 +63,7 @@ class ServerManager:
                       swap_free=int(swap.free),
                       swap_percent=float(f'{swap.percent:.2f}'),
                       )
-        bomiot_signals.send(msg={
+        bomiot_signals.send(sender=Memory, msg={
             'models': 'Memory',
             'type': 'created',
             'data': {
@@ -96,7 +96,7 @@ class ServerManager:
                     free=int(disk_usage.free),
                     percent=float(f'{disk_usage.percent:.2f}')
                 )
-                bomiot_signals.send(msg={
+                bomiot_signals.send(sender=Disk, msg={
                     'models': 'Disk',
                     'type': 'created',
                     'data': {
@@ -128,7 +128,7 @@ class ServerManager:
                    bytes_sent=int(bytes_sent),
                    bytes_recv=int(bytes_recv)
                    )
-        bomiot_signals.send(msg={
+        bomiot_signals.send(sender=Network, msg={
             'models': 'Network',
             'type': 'created',
             'data': {
@@ -165,14 +165,15 @@ class ServerManager:
                 pid_add = Pids(**item)
                 pid_add_list.append(pid_add)
                 data_list.append(item)
+                bomiot_signals.send(sender=Pids, msg={
+                                                    'models': 'Pids',
+                                                    'type': 'created',
+                                                    'data': item
+                                                })
             except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
                 continue
         Pids.objects.bulk_create(pid_add_list, batch_size=200)  # Bulk create PIDs to improve performance
-        bomiot_signals.send(msg={
-            'models': 'Pids',
-            'type': 'created',
-            'data': data_list
-        })
+
 
     def cteate_pypi_database(self, data):
         return PyPi(

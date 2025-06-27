@@ -3,6 +3,7 @@ import os
 import uvicorn
 from bomiot import version
 import argparse
+import psutil
 
 optional_title = 'Optional arguments'
 
@@ -141,7 +142,7 @@ parser_run = subparsers.add_parser(
     'run', help='Run server')
 parser_run.add_argument("--host", "-b", type=str, default="127.0.0.1", help="Default Domin: 127.0.0.1")
 parser_run.add_argument("--port", "-p", type=int, default=8000, help="Default Pore: 8000")
-parser_run.add_argument("--workers", "-w", type=int, default=1, help="CPU Core")
+parser_run.add_argument("--workers", "-w", type=int, default=psutil.cpu_count(logical=False), help="CPU Core")
 parser_run.add_argument("--log-level", type=str, default="info", choices=["critical", "error", "warning", "info", "debug", "trace"], help="Log Level")
 parser_run.add_argument("--uds", type=str, default=None, help="UNIX domain socket")
 parser_run.add_argument("--ssl-keyfile", type=str, default=None, help="SSL Key")
@@ -262,13 +263,30 @@ def cmd():
         migrate()
     # run server
     elif command == 'run':
+        workers = args.workers
+        if workers < 2:
+            workers = 2
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bomiot.server.server.settings")
         os.environ.setdefault('RUN_MAIN', 'true')
+        import django
+        django.setup()
+        from bomiot.server.core.models import UvicornProcess
+        process = UvicornProcess.objects.filter()
+        for i in process:
+            pid_data = i.pid
+            i.delete()
+            try:
+                process = psutil.Process(pid_data)
+                process.kill()
+                process.wait(timeout=1)
+            except:
+                continue
+        os.environ.setdefault('WORKERS', str(workers))
         uvicorn.run(
             args.app,
             host=args.host,
             port=args.port,
-            workers=args.workers,
+            workers=workers,
             log_level=args.log_level,
             uds=args.uds,
             ssl_keyfile=args.ssl_keyfile,

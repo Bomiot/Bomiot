@@ -2,7 +2,7 @@ import json, orjson
 import mimetypes
 import os
 from django.conf import settings
-from django.http import StreamingHttpResponse, JsonResponse, HttpResponse, FileResponse
+from django.http import JsonResponse, HttpResponse, FileResponse
 from wsgiref.util import FileWrapper
 from configparser import ConfigParser
 from django.contrib.auth import authenticate, login, logout
@@ -12,7 +12,7 @@ from django.core.cache import cache
 from bomiot.server.core.jwt_auth import create_token, parse_payload
 from bomiot.server.core.models import Permission
 from bomiot.server.core.message import login_message_return, detail_message_return, others_message_return
-from .pkgcheck import url_ignore
+from bomiot.server.server.pkgcheck import url_ignore
 from os.path import join, isdir, exists
 from os import listdir
 import importlib.util
@@ -171,6 +171,9 @@ def statics(request):
     resp = FileResponse(open(path, 'rb'))
     resp['Cache-Control'] = 'max-age=864000000000'
     return resp
+
+def google(request):
+    return JsonResponse({})
 
 def queryset_to_json(queryset):
     data = list(queryset.values())

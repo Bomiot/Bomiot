@@ -3,11 +3,9 @@ import time
 from threading import Thread, Lock
 import json
 import importlib
-from django.db import transaction
-from django.dispatch import receiver
+
 from django.conf import settings
 from django.core.cache import cache
-from bomiot.server.core.signal import bomiot_job_signals
 from django_apscheduler.models import DjangoJob
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.executors.pool import ThreadPoolExecutor
@@ -31,34 +29,6 @@ executors = {
 scheduler = BackgroundScheduler(timezone=TIMEZONE, executors=executors)
 scheduler.add_jobstore(DjangoJobStore(), 'default')
 scheduler_lock = Lock()
-
-@receiver(bomiot_job_signals)
-def handle_job_signal(sender, **kwargs):
-    try:
-        model_data = kwargs.get('msg', {}).get('models', '')
-        if model_data != 'JobList':
-            return
-        job_data = kwargs.get('msg', {}).get('data', {})
-        job_id = f"{inspect.getmodule(sender).__name__}-{sender.__name__}-{str(job_data)}"
-        with transaction.atomic():
-            job, created = JobList.objects.get_or_create(
-                job_id=job_id,
-                defaults={
-                    'module_name': inspect.getmodule(sender).__name__,
-                    'func_name': sender.__name__,
-                    'trigger': job_data.get('trigger'),
-                    'description': job_data.get('description', ''),
-                    'configuration': json.dumps(job_data)
-                }
-            )
-            if not created:
-                job.trigger = job_data.get('trigger')
-                job.description = job_data.get('description', '')
-                job.configuration = json.dumps(job_data)
-                job.save()
-    except Exception as e:
-        print(f"Error handling job signal: {str(e)}")
-
 
 class SchedulerManager(Thread):
     """

@@ -4,14 +4,14 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
 from django.db import transaction
-from . import models, serializers, filter
-from .signal import bomiot_data_signals
-from .permission import NormalPermission
+from bomiot.server.core import models, serializers, filter
+from bomiot.server.core.signal import bomiot_data_signals
+from bomiot.server.core.permission import NormalPermission
 from rest_framework.filters import OrderingFilter
 from rest_framework.exceptions import MethodNotAllowed
 from django_filters.rest_framework import DjangoFilterBackend
-from .page import DataCorePageNumberPagination
-from .utils import all_fields_empty, queryset_to_dict, compare_dicts
+from bomiot.server.core.page import DataCorePageNumberPagination
+from bomiot.server.core.utils import all_fields_empty, queryset_to_dict, compare_dicts
 
 
 class ExampleList(ModelViewSet):

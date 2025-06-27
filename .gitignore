@@ -15,6 +15,7 @@ npm-debug.log
 bomiot/server/logs/
 db.sqlite3
 install.sh
+notice.*
 *.pyc
 .venv
 /admin

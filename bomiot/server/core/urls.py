@@ -1,6 +1,6 @@
 import os
 from django.urls import path
-from . import client, views, handler
+from bomiot.server.core import client, views, handler
 from bomiot.server.function import goods
 from bomiot.server.function import bin
 from bomiot.server.function import stock

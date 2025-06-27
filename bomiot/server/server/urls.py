@@ -9,8 +9,8 @@ from django.views.generic.base import TemplateView
 from django.contrib.staticfiles.views import serve
 from django.views.static import serve as static_serve
 from django.conf import settings
-from . import views
-from .pkgcheck import pkg_check, cwd_check, ignore_pkg, ignore_cwd
+from bomiot.server.server import views
+from bomiot.server.server.pkgcheck import pkg_check, cwd_check, ignore_pkg, ignore_cwd
 from configparser import ConfigParser
 from pathlib import Path
 from django.urls import resolve, Resolver404
@@ -50,6 +50,10 @@ urlpatterns += [
     re_path('^icons/.*$', views.statics, name='icons'),
     re_path(r'^static/(?P<path>.*)$', return_static, name='static'),
     re_path(r'^media/(?P<path>.*)$', static_serve, {'document_root': settings.MEDIA_ROOT}),
+]
+
+urlpatterns += [
+    path('.well-known/appspecific/com.chrome.devtools.json', views.google),
 ]
 
 all_packages = [dist.metadata['Name'] for dist in importlib.metadata.distributions()]

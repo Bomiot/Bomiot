@@ -4,7 +4,7 @@ from django.db.migrations.executor import MigrationExecutor
 from django.db.models.signals import post_migrate
 import os
 import time
-import datetime
+import threading
 
 
 class CoreConfig(AppConfig):
@@ -14,68 +14,52 @@ class CoreConfig(AppConfig):
     name = 'bomiot.server.core'
 
     def ready(self):
-        try:
-            with transaction.atomic():
-                with connection.cursor() as cursor:
-                    cursor.execute("""
-                        CREATE TABLE IF NOT EXISTS bomiot_ready (
-                            id INTEGER PRIMARY KEY,
-                            pid INTEGER,
-                            created_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                        )
-                    """)
-                    cursor.execute("SELECT created_time FROM bomiot_ready WHERE id = 1")
-                    result = cursor.fetchone()
-                    if result:
-                        created_time = result[0]
-                        if created_time is None:
-                            cursor.execute("DELETE FROM bomiot_ready WHERE id = 1")
-                            cursor.execute("INSERT INTO bomiot_ready (id, pid, created_time) VALUES (1, %s, %s)", [os.getpid(), datetime.datetime.now()])
-                        else:
-                            try:
-                                if hasattr(created_time, 'timestamp'):
-                                    time_diff = time.time() - created_time.timestamp()
-                                else:
-                                    time_diff = time.time() - time.mktime(created_time.timetuple())
-                                
-                                if time_diff > 1:
-                                    cursor.execute("DELETE FROM bomiot_ready WHERE id = 1")
-                                    cursor.execute("INSERT INTO bomiot_ready (id, pid, created_time) VALUES (1, %s, %s)", [os.getpid(), datetime.datetime.now()])
-                            except (AttributeError, TypeError, ValueError) as e:
-                                print(f"Time format error: {e}")
-                                cursor.execute("DELETE FROM bomiot_ready WHERE id = 1")
-                                cursor.execute("INSERT INTO bomiot_ready (id, pid, created_time) VALUES (1, %s, %s)", [os.getpid(), datetime.datetime.now()])
-                    else:
-                        cursor.execute("INSERT INTO bomiot_ready (id, pid, created_time) VALUES (1, %s, %s)", [os.getpid(), datetime.datetime.now()])
-                    
-                    from bomiot.server.core import signal
-                    from bomiot.server.server.views import init_permission
-                    from bomiot.server.core.scheduler import sm
-                    from bomiot.server.core.observer import ob
-                    from bomiot.server.core.server_monitor import start_monitoring
-                    from bomiot.server.server.views import init_permission
-                    post_migrate.connect(do_init_data, sender=self)
-                    try:
-                        from bomiot.server.core.models import API
-                        if not API.objects.filter().exists():
-                            init_api()
-                    except Exception as e:
-                        print(f"Initial API initialization failed: {e}")
+        workers = int(os.environ.get('WORKERS', 0))
+        if workers > 0:
+            while True:
+                try:
+                    from bomiot.server.core.models import UvicornProcess
+                    with transaction.atomic():
+                        UvicornProcess.objects.create(pid=os.getpid())
+                        break
+                except:
+                    continue
+            process_workders = UvicornProcess.objects.filter().count()
+            if process_workders == workers:
+                from bomiot.server.core import signal
+                from bomiot.server.server.views import init_permission
+                from bomiot.server.core.scheduler import sm
+                from bomiot.server.core.observer import ob
+                from bomiot.server.core.server_monitor import start_monitoring
+                from bomiot.server.server.views import init_permission
+                post_migrate.connect(do_init_data, sender=self)
+                try:
+                    from bomiot.server.core.models import API
+                    if not API.objects.filter().exists():
+                        init_api()
+                except Exception as e:
+                    print(f"Initial API initialization failed: {e}")
+                from bomiot.server.core.signal import bomiot_signals
+                start_monitoring()
+                sm.start()
+                ob.start()
+                import bomiot_core
+                bomiot_core.cores()
+                def backgrun_init():
                     init_permission()
-                    start_monitoring()
-                    sm.start()
-                    ob.start()
+                init_thread = threading.Thread(target=backgrun_init, daemon=True)
+                init_thread.start()
 
-                    print('')
-                    print("  $$$$$$    $$$$$   $$$       $$$  $$   $$$$$   $$$$$$")
-                    print("  $$   $$  $$   $$  $$ $     $ $$  $$  $$   $$    $$")
-                    print("  $$$$$$$  $$   $$  $$  $   $  $$  $$  $$   $$    $$")
-                    print("  $$   $$  $$   $$  $$   $ $   $$  $$  $$   $$    $$")
-                    print("  $$$$$$    $$$$$   $$    $    $$  $$   $$$$$     $$")
-                    print('')
+                # from bomiot.server.core.notice import init
+                # init()
 
-        except Exception as e:
-            print(f"App initialization error: {e}")
+                print('')
+                print("  $$$$$$    $$$$$   $$$       $$$  $$   $$$$$   $$$$$$")
+                print("  $$   $$  $$   $$  $$ $     $ $$  $$  $$   $$    $$")
+                print("  $$$$$$$  $$   $$  $$  $   $  $$  $$  $$   $$    $$")
+                print("  $$   $$  $$   $$  $$   $ $   $$  $$  $$   $$    $$")
+                print("  $$$$$$    $$$$$   $$    $    $$  $$   $$$$$     $$")
+                print('')
 
 
 def do_init_data(sender, **kwargs):

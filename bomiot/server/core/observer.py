@@ -5,11 +5,11 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler, FileSystemEvent
 from watchdog.utils.dirsnapshot import DirectorySnapshot, DirectorySnapshotDiff
 from bomiot.server.core.models import Files
-from .utils import readable_file_size
+from bomiot.server.core.utils import readable_file_size
 from django.contrib.auth import get_user_model
 from django.forms import model_to_dict
-from .utils import compare_dicts
-from .signal import bomiot_signals
+from bomiot.server.core.utils import compare_dicts
+from bomiot.server.core.signal import bomiot_signals
 
 User = get_user_model()
 

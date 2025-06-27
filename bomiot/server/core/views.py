@@ -8,15 +8,15 @@ from rest_framework.exceptions import APIException
 from rest_framework.parsers import MultiPartParser, FormParser
 from functools import reduce
 
-from . import serializers, models, filter
-from .page import CorePageNumberPagination, PermissionPageNumberPagination, APIPageNumberPagination, TeamPageNumberPagination
-from .permission import NormalPermission
-from .utils import readable_file_size, sync_write_file
-from .signal import bomiot_job_signals
+from bomiot.server.core import serializers, models, filter
+from bomiot.server.core.page import CorePageNumberPagination, PermissionPageNumberPagination, APIPageNumberPagination, TeamPageNumberPagination
+from bomiot.server.core.permission import NormalPermission
+from bomiot.server.core.utils import readable_file_size, sync_write_file
+from bomiot.server.core.signal import bomiot_signals
 from rest_framework.filters import OrderingFilter
 from rest_framework.exceptions import MethodNotAllowed
 from django_filters.rest_framework import DjangoFilterBackend
-from .message import permission_message_return, detail_message_return, msg_message_return, others_message_return
+from bomiot.server.core.message import permission_message_return, detail_message_return, msg_message_return, others_message_return
 
 from django.contrib.auth import get_user_model
 from django.db.models import Q
@@ -359,15 +359,12 @@ class UserUpload(viewsets.ModelViewSet):
             if file_obj.size <= settings.FILE_SIZE:
                 file_data = file_obj.read()
                 file_path = join(settings.MEDIA_ROOT, str(self.request.auth.username), file_obj.name)
-                bomiot_job_signals.send(
+                bomiot_signals.send(
                     sender=sync_write_file,
                     msg={'models': 'Function'},
                     file_path=file_path,
                     file_data=file_data
                 )
-                with open(file_path, 'wb') as f:
-                    f.write(file_data)
-                f.close()
                 context = {}
                 msg = others_message_return(self.request.META.get('HTTP_LANGUAGE', ''), "Success upload files")
                 context['msg'] = f"{msg} {file_obj.name}"

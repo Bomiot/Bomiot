@@ -104,7 +104,6 @@ import { useAppNameStore } from 'stores/appName'
 import { userightDrawerStore } from "stores/rightDrawer"
 import { useleftDrawerStore } from "stores/leftDrawer"
 import { useTokenStore } from "stores/token"
-import { useExpireStore } from "stores/expire"
 import { useLanguageStore } from 'stores/language'
 import { useI18n } from "vue-i18n"
 import { useQuasar, openURL } from "quasar"
@@ -123,7 +122,6 @@ const appNameStore = useAppNameStore()
 const rightDrawerStore = userightDrawerStore()
 const leftDrawerStore = useleftDrawerStore()
 const tokenStore = useTokenStore()
-const expireStore = useExpireStore()
 const langStore = useLanguageStore()
 
 const loginForm = ref(false)
@@ -174,26 +172,10 @@ function openLink (e) {
 onMounted(() => {
   tokenStore.tokenCheck()
   listenToEvent()
-  var expire_date = expireStore.expireDayGet
-  if (expire_date <= 0) {
-    $q.notify({
-      type: 'error',
-      timeout: 10000,
-      message: t('expired')
-    })
-  }
-  if (expire_date > 0 && expire_date <= 3) {
-    $q.notify({
-      type: 'warning',
-      timeout: 10000,
-      message: t('expireNotice', { days: expire_date })
-    })
-  }
 })
 
 onBeforeUnmount(() => {
   emitter.off('needLogin')
-  emitter.off('expire')
 })
 
 function listenToEvent() {
@@ -202,11 +184,6 @@ function listenToEvent() {
       tokenStore.tokenChange('')
     }
   })
-  emitter.on('expire', (payload) => {
-    if (payload) {
-      expireStore.expireChange(payload)
-    }
-  });
 }
 
 watch(() => langStore.langData, val => {

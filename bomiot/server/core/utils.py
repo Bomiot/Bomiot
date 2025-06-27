@@ -8,7 +8,7 @@ from os.path import join
 import importlib.util
 import importlib
 from pathlib import Path
-from .message import msg_message_return
+from bomiot.server.core.message import msg_message_return
 
 def get_job_id(task):
     """

@@ -1,5 +1,5 @@
 from rest_framework.throttling import BaseThrottle
-from .models import ThrottleModel
+from bomiot.server.core.models import ThrottleModel
 from django.utils import timezone
 from django.conf import settings
 

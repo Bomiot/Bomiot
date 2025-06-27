@@ -5,7 +5,6 @@ import { LocalStorage, Notify, Loading } from 'quasar';
 
 const baseURL = 'http://127.0.0.1:8000' // Replace with your actual API URL
 
-
 const api = axios.create({
   // baseURL: baseURL
 })
@@ -101,7 +100,6 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   (response) => {
-    emitter.emit('expire', parseInt(response.headers.expire))
     if (response.data.detail) {
       Notify.create({
         type: 'warning',
