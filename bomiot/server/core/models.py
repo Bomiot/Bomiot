@@ -121,7 +121,7 @@ class Message(CoreModel):
 
 
 class Pids(CoreModel):
-    pid = models.IntegerField(primary_key=True, editable=False, verbose_name="PID")
+    pid = models.IntegerField(default=0, verbose_name="PID")
     name = models.CharField(default='', max_length=255, blank=True, verbose_name="PID Name")
     memory = models.BigIntegerField(default=0, verbose_name="Memory")
     create_time = models.DateTimeField(auto_now_add=False, auto_now=False, blank=True, verbose_name="Create Time")

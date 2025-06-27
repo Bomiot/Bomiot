@@ -8,7 +8,7 @@ from bomiot.server.core.permission import NormalPermission
 from rest_framework.filters import OrderingFilter
 from rest_framework.exceptions import MethodNotAllowed
 from django_filters.rest_framework import DjangoFilterBackend
-from bomiot.server.core.message import others_message_return
+from bomiot_message import others_message_return
 
 from django.db.models import Sum
 

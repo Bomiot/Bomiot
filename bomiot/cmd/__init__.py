@@ -142,7 +142,7 @@ parser_run = subparsers.add_parser(
     'run', help='Run server')
 parser_run.add_argument("--host", "-b", type=str, default="127.0.0.1", help="Default Domin: 127.0.0.1")
 parser_run.add_argument("--port", "-p", type=int, default=8000, help="Default Pore: 8000")
-parser_run.add_argument("--workers", "-w", type=int, default=psutil.cpu_count(logical=False), help="CPU Core")
+parser_run.add_argument("--workers", "-w", type=int, default=2, help="CPU Core")
 parser_run.add_argument("--log-level", type=str, default="info", choices=["critical", "error", "warning", "info", "debug", "trace"], help="Log Level")
 parser_run.add_argument("--uds", type=str, default=None, help="UNIX domain socket")
 parser_run.add_argument("--ssl-keyfile", type=str, default=None, help="SSL Key")

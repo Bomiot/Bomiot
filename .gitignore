@@ -45,3 +45,4 @@ ci-logs/
 /*.swp
 /*.swo
 /*.log
+/testing/

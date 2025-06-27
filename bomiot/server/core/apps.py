@@ -14,6 +14,13 @@ class CoreConfig(AppConfig):
     name = 'bomiot.server.core'
 
     def ready(self):
+        post_migrate.connect(do_init_data, sender=self)
+        try:
+            from bomiot.server.core.models import API
+            if not API.objects.filter().exists():
+                init_api()
+        except Exception as e:
+            print(f"Initial API initialization failed: {e}")
         workers = int(os.environ.get('WORKERS', 0))
         if workers > 0:
             while True:
@@ -32,13 +39,6 @@ class CoreConfig(AppConfig):
                 from bomiot.server.core.observer import ob
                 from bomiot.server.core.server_monitor import start_monitoring
                 from bomiot.server.server.views import init_permission
-                post_migrate.connect(do_init_data, sender=self)
-                try:
-                    from bomiot.server.core.models import API
-                    if not API.objects.filter().exists():
-                        init_api()
-                except Exception as e:
-                    print(f"Initial API initialization failed: {e}")
                 from bomiot.server.core.signal import bomiot_signals
                 start_monitoring()
                 sm.start()

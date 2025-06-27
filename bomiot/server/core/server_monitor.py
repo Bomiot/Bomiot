@@ -88,7 +88,6 @@ class ServerManager:
             try:
                 disk_usage = psutil.disk_usage(partitions[i].mountpoint)
                 disk_detail = Disk(
-                    id=i+1,
                     device=partitions[i].device,
                     mountpoint=partitions[i].mountpoint,
                     total=int(disk_usage.total),
@@ -100,7 +99,6 @@ class ServerManager:
                     'models': 'Disk',
                     'type': 'created',
                     'data': {
-                        'id': i+1,
                         'device': partitions[i].device,
                         'mountpoint': partitions[i].mountpoint,
                         'total': int(disk_usage.total),

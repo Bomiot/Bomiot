@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework.exceptions import APIException
-from bomiot.server.core.message import login_message_return
+from bomiot_message import login_message_return
 from bomiot.server.core.jwt_auth import parse_payload
 import typing
 

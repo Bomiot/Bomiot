@@ -16,7 +16,7 @@ from bomiot.server.core.signal import bomiot_signals
 from rest_framework.filters import OrderingFilter
 from rest_framework.exceptions import MethodNotAllowed
 from django_filters.rest_framework import DjangoFilterBackend
-from bomiot.server.core.message import permission_message_return, detail_message_return, msg_message_return, others_message_return
+from bomiot_message import permission_message_return, detail_message_return, msg_message_return, others_message_return
 
 from django.contrib.auth import get_user_model
 from django.db.models import Q

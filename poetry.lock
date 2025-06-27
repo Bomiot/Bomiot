@@ -150,6 +150,30 @@ files = [
 ]
 
 [[package]]
+name = "bomiot-message"
+version = "0.4.5"
+description = ""
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "bomiot_message-0.4.5-cp310-cp310-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:8d70713d4ae27cf86e4704c5b64843f3cf81a4ede43ddcfdb6432147a5db89f9"},
+    {file = "bomiot_message-0.4.5-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a2932fae147c75cc990d62ac1f15f70e3a58c0fc09f3644b10d3df1a177f43bd"},
+    {file = "bomiot_message-0.4.5-cp310-cp310-win_amd64.whl", hash = "sha256:ce4f3859e7b1b9d8cdbcd80c95fb5468bc5eef92611851ebce4e14c3da28a818"},
+    {file = "bomiot_message-0.4.5-cp311-cp311-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:eb627fb1a46ec0247224b3738801cab64ce7c3b89d029beaa9d1a7176acd4dfd"},
+    {file = "bomiot_message-0.4.5-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:fce64a32f0bb8cdfe596dca082eeb24fd9fcedb191cab52e12eb82a42cfbf8bf"},
+    {file = "bomiot_message-0.4.5-cp311-cp311-win_amd64.whl", hash = "sha256:0759318cc33f673a0185b1d9a29048469853350b0e71c71341d3ad75a347d545"},
+    {file = "bomiot_message-0.4.5-cp312-cp312-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:8754a780a8c694442244a819824777898776c53b40f2300388ef996605d55396"},
+    {file = "bomiot_message-0.4.5-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e4bce7ecdb6d5499a3c919a3596317c07822d2d5d42c40c658585ac8b37b9d09"},
+    {file = "bomiot_message-0.4.5-cp312-cp312-win_amd64.whl", hash = "sha256:a374608847196709045f94cb7321679ee9c9af90c9a01daa2f47d268c4351e78"},
+    {file = "bomiot_message-0.4.5-cp313-cp313-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:fbbd215747897e6a4f74f74be164b7f509b4375b3a6b0fd70453def343b00e13"},
+    {file = "bomiot_message-0.4.5-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e5adc60fcd999c31b93e6504e80818fc3eb95a160518f67ed0cbae52965f70df"},
+    {file = "bomiot_message-0.4.5-cp313-cp313-win_amd64.whl", hash = "sha256:71237aa78020572b9e4e97525af2d0fbd446d545cb12a032342ee51a1cda2f81"},
+    {file = "bomiot_message-0.4.5-cp39-cp39-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:020e81612b21f9081f9115c8d493343c8c6e04c01928a99ebaed1c57f49dc54e"},
+    {file = "bomiot_message-0.4.5-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:591f4ac527a2e4bf1f3ca35f7a7f427d3c0168dc112829797135ef45487910ce"},
+    {file = "bomiot_message-0.4.5-cp39-cp39-win_amd64.whl", hash = "sha256:f0b116d5a6082bae055c0c2d4eb7102fc158dbe31b43d54062a341e46c84f0ce"},
+]
+
+[[package]]
 name = "bomiot-token"
 version = "0.7.0"
 description = "Bomiot Token validation"
@@ -1422,4 +1446,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "d1a9301f12d103b267bb89bf3f55810f23eeeaf28424b6d41e1460fc610d7848"
+content-hash = "72b0f80de679a28c0b254e9e735288b2abeb97eb54b9592f36cd929880c530b0"

@@ -1,4 +1,4 @@
-from bomiot.server.core.message import msg_message_return, detail_message_return, login_message_return
+from bomiot_message import msg_message_return, detail_message_return, login_message_return
 from bomiot.server.core.models import Example
 from bomiot.server.core.utils import queryset_to_dict
 from django.core.cache import cache

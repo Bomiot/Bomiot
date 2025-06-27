@@ -14,7 +14,7 @@ from django.core.cache import cache
 from bomiot.server.core.utils import flatten_json, all_fields_empty
 from bomiot.server.core.signal import bomiot_data_signals
 from bomiot.server.core.models import Permission
-from bomiot.server.core.message import permission_message_return
+from bomiot_message import permission_message_return
 
 class CorePageNumberPagination(PageNumberPagination):
     page_query_param = 'page'
