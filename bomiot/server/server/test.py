@@ -4,7 +4,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from collections import defaultdict
 
 API_LIST = [
-        #{"name": "测试django", "url": "http://127.0.0.1:8000/django/test/", "method": "GET"},
+        # {"name": "测试django", "url": "http://127.0.0.1:8000/test/", "method": "GET"},
         {"name": "测试fastapi", "url": "http://127.0.0.1:8000/fastapi/test/", "method": "GET"},
         # {"name": "测试flask", "url": "http://127.0.0.1:8000/flask/test/", "method": "GET"},
 ]

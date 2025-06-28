@@ -23,7 +23,7 @@
             :label="t('refresh')"
             icon="refresh"
             @click="onRequest()"
-            v-show="tokenStore.userPermissionGet('Get User List')"
+            v-show="tokenStore.userPermissionGet('Get Example List')"
           >
             <q-tooltip
               class="bg-indigo"

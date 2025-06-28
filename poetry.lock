@@ -101,26 +101,26 @@ files = [
 
 [[package]]
 name = "bomiot-asgi"
-version = "0.5.1"
+version = "0.5.2"
 description = ""
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "bomiot_asgi-0.5.1-cp310-cp310-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:3cf5db3c2c382cfd0988a4c562305f8943c5732f3cd170020dde7afab5774f55"},
-    {file = "bomiot_asgi-0.5.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5fd8b064e7d80557b5132213e04d28dad38fd3032598495048eaa02c61f80104"},
-    {file = "bomiot_asgi-0.5.1-cp310-cp310-win_amd64.whl", hash = "sha256:b12dc3107ffbd1381aeda8003424a004bdfeafbfddf8a4a81dfef25e4499bb17"},
-    {file = "bomiot_asgi-0.5.1-cp311-cp311-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:31b02fd02fcf6058fcc0da914b7155e3924ee0acbd6d08ed4850c7ad7e8237de"},
-    {file = "bomiot_asgi-0.5.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:50e55817f829fd65c820d8fd9ea17e2c7795ba48d036d0f217b602510f50df76"},
-    {file = "bomiot_asgi-0.5.1-cp311-cp311-win_amd64.whl", hash = "sha256:0bfb8f43490644141bf15766d7df1f65e47c69de7f7596a09a79ce61507db98f"},
-    {file = "bomiot_asgi-0.5.1-cp312-cp312-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:99635618691d2f1da050ba7503262c226a53a7bcdb8e4ddf8d0d668386c4d7fc"},
-    {file = "bomiot_asgi-0.5.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:86855bf501e7662a9f346d3e74a303f4a046727bd6db25a757b2eb216e2613d4"},
-    {file = "bomiot_asgi-0.5.1-cp312-cp312-win_amd64.whl", hash = "sha256:8ef08c933731d281606ed2934270d7c0a03db5055ceb99ebc47212a6c7c26133"},
-    {file = "bomiot_asgi-0.5.1-cp313-cp313-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:5d436add4b316ed9495e5e07245a25c3a03afe496d5add34064048e69ab26ab4"},
-    {file = "bomiot_asgi-0.5.1-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1499a27f77346423cda1b8b5c9465e8231565adb717f26fba2fc2323bce4a2f2"},
-    {file = "bomiot_asgi-0.5.1-cp313-cp313-win_amd64.whl", hash = "sha256:90b213d61c463492f52456fd42ca0a78fd2d219b86bdd3358ad88fc605f4c12c"},
-    {file = "bomiot_asgi-0.5.1-cp39-cp39-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:b54afe57dcfa61528d399c481aca3f9de1d1d15221656c81fefe9a9354bfe8e9"},
-    {file = "bomiot_asgi-0.5.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e6009e4cf8dbc056883350857dbe9d1e24218b4d6ad3b663889d675876eda4d2"},
-    {file = "bomiot_asgi-0.5.1-cp39-cp39-win_amd64.whl", hash = "sha256:d087cef323897332585ba8137cf3ba6d650cfe158c86b6741ea2dbc786423386"},
+    {file = "bomiot_asgi-0.5.2-cp310-cp310-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:af7d9a5344debdcf0fdfd07f8c3b433717764a06532f55630a2c4f2dee5b1a5c"},
+    {file = "bomiot_asgi-0.5.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e24d12e32092cb9d86fdbbe083bbe652ffd7c3aa2a4ca0235aa2eb25a2deab66"},
+    {file = "bomiot_asgi-0.5.2-cp310-cp310-win_amd64.whl", hash = "sha256:690c00710a47e432a97511550a5e1fdc954a7aea324db5ef9f712954e453611f"},
+    {file = "bomiot_asgi-0.5.2-cp311-cp311-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:867182440871247f629e962946fefe75f42d2180987f8c5d673f7889e5eb449b"},
+    {file = "bomiot_asgi-0.5.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ee34851110b2103efb980f4f51a15c96cfb32856bb97d5336487322b55c5ba69"},
+    {file = "bomiot_asgi-0.5.2-cp311-cp311-win_amd64.whl", hash = "sha256:4e5add5621bdceae976da492d204b9b9935c9b21efea222b018bebb3b193e9ed"},
+    {file = "bomiot_asgi-0.5.2-cp312-cp312-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:28e8891a8430506e1e902b371b17029f76d8e5ac74d0784a6d534c51ec3c46fa"},
+    {file = "bomiot_asgi-0.5.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f61ca61880e71e6ac6c0dc986d54dffb5893bcb0da3133165436fa36783f31fa"},
+    {file = "bomiot_asgi-0.5.2-cp312-cp312-win_amd64.whl", hash = "sha256:b83d00446377485283eac5881b1378f22355cc15c92576f717d9c826f9dabe5a"},
+    {file = "bomiot_asgi-0.5.2-cp313-cp313-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:130a112bee5047e91206b52732ace98ca61482e63c5982898d781ccfb912187b"},
+    {file = "bomiot_asgi-0.5.2-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:901a85f251c40dc9f475193a656334bfbb518bc68d212db606ed0d7d29e92df9"},
+    {file = "bomiot_asgi-0.5.2-cp313-cp313-win_amd64.whl", hash = "sha256:eae04b4eca74aa22b75dfc9781afc935be0e838ccdf507062cd7395b8f617e6c"},
+    {file = "bomiot_asgi-0.5.2-cp39-cp39-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:4a8bda3f052a4bc1eeacbee9bb8ad2d19c42fe96ce7686bc1cd743376f01a9f9"},
+    {file = "bomiot_asgi-0.5.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:644176a34f07abc010f75c199731af6e22b1a797a5e55a20095fe5e9d3c8f807"},
+    {file = "bomiot_asgi-0.5.2-cp39-cp39-win_amd64.whl", hash = "sha256:801732038e914825ae3e4f5bad440c4c2ea33ba7c5829d639bc321cdde0c49ce"},
 ]
 
 [[package]]
@@ -149,26 +149,26 @@ files = [
 
 [[package]]
 name = "bomiot-core"
-version = "0.5.7"
+version = "0.5.8"
 description = "Bomiot Core"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "bomiot_core-0.5.7-cp310-cp310-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:5377d35365dbbf38c7c0f799d6c52ab52283d328abe783347dc87f33f663ea2b"},
-    {file = "bomiot_core-0.5.7-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:61203c359b18ff5e148aebae9d6379955daf5d51cafd6fff67fcf78f957d647e"},
-    {file = "bomiot_core-0.5.7-cp310-cp310-win_amd64.whl", hash = "sha256:f4dd42765640503a5249fb8bf1c4b9e4e38e2a1cdff6683293c94347ac8d901d"},
-    {file = "bomiot_core-0.5.7-cp311-cp311-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:051df48422908e2484995bc8e0b95197551cdd91dd90dc90a56a22a8f24e056d"},
-    {file = "bomiot_core-0.5.7-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0ff978e21b4a145db4675c742c0b2bfeafc11331570ae3698423a19a24e02efa"},
-    {file = "bomiot_core-0.5.7-cp311-cp311-win_amd64.whl", hash = "sha256:48c385738bd6975884ec9f7828e1df9d60f5c12a29a41c2e5d2e1ca1e929fc7b"},
-    {file = "bomiot_core-0.5.7-cp312-cp312-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:37fe4463c99608d72cad184ec7ae093c0eeeeb0d92427c9520dc7d65c5b2e401"},
-    {file = "bomiot_core-0.5.7-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b4b55831705ccf18afc0b1ab5ae544e0f625d5838f4f9538fb42c1f6d70d8644"},
-    {file = "bomiot_core-0.5.7-cp312-cp312-win_amd64.whl", hash = "sha256:449111bc70be79b0a817f23c7e14d4f24f17898839c5e03fc657eece1156b7d6"},
-    {file = "bomiot_core-0.5.7-cp313-cp313-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:db13c8e703de96bcaafe15cf56ce7c1327384b47291125cc28060b60840334a3"},
-    {file = "bomiot_core-0.5.7-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2123faba593b18ea01eec942b271a2363f3fd715370298b1aa5f98f686be51e3"},
-    {file = "bomiot_core-0.5.7-cp313-cp313-win_amd64.whl", hash = "sha256:6abeb773bff3e621876261209a694a30f15fd987271bbd78d3cbfd66f7ccca12"},
-    {file = "bomiot_core-0.5.7-cp39-cp39-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:018f18d77107ad2d3f0c8b42e44ce7c52ad813c38a77fb349fb7a9379caf6fae"},
-    {file = "bomiot_core-0.5.7-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1df56e90c5ea29d5d2eeb25bccf03c400b698d48b1621c63291d69ec86f11415"},
-    {file = "bomiot_core-0.5.7-cp39-cp39-win_amd64.whl", hash = "sha256:782ec70e2bd150ea1bfacb551ec49a069b1a8e49fe0b019507fac6e4bd4c6e90"},
+    {file = "bomiot_core-0.5.8-cp310-cp310-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:73c22aa53e55a4547fb17a48676647a8c31bb4abe065385a27c1fe9ce6350920"},
+    {file = "bomiot_core-0.5.8-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:fdd599caf3ecc052b783572dc31c145b9c68fffbb71e2ea52003e3773a55c071"},
+    {file = "bomiot_core-0.5.8-cp310-cp310-win_amd64.whl", hash = "sha256:ca24f006f3388bc70973ff3b58176d748199572ac8810d116855aede15c216ee"},
+    {file = "bomiot_core-0.5.8-cp311-cp311-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:20474bf48fcc2f80e3d4efd60f4c90b9d3c869f4c7227b2a560759ca86aee731"},
+    {file = "bomiot_core-0.5.8-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:594f53785d69bd8291a616423292bb3818de0ec6d4f939473b861880ea950c5d"},
+    {file = "bomiot_core-0.5.8-cp311-cp311-win_amd64.whl", hash = "sha256:1ca96f5c2ad9b99b1e3b25f180e2374a35a1ed8305c9d13bccb4faae765bea97"},
+    {file = "bomiot_core-0.5.8-cp312-cp312-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:215ac91864f2bfcc0946072828351a2d97319e9865ddb33b78d265cbc917b202"},
+    {file = "bomiot_core-0.5.8-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bd17e0f10f66ef733b3ddcf67c762df8a3b0a7aea1012371a95692ff6a8a3d69"},
+    {file = "bomiot_core-0.5.8-cp312-cp312-win_amd64.whl", hash = "sha256:33bb72cc8a3a10307ebfffe45f5640d35d18bffe6cc422b302d03cb6ab1c8c7d"},
+    {file = "bomiot_core-0.5.8-cp313-cp313-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:fa5e2448fd51f497be41d6a8f05f177734ed634b26b42ed57787f608dd400bd6"},
+    {file = "bomiot_core-0.5.8-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b39c73408e95ce715bfc283f94f4beabccfd654f2cbc92489b68d5dc497c44c1"},
+    {file = "bomiot_core-0.5.8-cp313-cp313-win_amd64.whl", hash = "sha256:c8bf9be1e09b9043aa181e8580d7f0d1ffc6dae6d610e21950f23c7b1394abd8"},
+    {file = "bomiot_core-0.5.8-cp39-cp39-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:d6ed7ceeaa6a580604ecb001ae43197072772c6c6a78dcdfe3b60d01af38fafe"},
+    {file = "bomiot_core-0.5.8-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9804680a8d97110f653d1eecc0425dfe5658e1e2297802628cd379450dcd47c8"},
+    {file = "bomiot_core-0.5.8-cp39-cp39-win_amd64.whl", hash = "sha256:7b9eba7d805623546a70fe1aa91aa2f0d89f54f37011d696934ed3108f72f896"},
 ]
 
 [[package]]
@@ -1857,4 +1857,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "58910a0a98cbf659fd9116f5b36308f9dafef65f2a956ab440aee2253d8febeb"
+content-hash = "3c37d1b077e53b0b72882325be14cb63457f0fce4c494e404c70739efbaba8a2"
