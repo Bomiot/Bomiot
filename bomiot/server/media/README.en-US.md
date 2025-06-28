@@ -30,23 +30,6 @@
 
 ---
 
-## 📋 Table of Contents
-
-- [🌟 Project Introduction](#-project-introduction)
-- [✨ Core Features](#-core-features)
-- [🚀 Quick Start](#-quick-start)
-- [📦 Installation Guide](#-installation-guide)
-- [🛠️ Command Line Tools](#️-command-line-tools)
-- [🏗️ Project Structure](#️-project-structure)
-- [🔧 Configuration](#-configuration)
-- [🌐 Deployment Guide](#-deployment-guide)
-- [📚 Scheduled Tasks](#-scheduled-tasks)
-- [🤝 Contributing](#-contributing)
-- [📄 License](#-license)
-- [🔗 Related Links](#-related-links)
-
----
-
 ## 🌟 Project Introduction
 
 Bomiot is a revolutionary distributed document management framework and full-stack development platform, with core components written in Rust, designed to solve modern development pain points. We believe that excellent open-source projects should not only have powerful technology stacks but also focus on developer experience and team collaboration efficiency, making it simple and easy to learn.
