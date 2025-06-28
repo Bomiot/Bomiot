@@ -26,7 +26,7 @@
 
 [![YouTube](https://img.shields.io/youtube/channel/subscribers/UCPW1wciGMIEh7CYOdLnsloA?color=red&label=YouTube&logo=youtube&style=for-the-badge)](https://www.youtube.com/channel/UCPW1wciGMIEh7CYOdLnsloA)
 
-[English](README.md) | [中文](README.zh-CN-github.md)
+[English](README-gitee.md) | [中文](README.zh-CN.md)
 
 </div>
 

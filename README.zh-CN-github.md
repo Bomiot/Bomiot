@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="media/img/logo.png" alt="Bomiot logo" width="200" height="auto" />
+  <img src="bomiot/templates/dist/spa/icons/logo.png" alt="Bomiot logo" width="200" height="auto" />
   <h1>🚀 Bomiot</h1>
   <p><strong>One App you can do everything</strong></p>
   <p><em>强大的分布式文档管理框架 & 全栈开发平台</em></p>
@@ -26,7 +26,26 @@
 
 [![BiliBili](https://img.shields.io/badge/BiliBili-4987-red)](https://space.bilibili.com/407321291/channel/seriesdetail?sid=776320)
 
+[English](README.md) | [中文](README.zh-CN-github.md)
+
 </div>
+
+---
+
+## 📋 目录
+
+- [🌟 项目简介](#-项目简介)
+- [✨ 核心特性](#-核心特性)
+- [🚀 快速开始](#-快速开始)
+- [📦 安装指南](#-安装指南)
+- [🛠️ 命令行工具](#️-命令行工具)
+- [🏗️ 项目结构](#️-项目结构)
+- [🔧 配置说明](#-配置说明)
+- [🌐 部署指南](#-部署指南)
+- [📚 定时任务](#-定时任务)
+- [🤝 贡献指南](#-贡献指南)
+- [📄 许可证](#-许可证)
+- [🔗 相关链接](#-相关链接)
 
 ---
 
@@ -309,6 +328,7 @@ bomiot run [选项]
   --loop LOOP                    异步循环 (auto/asyncio/uvloop)
   --limit-concurrency            最大并发请求数(默认：1000)
   --backlog                      最大等待连接数(默认：2048)
+  --timeout-keep-alive           HTTP 长连接超时时间(默认: 5)
   --timeout-graceful-shutdown    优雅关闭超时时间(默认：30)
 ```
 
