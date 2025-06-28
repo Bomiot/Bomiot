@@ -318,10 +318,8 @@ bomiot run [选项]
 # 基本启动
 bomiot run
 
-# 测试api，method("GET")
-"name": "django", "url": "http://127.0.0.1:8000/test/"
-"name": "fastapi", "url": "http://127.0.0.1:8000/fastapi/test/"
-"name": "flask", "url": "http://127.0.0.1:8000/flask/test/"
+# 测试API
+
 
 # 指定端口和主机
 bomiot run --host 0.0.0.0 --port 8080
