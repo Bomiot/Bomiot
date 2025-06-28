@@ -11,7 +11,7 @@ from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from bomiot.server.core.jwt_auth import create_token, parse_payload
 from bomiot.server.core.models import Permission
-from bomiot_message import login_message_return, detail_message_return, others_message_return
+from bomiot_message import login_message_return, others_message_return
 from bomiot.server.server.pkgcheck import url_ignore
 from os.path import join, isdir, exists
 from os import listdir
@@ -20,6 +20,10 @@ from pathlib import Path
 from django.urls import get_resolver, URLPattern, URLResolver
 
 User = get_user_model()
+
+async def test(request):
+    return JsonResponse({"msg": "This is Django API"})
+
 
 def logins(request):
     data = json.loads(request.body.decode().replace("'", '"'))

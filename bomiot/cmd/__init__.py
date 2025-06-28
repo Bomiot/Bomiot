@@ -150,7 +150,8 @@ parser_run.add_argument("--ssl-certfile", type=str, default=None, help="SSL PEM"
 parser_run.add_argument("--proxy-headers", action="store_true", help="X-Forwarded-*Header")
 parser_run.add_argument("--http", type=str, default="httptools", choices=["auto", "h11", "httptools"], help="HTTP")
 parser_run.add_argument("--loop", type=str, default="auto", choices=["auto", "asyncio", "uvloop"], help="Asyncio Loop")
-parser_run.add_argument("--app", type=str, default="bomiot.server.server.asgi:application", help="ASGI Application")
+parser_run.add_argument("--timeout-graceful-shutdown", type=str, default=10, help="Time out shut down")
+parser_run.add_argument("--app", type=str, default="bomiot_asgi:application", help="ASGI Application")
 
 # show help info when no args
 if len(sys.argv[1:]) == 0:
@@ -293,6 +294,7 @@ def cmd():
             ssl_certfile=args.ssl_certfile,
             proxy_headers=args.proxy_headers,
             http=args.http,
+            timeout_graceful_shutdown=args.timeout_graceful_shutdown,
             loop=args.loop
         )
 

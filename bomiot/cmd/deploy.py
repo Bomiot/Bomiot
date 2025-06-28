@@ -36,7 +36,7 @@ def deploy(folder: str):
         if str(sys.argv[2]) != 'bomiot':
             supervisor_config.add_section(f'program:{sys.argv[2]}')
             supervisor_config.set(f'program:{sys.argv[2]}', 'user', 'root')
-            supervisor_config.set(f'program:{sys.argv[2]}', 'command', 'daphne -b 0.0.0.0 -p 8008 bomiot.server.server.asgi:application')
+            supervisor_config.set(f'program:{sys.argv[2]}', 'command', 'bomiot run -b 0.0.0.0 -p 8008')
             supervisor_config.set(f'program:{sys.argv[2]}', 'autostart', 'true')
             supervisor_config.set(f'program:{sys.argv[2]}', 'autorestart', 'true')
             supervisor_config.set(f'program:{sys.argv[2]}', 'startsecs', '0')

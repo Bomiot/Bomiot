@@ -19,7 +19,7 @@ class CoreAuthentication:
         :return: (auth status, user)
         """
         # path that does not require authentication
-        if request.path in ['/', '/api/docs/', '/api/debug/', '/api/', '/core/user/permission/']:
+        if request.path in ['/', '/django/api/docs/', '/django/api/debug/', '/django/api/', '/django/core/user/permission/']:
             return False, None
 
         # get request Token

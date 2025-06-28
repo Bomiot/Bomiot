@@ -105,11 +105,11 @@ bomiot initadmin
 ## :hammer_and_wrench: How to start:
 
 ~~~shell
-daphne -p 8008 bomiot.server.server.asgi:application
+bomiot run
 
 or
 
-daphne -b 0.0.0.0 -p 8008 bomiot.server.server.asgi:application # LAN
+bomiot run -b 0.0.0.0 -p 8008 # LAN
 ~~~
 
 - Front-end development mode

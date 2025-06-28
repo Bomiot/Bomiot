@@ -383,18 +383,6 @@ file_extension = py,png,jpg,jpeg,gif,bmp,webp,txt,md,html,htm,js,css,json,xml,cs
 bomiot run --host 0.0.0.0 --port 8000
 ```
 
-### 生产环境
-
-#### 使用 Gunicorn
-
-```bash
-# 安装 Gunicorn
-pip install gunicorn
-
-# 启动服务
-gunicorn bomiot.server.server.asgi:application -w 4 -k uvicorn.workers.UvicornWorker
-```
-
 #### 使用 Docker
 
 ```dockerfile

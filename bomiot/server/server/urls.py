@@ -33,6 +33,7 @@ templates_dir_name = templates_config.get('templates', 'name', fallback='templat
 urlpatterns = [
     # path('admin/', admin.site.urls),
     path('', TemplateView.as_view(template_name=templates_dir_name)),
+    path('test/', views.test, name='test'),
     path('login/', views.logins, name='login'),
     path('logout/', views.logouts, name='logout'),
     path('checktoken/', views.check_token, name='check_token'),

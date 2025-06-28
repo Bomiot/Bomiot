@@ -40,11 +40,11 @@ class CoreConfig(AppConfig):
                 from bomiot.server.core.server_monitor import start_monitoring
                 from bomiot.server.server.views import init_permission
                 from bomiot.server.core.signal import bomiot_signals
-                start_monitoring()
+                # start_monitoring()
                 sm.start()
                 ob.start()
                 import bomiot_core
-                bomiot_core.cores()
+                # bomiot_core.cores()
                 def backgrun_init():
                     init_permission()
                 init_thread = threading.Thread(target=backgrun_init, daemon=True)

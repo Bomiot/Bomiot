@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from bomiot.server.core.models import Pids, PyPi, CPU, Memory, Disk, Network
 from bomiot.server.core.utils import readable_file_size
 from bomiot.server.core.signal import bomiot_signals
+from time import sleep
 
 pypi_stats_list = []
 
@@ -206,13 +207,19 @@ class ServerManager:
     def monitor_server(self):
         """Monitor server status"""
         while True:
+            sleep(1)
             self.get_cpu_info()
+            sleep(1)
             self.get_memory_info()
+            sleep(1)
             self.get_disk_info()
+            sleep(1)
             self.get_network_info()
+            sleep(1)
             self.get_pid()
+            sleep(1)
             self.get_pypi_stats()
-            time.sleep(60)  # Perform monitoring every 60 seconds
+            sleep(60)  # Perform monitoring every 60 seconds
 
 
 def start_monitoring():

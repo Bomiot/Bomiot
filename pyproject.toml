@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bomiot"
-version = "0.9.1"
+version = "0.9.2"
 description = "One App you can do everything"
 authors = ["Bomiot <Singosgu@gmail.com>"]
 readme = "README.md"
@@ -33,6 +33,7 @@ pyjwt = ">=2.10.1"
 django-filter = "~24.3"
 djangorestframework-csv = "~3.0.2"
 bomiot-token = ">=0.7.0"
+bomiot-asgi = ">=0.5.1"
 bomiot-core = ">=0.5.7"
 bomiot-control = ">=0.1.2"
 bomiot-data-control = ">=0.3.2"
@@ -51,6 +52,9 @@ uvicorn = "^0.34.3"
 httptools = "^0.6.4"
 aiofiles = "^24.1.0"
 bomiot-message = "^0.4.5"
+starlette = "~0.46.2"
+fastapi = "~0.115.14"
+flask = "~3.1.1"
 
 
 [build-system]

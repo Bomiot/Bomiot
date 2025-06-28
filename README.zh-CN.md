@@ -105,11 +105,11 @@ bomiot initadmin
 ## :hammer_and_wrench: 怎么启动:
 
 ~~~shell
-daphne -p 8008 bomiot.server.server.asgi:application
+bomoiot run
 
 or
 
-daphne -b 0.0.0.0 -p 8008 bomiot.server.server.asgi:application # 局域网
+bomiot run -b 0.0.0.0 -p 8008 # 局域网
 ~~~
 
 
