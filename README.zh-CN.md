@@ -26,7 +26,7 @@
 
 [![BiliBili](https://img.shields.io/badge/BiliBili-4987-red)](https://space.bilibili.com/407321291/channel/seriesdetail?sid=776320)
 
-[English](README-gitee.md) | [中文](README.zh-CN.md)
+[English](README.en.md) | [中文](README.zh-CN.md)
 
 </div>
 
