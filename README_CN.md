@@ -543,7 +543,7 @@ git push origin feature/amazing-feature
 ## 🔗 相关链接
 
 ### 📺 视频教程
-- [YouTube 频道](https://www.youtube.com/channel/UCPW1wciGMIEh7CYOdLnsloA)
+- [BiliBili 频道](https://space.bilibili.com/407321291/channel/seriesdetail?sid=776320)
 
 ### 🐛 问题反馈
 - [报告 Bug](https://github.com/Bomiot/Bomiot/issues/new?template=bug_report.md)

@@ -5,7 +5,7 @@ from django.db.models.signals import post_migrate
 import os
 import time
 import threading
-
+import bomiot_core
 
 class CoreConfig(AppConfig):
     """
@@ -40,18 +40,14 @@ class CoreConfig(AppConfig):
                 from bomiot.server.core.server_monitor import start_monitoring
                 from bomiot.server.server.views import init_permission
                 from bomiot.server.core.signal import bomiot_signals
-                # start_monitoring()
+                start_monitoring()
                 sm.start()
                 ob.start()
-                import bomiot_core
-                # bomiot_core.cores()
                 def backgrun_init():
+                    bomiot_core.cores()
                     init_permission()
                 init_thread = threading.Thread(target=backgrun_init, daemon=True)
                 init_thread.start()
-
-                # from bomiot.server.core.notice import init
-                # init()
 
                 print('')
                 print("  $$$$$$    $$$$$   $$$       $$$  $$   $$$$$   $$$$$$")
