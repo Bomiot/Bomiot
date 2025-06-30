@@ -361,7 +361,7 @@ class UserUpload(viewsets.ModelViewSet):
                 file_size_limit = readable_file_size(settings.FILE_SIZE)
                 detail = others_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
                                                          "File size exceeds limit")
-                context['detail'] = f"{detail} {file_size}/{file_size_limit}"
+                context = {"detail": f"{detail} {file_size}/{file_size_limit}"}
                 raise APIException(context)
             file_data = file_obj.read()
             file_path = join(settings.MEDIA_ROOT, str(self.request.auth.username), file_obj.name)
@@ -373,7 +373,7 @@ class UserUpload(viewsets.ModelViewSet):
             )
             context = {}
             msg = others_message_return(self.request.META.get('HTTP_LANGUAGE', ''), "Success upload files")
-            context['msg'] = f"{msg} {file_obj.name}"
+            context = {"msg": f"{msg} {file_obj.name}"}
             return Response(context, status=200)
                 
 
