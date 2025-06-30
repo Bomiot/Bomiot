@@ -28,6 +28,7 @@ def deploy(folder: str):
 
         if exists(join(supervisor_path, str(sys.argv[2]) + '.ini')) is False:
             shutil.copy2(join(file_path, 'supervisor.conf'), supervisor_path)
+            shutil.copy2(join(file_path, 'stoppid.py'), supervisor_path)
             if exists(join(supervisor_path, str(sys.argv[2]) + '.conf')):
                 os.remove(join(supervisor_path, str(sys.argv[2]) + '.conf'))
             rename(join(supervisor_path, 'supervisor.conf'), join(supervisor_path, str(sys.argv[2]) + '.conf'))
@@ -42,11 +43,13 @@ def deploy(folder: str):
             supervisor_config.set(f'program:{sys.argv[2]}', 'startsecs', '0')
             supervisor_config.set(f'program:{sys.argv[2]}', 'stopwaitsecs', '0')
             supervisor_config.set(f'program:{sys.argv[2]}', 'redirect_stderr', 'true')
+            supervisor_config.set(f'program:{sys.argv[2]}', 'stopscript_timeout', '30')
+        supervisor_config.set(f'program:{sys.argv[2]}', 'stopscript', f'{join(supervisor_path, "stoppid.py")}')
         supervisor_config.set(f'program:{sys.argv[2]}', 'directory', f'{getcwd()}')
         supervisor_config.set(f'program:{sys.argv[2]}', 'stdout_logfile',
-                   f'{join(join(getcwd(), "logs"), "bomiot_supervisor_access.log")}')
+                   f'{join(getcwd(), "logs", "bomiot_supervisor_access.log")}')
         supervisor_config.set(f'program:{sys.argv[2]}', 'stderr_logfile',
-                   f'{join(join(getcwd(), "logs"), "bomiot_supervisor_err.log")}')
+                   f'{join(getcwd(), "logs", "bomiot_supervisor_err.log")}')
         supervisor_config.remove_section('program:bomiot')
         supervisor_config.write(open(join(supervisor_path, str(sys.argv[2]) + '.conf'), "wt"))
 

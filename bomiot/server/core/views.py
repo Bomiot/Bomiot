@@ -356,26 +356,26 @@ class UserUpload(viewsets.ModelViewSet):
                 detail = others_message_return(self.request.META.get('HTTP_LANGUAGE', ''), "File type not allowed")
                 context = {'detail': f"{detail} {file_obj.name}"}
                 raise APIException(context)
-            if file_obj.size <= settings.FILE_SIZE:
-                file_data = file_obj.read()
-                file_path = join(settings.MEDIA_ROOT, str(self.request.auth.username), file_obj.name)
-                bomiot_signals.send(
-                    sender=sync_write_file,
-                    msg={'models': 'Function'},
-                    file_path=file_path,
-                    file_data=file_data
-                )
-                context = {}
-                msg = others_message_return(self.request.META.get('HTTP_LANGUAGE', ''), "Success upload files")
-                context['msg'] = f"{msg} {file_obj.name}"
-                return Response(context, status=200)
-            else:
+            if int(file_obj.size) >= int(settings.FILE_SIZE):
                 file_size = readable_file_size(file_obj.size)
                 file_size_limit = readable_file_size(settings.FILE_SIZE)
                 detail = others_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
                                                          "File size exceeds limit")
                 context['detail'] = f"{detail} {file_size}/{file_size_limit}"
                 raise APIException(context)
+            file_data = file_obj.read()
+            file_path = join(settings.MEDIA_ROOT, str(self.request.auth.username), file_obj.name)
+            bomiot_signals.send(
+                sender=sync_write_file,
+                msg={'models': 'Function'},
+                file_path=file_path,
+                file_data=file_data
+            )
+            context = {}
+            msg = others_message_return(self.request.META.get('HTTP_LANGUAGE', ''), "Success upload files")
+            context['msg'] = f"{msg} {file_obj.name}"
+            return Response(context, status=200)
+                
 
 
 class FilePage(CorePageNumberPagination):
