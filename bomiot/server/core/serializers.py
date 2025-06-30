@@ -73,7 +73,7 @@ class FileSerializer(serializers.ModelSerializer):
     """
     name = serializers.CharField(read_only=True, required=False)
     type = serializers.CharField(read_only=True, required=False)
-    size = serializers.CharField(read_only=True, required=False)
+    size = serializers.IntegerField(read_only=True, required=False)
     owner = serializers.CharField(read_only=True, required=False)
     shared_to = serializers.CharField(read_only=True, required=False)
     is_delete = serializers.BooleanField(read_only=True, required=False)

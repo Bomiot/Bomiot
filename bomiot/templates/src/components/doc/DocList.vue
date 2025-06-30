@@ -124,6 +124,14 @@ const ScreenHeight = ref($q.screen.height * 0.73 + '' + 'px')
 const ScreenWidth = ref($q.screen.width * 0.825 + '' + 'px')
 const CardBackground = ref($q.dark.isActive? '#121212' : '#ffffff')
 
+function bytesToSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(1024));
+    const formattedSize = (bytes / Math.pow(1024, i)).toFixed(2);
+    return new Intl.NumberFormat().format(formattedSize) + ' ' + sizes[i];
+}
+
 function onRequest (props) {
   let requestData = {}
   if (props) {
@@ -140,7 +148,17 @@ function onRequest (props) {
         max_page: requestData.pagination.rowsPerPage
       }
     }).then(res => {
-      rows.value = res.results
+      rows.value = res.results.map(item => {
+        return {
+          ...item,
+          name: item.name,
+          type: item.type,
+          size: bytesToSize(item.size),
+          owner: item.owner,
+          created_time: item.created_time,
+          updated_time: item.updated_time
+        }
+      })
       rowsCount.value = res.count
       userList.value = res.users
     }).catch(err => {

@@ -44,7 +44,7 @@ class MyHandler(FileSystemEventHandler):
             file_data = Files.objects.create(
                         name=detail.name,
                         type=detail.name.split('.')[-1].lower(),
-                        size=readable_file_size(detail.stat().st_size),
+                        size=detail.stat().st_size,
                         owner=detail.parent.name
                     )
             bomiot_signals.send(msg={
@@ -69,7 +69,7 @@ class MyHandler(FileSystemEventHandler):
             if file_data_check.exists():
                 old_instance = file_data_check.first()
                 new_instance = Files.objects.filter(name=detail.name, owner=detail.parent.name).first()
-                new_instance.size=readable_file_size(detail.stat().st_size)
+                new_instance.size=detail.stat().st_size
                 new_instance.is_delete = False
                 new_instance.save()
                 instance = Files.objects.filter(id=old_instance.id).first()
@@ -111,7 +111,7 @@ class MyHandler(FileSystemEventHandler):
             Files.objects.create(
                 name=move_to.name,
                 type=move_to.name.split('.')[-1].lower(),
-                size=readable_file_size(move_to.stat().st_size),
+                size=move_to.stat().st_size,
                 owner=move_to.parent.name,
                 shared_to=''
             )

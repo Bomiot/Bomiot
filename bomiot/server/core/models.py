@@ -96,7 +96,7 @@ class JobList(CoreModel):
 class Files(CoreModel):
     name = models.CharField(default='', max_length=255, blank=True, verbose_name="File Name")
     type = models.CharField(default='', max_length=255, blank=True, verbose_name="Type")
-    size = models.CharField(default='', max_length=255, blank=True, verbose_name="Size")
+    size = models.BigIntegerField(default=0, blank=True, verbose_name="Size")
     owner = models.CharField(default='', max_length=255, blank=True, verbose_name="Owner")
     shared_to = models.CharField(default='', max_length=255, blank=True, verbose_name="Shared To")
 
