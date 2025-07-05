@@ -34,6 +34,12 @@ def create_file(folder: str):
 
     if exists(join(working_space, 'LICENSE')) is False:
         shutil.copy2(join(file_path, 'LICENSE'), working_space)
+    
+    if exists(join(working_space, 'README.md')) is False:
+        shutil.copy2(join(file_path, 'README.md'), working_space)
+
+    if exists(join(working_space, 'performance.py')) is False:
+        shutil.copy2(join(file_path, 'performance.py'), working_space)
 
     log_path = join(working_space, 'logs')
     exists(log_path) or makedirs(log_path)
