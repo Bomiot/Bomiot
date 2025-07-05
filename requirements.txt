@@ -96,9 +96,6 @@ bomiot-message==0.4.5 ; python_version >= "3.9" and python_version < "4.0" \
     --hash=sha256:f0b116d5a6082bae055c0c2d4eb7102fc158dbe31b43d54062a341e46c84f0ce \
     --hash=sha256:fbbd215747897e6a4f74f74be164b7f509b4375b3a6b0fd70453def343b00e13 \
     --hash=sha256:fce64a32f0bb8cdfe596dca082eeb24fd9fcedb191cab52e12eb82a42cfbf8bf
-bomiot-process==0.9.10 ; python_version >= "3.9" and python_version < "4.0" \
-    --hash=sha256:b60fa387aec0d0f8d7e39cd150b26c785eecefcd5c8061e502e7b0a2735282de \
-    --hash=sha256:c094dededc0a9ccd7039471281f32405c4e66d0db05e1513f9ce640b64788471
 bomiot-token==0.7.0 ; python_version >= "3.9" and python_version < "4.0" \
     --hash=sha256:1dd81d06fc611c8fc575477ec41c60f99ae45cd30e6a80e7582436a50c595f5f \
     --hash=sha256:2634ea924799773ca0fd1d3a06127cdd37a3f25cd893be5dc0ab2ce15c976ccd \
