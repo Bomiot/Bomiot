@@ -215,7 +215,6 @@ def cmd():
         import django
         django.setup()
         from django.core.management import call_command
-        from django.conf import settings
         from django.apps import apps
         appname = args.appname
         empty = args.empty
@@ -274,7 +273,6 @@ def cmd():
         import importlib.resources
         from os.path import join
         from pathlib import Path
-        from bomiot_process import process
         from configparser import ConfigParser
         workspace_path = importlib.resources.files('bomiot').joinpath('server', 'workspace.ini')
         WORKING_SPACE_CONFIG = ConfigParser()
@@ -283,19 +281,17 @@ def cmd():
         if platform.system() == 'Windows':
             from bomiot.cmd.killport import kill_process_on_port
             kill_process_on_port(args.port)
-            process.process_stop(project_name=WORKING_SPACE)
-        process.monitor_workers(args.port, WORKING_SPACE)
-        lockfile = Path(join(WORKING_SPACE, 'deploy', 'bomiot_ready.lock'))
+        lockfile = Path(join(WORKING_SPACE, 'bomiot_ready.lock'))
         if lockfile.exists():
             lockfile.unlink()
-        workers = args.workers
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bomiot.server.server.settings")
         os.environ.setdefault('RUN_MAIN', 'true')
+        os.environ.setdefault('WORKERS', str(args.workers))
         uvicorn.run(
             args.app,
             host=args.host,
             port=args.port,
-            workers=workers,
+            workers=args.workers,
             log_level=args.log_level,
             uds=args.uds,
             ssl_keyfile=args.ssl_keyfile,
@@ -306,7 +302,7 @@ def cmd():
             backlog=args.backlog,
             timeout_keep_alive=args.timeout_keep_alive,
             timeout_graceful_shutdown=args.timeout_graceful_shutdown,
-            loop=args.loop,
+            loop=args.loop
         )
 
 

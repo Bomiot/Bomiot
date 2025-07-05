@@ -76,7 +76,7 @@ def check_token(request):
     return JsonResponse(context)
 
 
-def mdurl(request, mddocs):
+async def mdurl(request, mddocs):
     language = request.META.get('HTTP_LANUAGE', '')
     if not mddocs.endswith('.md'):
         return JsonResponse({'detail': others_message_return(language, 'Only support markdown file')})
