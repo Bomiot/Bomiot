@@ -1,9 +1,12 @@
 import sys
 import os
 import uvicorn
+import time
 from bomiot import version
 import argparse
 import psutil
+import multiprocessing
+import threading
 
 optional_title = 'Optional arguments'
 
@@ -142,7 +145,7 @@ parser_run = subparsers.add_parser(
     'run', help='Run server')
 parser_run.add_argument("--host", "-b", type=str, default="127.0.0.1", help="Default Domin: 127.0.0.1")
 parser_run.add_argument("--port", "-p", type=int, default=8000, help="Default Pore: 8000")
-parser_run.add_argument("--workers", "-w", type=int, default=2, help="CPU Core")
+parser_run.add_argument("--workers", "-w", type=int, default=1, help="CPU Core")
 parser_run.add_argument("--log-level", type=str, default="info", choices=["critical", "error", "warning", "info", "debug", "trace"], help="Log Level")
 parser_run.add_argument("--uds", type=str, default=None, help="UNIX domain socket")
 parser_run.add_argument("--ssl-keyfile", type=str, default=None, help="SSL Key")
@@ -151,7 +154,7 @@ parser_run.add_argument("--proxy-headers", action="store_true", help="X-Forwarde
 parser_run.add_argument("--http", type=str, default="httptools", choices=["auto", "h11", "httptools"], help="HTTP")
 parser_run.add_argument("--loop", "-l", type=str, default="auto", choices=["auto", "asyncio", "uvloop"], help="Asyncio Loop")
 parser_run.add_argument("--limit-concurrency", type=str, default=1000, help="Limit concurrency")
-parser_run.add_argument("--backlog", type=str, default=2048, help="Backlog")
+parser_run.add_argument("--backlog", type=int, default=128, help="Backlog")
 parser_run.add_argument("--timeout-keep-alive", type=str, default=5, help="Backlog")
 parser_run.add_argument("--timeout-graceful-shutdown", type=str, default=30, help="Time out shut down")
 parser_run.add_argument("--app", type=str, default="bomiot_asgi:application", help="ASGI Application")
@@ -267,25 +270,27 @@ def cmd():
         migrate()
     # run server
     elif command == 'run':
+        import platform
+        import importlib.resources
+        from os.path import join
+        from pathlib import Path
+        from bomiot_process import process
+        from configparser import ConfigParser
+        workspace_path = importlib.resources.files('bomiot').joinpath('server', 'workspace.ini')
+        WORKING_SPACE_CONFIG = ConfigParser()
+        WORKING_SPACE_CONFIG.read(workspace_path, encoding='utf-8')
+        WORKING_SPACE = WORKING_SPACE_CONFIG.get('space', 'name', fallback='Create your working space first')
+        if platform.system() == 'Windows':
+            from bomiot.cmd.killport import kill_process_on_port
+            kill_process_on_port(args.port)
+            process.process_stop(project_name=WORKING_SPACE)
+        process.monitor_workers(args.port, WORKING_SPACE)
+        lockfile = Path(join(WORKING_SPACE, 'deploy', 'bomiot_ready.lock'))
+        if lockfile.exists():
+            lockfile.unlink()
         workers = args.workers
-        if workers < 2:
-            workers = 2
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bomiot.server.server.settings")
         os.environ.setdefault('RUN_MAIN', 'true')
-        import django
-        django.setup()
-        from bomiot.server.core.models import UvicornProcess
-        process = UvicornProcess.objects.filter()
-        for i in process:
-            pid_data = i.pid
-            i.delete()
-            try:
-                process = psutil.Process(pid_data)
-                process.kill()
-                process.wait(timeout=1)
-            except:
-                continue
-        os.environ.setdefault('WORKERS', str(workers))
         uvicorn.run(
             args.app,
             host=args.host,
@@ -301,8 +306,9 @@ def cmd():
             backlog=args.backlog,
             timeout_keep_alive=args.timeout_keep_alive,
             timeout_graceful_shutdown=args.timeout_graceful_shutdown,
-            loop=args.loop
+            loop=args.loop,
         )
+
 
 # for console debugger
 if __name__ == '__main__':

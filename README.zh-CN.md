@@ -185,7 +185,7 @@ yarn install
 #### 3. 打开开发baseUrl
 
 ```bash
-# 创建数据库迁移
+# 修改axios.js
 vim my-project/templates/src/boot/axios.js
 
 ```
@@ -319,7 +319,7 @@ bomiot run [选项]
 选项:
   --host, -b HOST                服务器主机地址 (默认: 127.0.0.1)
   --port, -p PORT                服务器端口 (默认: 8000)
-  --workers -w WORKERS           工作进程数 (默认: 2)
+  --workers -w WORKERS           工作进程数 (默认: 1)
   --log-level LEVEL              日志级别 (critical/error/warning/info/debug/trace)
   --ssl-keyfile FILE             SSL 密钥文件
   --ssl-certfile FILE            SSL 证书文件
@@ -327,7 +327,7 @@ bomiot run [选项]
   --http HTTP                    HTTP 实现 (auto/h11/httptools)
   --loop LOOP                    异步循环 (auto/asyncio/uvloop)
   --limit-concurrency            最大并发请求数(默认：1000)
-  --backlog                      最大等待连接数(默认：2048)
+  --backlog                      最大等待连接数(默认：128)
   --timeout-keep-alive           HTTP 长连接超时时间(默认: 5)
   --timeout-graceful-shutdown    优雅关闭超时时间(默认：30)
 ```

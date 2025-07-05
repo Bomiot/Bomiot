@@ -274,7 +274,7 @@ def receiver_callback(data, method) -> dict:
                 print(f"class {type(receiver_check[1]).get('class')} can not find {receiver_path}")
         else:
             if hasattr(module, receiver_check[1]['method']):
-                result = getattr(instance, receiver_check[1]['method'])(data)
+                result = getattr(module, receiver_check[1]['method'])(data)
                 return result
             else:
                 print(f"{receiver_path} don't have {receiver_check[1]['method']} method")
@@ -316,7 +316,7 @@ def receiver_file_callback(data, method) -> dict:
                 print(f"class {type(receiver_check[1]).get('class')} can not find {receiver_path}")
         else:
             if hasattr(module, receiver_check[1]['method']):
-                result = getattr(instance, receiver_check[1]['method'])(data)
+                result = getattr(module, receiver_check[1]['method'])(data)
                 return result
             else:
                 print(f"{receiver_path} don't have {receiver_check[1]['method']} method")
@@ -346,7 +346,7 @@ def receiver_server_callback(data, method) -> dict:
                 print(f"class {type(receiver_check[1]).get('class')} can not find {receiver_path}")
         else:
             if hasattr(module, receiver_check[1]['method']):
-                result = getattr(instance, receiver_check[1]['method'])(data)
+                result = getattr(module, receiver_check[1]['method'])(data)
                 return result
             else:
                 print(f"{receiver_path} don't have {receiver_check[1]['method']} method")

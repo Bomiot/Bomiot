@@ -3,7 +3,8 @@ from django.db import connections, connection, transaction
 from django.db.migrations.executor import MigrationExecutor
 from django.db.models.signals import post_migrate
 import os
-import time
+from os.path import join
+from time import sleep
 import threading
 import bomiot_core
 
@@ -14,50 +15,44 @@ class CoreConfig(AppConfig):
     name = 'bomiot.server.core'
 
     def ready(self):
+        from django.conf import settings
+        from bomiot.server.core.models import API
+        from bomiot.server.core import signal
         post_migrate.connect(do_init_data, sender=self)
         try:
-            from bomiot.server.core.models import API
             if not API.objects.filter().exists():
                 init_api()
         except Exception as e:
             print(f"Initial API initialization failed: {e}")
-        workers = int(os.environ.get('WORKERS', 0))
-        if workers > 0:
-            while True:
-                try:
-                    from bomiot.server.core.models import UvicornProcess
-                    with transaction.atomic():
-                        UvicornProcess.objects.create(pid=os.getpid())
-                        break
-                except:
-                    continue
-            process_workders = UvicornProcess.objects.filter().count()
-            if process_workders == workers:
-                from bomiot.server.core import signal
-                from bomiot.server.server.views import init_permission
-                from bomiot.server.core.scheduler import sm
-                from bomiot.server.core.observer import ob
-                from bomiot.server.core.server_monitor import start_monitoring
-                from bomiot.server.server.views import init_permission
-                from bomiot.server.core.signal import bomiot_signals
-                start_monitoring()
-                sm.start()
-                ob.start()
-                def backgrun_init():
-                    bomiot_core.cores()
-                    init_permission()
-                init_thread = threading.Thread(target=backgrun_init, daemon=True)
-                init_thread.start()
+        lockfile = f"{join(settings.WORKING_SPACE, 'deploy', 'bomiot_ready.lock')}"
+        try:
+            fd = os.open(lockfile, os.O_CREAT | os.O_EXCL | os.O_RDWR)
+            from bomiot.server.server.views import init_permission
+            from bomiot.server.core.scheduler import sm
+            from bomiot.server.core.observer import ob
+            from bomiot.server.core.server_monitor import start_monitoring
+            from bomiot.server.server.views import init_permission
+            from bomiot.server.core.signal import bomiot_signals
+            start_monitoring()
+            sm.start()
+            ob.start()
+            def backgrun_init():
+                # bomiot_core.cores()
+                init_permission()
+            init_thread = threading.Thread(target=backgrun_init, daemon=True)
+            init_thread.start()
 
-                print('')
-                print("  $$$$$$    $$$$$   $$$       $$$  $$   $$$$$   $$$$$$")
-                print("  $$   $$  $$   $$  $$ $     $ $$  $$  $$   $$    $$")
-                print("  $$$$$$$  $$   $$  $$  $   $  $$  $$  $$   $$    $$")
-                print("  $$   $$  $$   $$  $$   $ $   $$  $$  $$   $$    $$")
-                print("  $$$$$$    $$$$$   $$    $    $$  $$   $$$$$     $$")
-                print('')
+            print('')
+            print("  $$$$$$    $$$$$   $$$       $$$  $$   $$$$$   $$$$$$")
+            print("  $$   $$  $$   $$  $$ $     $ $$  $$  $$   $$    $$")
+            print("  $$$$$$$  $$   $$  $$  $   $  $$  $$  $$   $$    $$")
+            print("  $$   $$  $$   $$  $$   $ $   $$  $$  $$   $$    $$")
+            print("  $$$$$$    $$$$$   $$    $    $$  $$   $$$$$     $$")
+            print('')
 
-
+        except FileExistsError:
+            pass
+                
 def do_init_data(sender, **kwargs):
     init_api()
 

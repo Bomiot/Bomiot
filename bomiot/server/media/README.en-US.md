@@ -166,7 +166,7 @@ yarn install
 #### 2. Open Development baseUrl
 
 ```bash
-# Create database migration
+# Change axios.js
 vim my-project/templates/src/boot/axios.js
 
 ```
@@ -300,7 +300,7 @@ bomiot run [options]
 Options:
   --host, -b HOST                Server host address (default: 127.0.0.1)
   --port, -p PORT                Server port (default: 8000)
-  --workers -w WORKERS           Number of worker processes (default: 2)
+  --workers -w WORKERS           Number of worker processes (default: 1)
   --log-level LEVEL              Log level (critical/error/warning/info/debug/trace)
   --ssl-keyfile FILE             SSL key file
   --ssl-certfile FILE            SSL certificate file
@@ -308,7 +308,7 @@ Options:
   --http HTTP                    HTTP implementation (auto/h11/httptools)
   --loop LOOP                    Async loop (auto/asyncio/uvloop)
   --limit-concurrency            Maximum concurrent requests (default: 1000)
-  --backlog                      Maximum waiting connections (default: 2048)
+  --backlog                      Maximum waiting connections (default: 128)
   --timeout-keep-alive           HTTP keep-alive timeout (default: 5)
   --timeout-graceful-shutdown    Graceful shutdown timeout (default: 30)
 ```

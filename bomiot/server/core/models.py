@@ -39,16 +39,6 @@ class Permission(CoreModel):
         ordering = ['-id']
 
 
-class UvicornProcess(CoreModel):
-    pid = models.IntegerField(default=0, verbose_name="Uvicorn Process")
-
-    class Meta:
-        db_table = settings.BASE_DB_TABLE + '_uvicornprocess'
-        verbose_name = settings.BASE_DB_TABLE + ' Uvicorn Process'
-        verbose_name_plural = verbose_name
-        ordering = ['id']
-
-
 class API(CoreModel):
     id = models.AutoField(primary_key=True)
     method = models.CharField(max_length=18, verbose_name="Method", default='GET')
