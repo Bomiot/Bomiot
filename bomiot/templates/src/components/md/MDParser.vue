@@ -31,7 +31,7 @@ import markdownItDeflist from 'markdown-it-deflist'
 import markdownItAbbr from 'markdown-it-abbr'
 import markdownItCodeCopy from 'markdown-it-code-copy'
 import 'highlight.js/styles/monokai.css'
-import { useMeta, useQuasar } from "quasar"
+import { useQuasar } from "quasar"
 import { useLanguageStore } from 'stores/language'
 import hljs from 'highlight.js'
 import { useI18n } from "vue-i18n"
@@ -45,9 +45,6 @@ const rightDrawerStore = userightDrawerStore()
 const source = computed(() => mdStore.mdDocsGet)
 const markdownDom = ref('')
 const darkShow = ref(false)
-const title = ref('')
-const description = ref('')
-const keywords = ref('')
 const toc = ref([])
 const copyText = ref('')
 
@@ -91,7 +88,7 @@ function MDHtml() {
     md.use(markdownItKatex)
     md.use(emoji)
     md.use(markdownItCodeCopy, {
-      iconStyle: 'font-size: 21px; opacity: 0.4; color: #fff',
+      iconStyle: 'opacity: 0.4; color: #fff;',
       iconClass: 'mdi mdi-content-copy',
       buttonStyle: 'position: absolute; top: 7.5px; right: 6px; cursor: pointer; outline: none; background-color: transparent;',
       buttonClass: '',
@@ -146,7 +143,7 @@ function MDHtml() {
     md.use(markdownItKatex)
     md.use(emoji)
     md.use(markdownItCodeCopy, {
-      iconStyle: 'font-size: 21px; opacity: 0.4; color: #fff;',
+      iconStyle: 'opacity: 0.4; color: #fff;',
       iconClass: 'mdi mdi-content-copy',
       buttonStyle: 'position: absolute; top: 7.5px; right: 6px; cursor: pointer; outline: none; background-color: transparent;',
       buttonClass: '',
@@ -191,24 +188,10 @@ function mdDataChange() {
       'Cache-Control': 'no-cache',
       'Pragma': 'no-cache'
     },
-    timestamp: new Date().getTime()
   }).then(res => {
     if (!res.detail) {
-      get({
-        url: res,
-        params: {},
-        headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
-        },
-        timestamp: new Date().getTime()
-      }).then(res => {
-        mdStore.mdDocsChange(res)
-        MDHtml()
-      }).catch(err => {
-        $q.loading.hide()
-        return Promise.reject(err)
-      })
+      mdStore.mdDocsChange(res)
+      MDHtml()
     } else {
       $q.loading.hide()
       return Promise.reject(new Error('Failed to load README file'))
@@ -219,20 +202,8 @@ function mdDataChange() {
   })
 }
 
-
-useMeta(() => {
-  return {
-    title: title.value,
-    meta: {
-      description: {name: 'description', content: description.value},
-      keywords: {name: 'keywords', content: keywords.value},
-    }
-  }
-})
-
-
 onMounted(() => {
-  mdDataChange()
+  // mdDataChange()
 })
 
 

@@ -46,6 +46,8 @@ def deploy(folder: str):
                         f'{join(getcwd(), "logs", f"{sys.argv[2]}_error.log")}')
                 supervisor_config.set(f'program:{sys.argv[2]}', 'stdout_logfile_maxbytes', '20MB')
                 supervisor_config.set(f'program:{sys.argv[2]}', 'stdout_logfile_backups', '10')
+                supervisor_config.set(f'program:{sys.argv[2]}', 'stderr_logfile_maxbytes', '20MB')
+                supervisor_config.set(f'program:{sys.argv[2]}', 'stderr_logfile_backups', '10')
 
                 supervisor_config.write(open(supervisor_path, "wt"))
 

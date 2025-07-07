@@ -55,6 +55,8 @@ export default {
   menuTab: {
     standard: '基础',
     server: '服务器',
+    basic: '入门',
+    db: '数据库',
   },
   menuLink: {
     home: '首页',

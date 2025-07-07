@@ -1,5 +1,5 @@
 <template>
-  <q-tabs mobile-arrows v-model="tab" align="left" :indicator-color="indicatorColor">
+  <q-tabs mobile-arrows v-model="tab" align="left" :indicator-color="$q.dark.isActive ? 'yellow' : 'black'">
     <q-tab v-for="(list, index) in tabList"
            :key="index"
            v-bind="list"
@@ -20,21 +20,14 @@ const { t } = useI18n()
 const tabStore = useTabDataStore()
 
 const tab = ref('')
-const indicatorColor = ref('black')
 
 const tabList = computed(() => [
   { name: 'standard', label: t('menuTab.standard') },
   { name: 'server', label: t('menuTab.server') },
   { name: 'api', label: 'api' },
+  { name: 'basic', label: t('menuTab.basic') },
+  { name: 'db', label: t('menuTab.db') },
 ])
-
-function tabColor () {
-  if ($q.dark.isActive) {
-    indicatorColor.value = 'yellow'
-  } else {
-    indicatorColor.value = 'black'
-  }
-}
 
 function tabChange (e) {
   tabStore.tabDataChange(e)
@@ -42,17 +35,10 @@ function tabChange (e) {
 
 onMounted(() => {
   tab.value = tabStore.tabData
-  tabColor()
 })
 
 watch(() => tabStore.tabData, val => {
   tab.value = val
-})
-
-watch(() => $q.dark.isActive, val => {
-  if (val) {
-    tabColor()
-  }
 })
 
 </script>

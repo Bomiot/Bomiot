@@ -5,7 +5,7 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', name: 'home', component: () => import('pages/IndexPage.vue') },
-      { path: 'readme', component: () => import('pages/READMEReader.vue') },
+      { path: 'readme', component: () => import('pages/basic/READMEReader.vue') },
       { path: 'upload', component: () => import('pages/UploadCenter.vue') },
       { path: 'doc', component: () => import('pages/DocCenter.vue') },
       { path: 'table', component: () => import('pages/TableReader.vue') },
@@ -23,6 +23,12 @@ const routes = [
       { path: 'pidcharts', component: () => import('pages/PIDCharts.vue') },
       { path: 'api', component: () => import('pages/APIReader.vue') },
       { path: 'example', component: () => import('pages/ExampleReader.vue') },
+      { path: 'locust', component: () => import('pages/basic/LocustReader.vue') },
+      { path: 'poetry', component: () => import('pages/basic/PoetryReader.vue') },
+      { path: 'supervisor', component: () => import('pages/basic/SupervisorReader.vue') },
+      { path: 'sqlite', component: () => import('pages/db/SqliteReader.vue') },
+      { path: 'mysql', component: () => import('pages/db/MysqlReader.vue') },
+      { path: 'postgresql', component: () => import('pages/db/PostgresqlReader.vue') },
     ]
   },
   {

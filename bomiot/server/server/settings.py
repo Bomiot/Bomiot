@@ -149,7 +149,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'bomiot.server.core.middlewares.DisableMediaCachingMiddleware'
 ]
 
 ROOT_URLCONF = 'bomiot.server.server.urls'

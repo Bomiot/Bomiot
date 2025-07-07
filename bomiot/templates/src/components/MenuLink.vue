@@ -39,7 +39,6 @@ const menuStore = useMenuDataStore()
 
 const menuLinks = computed(() => [
   { tab: 'standard', title: t('menuLink.home'), icon: 'home', link: '/' },
-  { tab: 'standard', title: 'README', icon: 'menu_book', link: '/readme' },
   { tab: 'standard', title: t('menuLink.user'), icon: 'people', link: '/user' },
   { tab: 'standard', title: t('menuLink.team'), icon: 'diversity_3', link: '/team' },
   { tab: 'standard', title: t('menuLink.department'), icon: 'diversity_2', link: '/department' },
@@ -56,6 +55,13 @@ const menuLinks = computed(() => [
   { tab: 'server', title: 'PID Tree', icon: 'view_quilt', link: '/pidcharts' },
   { tab: 'api', title: 'API', icon: 'api', link: '/api' },
   { tab: 'api', title: t('menuLink.example'), icon: 'more_horiz', link: '/example' },
+  { tab: 'basic', title: 'README', icon: 'img:icons/logo.png', link: '/readme' },
+  { tab: 'basic', title: 'Locust', icon: 'img:statics/icons/locust.png', link: '/locust' },
+  { tab: 'basic', title: 'Poetry', icon: 'img:statics/icons/poetry.png', link: '/poetry' },
+  { tab: 'basic', title: 'Supervisor', icon: 'img:statics/icons/supervisor.png', link: '/supervisor' },
+  { tab: 'db', title: 'Sqlite', icon: 'img:statics/icons/sqlite.svg', link: '/sqlite' },
+  { tab: 'db', title: 'MySQL', icon: 'img:statics/icons/mysql.svg', link: '/mysql' },
+  { tab: 'db', title: 'PostgreSQL', icon: 'img:statics/icons/postgresql.svg', link: '/postgresql' },
 ])
 
 

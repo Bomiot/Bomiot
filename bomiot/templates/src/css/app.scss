@@ -112,6 +112,70 @@
   line-height: 1.6;
 }
 
+.markdownStyle-dark {
+  width: 70%;
+  padding-right: 20px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #fff;
+  opacity: 0;
+  transform: translateY(200px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  
+  &.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  h1 { font-size: 2em; }
+  h2 { font-size: 1.5em; }
+  h3 { font-size: 1.25em; }
+  h4 { font-size: 1em; }
+  h5 { font-size: 0.875em; }
+  h6 { font-size: 0.85em; }
+
+  p {
+    margin-bottom: 16px;
+  }
+
+  code {
+    background-color: #333;
+    color: #fff;
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 0.9em;
+  }
+
+  pre {
+    background-color: #333;
+    border-radius: 6px;
+    padding: 16px;
+    overflow: auto;
+    margin-bottom: 16px;
+
+    code {
+      background-color: transparent;
+      padding: 0;
+      color: #fff;
+    }
+  }
+
+  blockquote {
+    margin: 0 0 16px;
+    padding: 0 1em;
+    color: #6a737d;
+    border-left: 0.25em solid #dfe2e5;
+  }
+}
+
 .markdownStyle {
   width: 70%;
   padding-right: 20px;
@@ -119,24 +183,12 @@
   line-height: 1.6;
   color: #333;
   opacity: 0;
-  transform: translateY(500px);
-  transition: opacity 1s ease, transform 1s ease;
+  transform: translateY(200px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
 
   &.fade-in {
     opacity: 1;
     transform: translateY(0);
-  }
-
-  .markdownStyle-dark {
-    width: 70%;
-    padding-right: 20px;
-    font-size: 16px;
-    line-height: 1.6;
-    color: #fff;
-    opacity: 0;
-    transform: translateY(500px);
-    transition: opacity 1s ease, transform 1s ease;
-  
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -195,7 +247,7 @@
   width: 280px;
   max-height: calc(100vh - 120px);
   overflow-y: auto;
-  background: #fff;
+  background-color: transparent;
   padding: 20px;
   z-index: 1000;
 
@@ -252,7 +304,7 @@
   width: 280px;
   max-height: calc(100vh - 120px);
   overflow-y: auto;
-  background: #121212;
+  background-color: transparent;
   padding: 20px;
   z-index: 1000;
 

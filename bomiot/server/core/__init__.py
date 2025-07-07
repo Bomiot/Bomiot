@@ -1,1 +1,1 @@
-from .middlewares import JwtAuthorizationMiddleware, DisableMediaCachingMiddleware
+from .middlewares import JwtAuthorizationMiddleware

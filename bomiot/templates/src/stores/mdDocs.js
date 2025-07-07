@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 
 export const useMDDataStore = defineStore('markdownDocs', {
   state: () => ({
-    mdDocs: "'# Hi!! GreaterWMS'",
+    mdDocs: "'# Hi!! Bomiot'",
     docName: ''
   }),
 

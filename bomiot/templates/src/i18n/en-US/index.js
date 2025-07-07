@@ -55,6 +55,8 @@ export default {
   menuTab: {
     standard: 'Standard',
     server: 'Server',
+    basic: 'Basic',
+    db: 'Database',
   },
   menuLink: {
     home: 'Home',

@@ -62,7 +62,7 @@ def logins(request):
 
 
 @login_required
-def logouts(request):
+async def logouts(request):
     if request.user.is_authenticated:
         logout(request)
         return JsonResponse({'msg': others_message_return(request.META.get('HTTP_LANGUAGE', ''), 'Welcome Back Again')})
@@ -70,7 +70,7 @@ def logouts(request):
         return JsonResponse(login_message_return(request.META.get('HTTP_LANGUAGE', ''), 'User Not Log In'))
 
 
-def check_token(request):
+async def check_token(request):
     token = request.META.get('HTTP_TOKEN')
     context = parse_payload(token)
     return JsonResponse(context)
@@ -92,21 +92,27 @@ async def mdurl(request, mddocs):
             if i.startswith(start_words[0]) and i.endswith('.md'):
                 md_check_list_all.append(i)
     if len(md_check_list_only) == 1:
-        return HttpResponse(f"media/{mddocs}")
+        response = FileResponse(open(join(settings.MEDIA_ROOT, mddocs), 'rb'))
+        response['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        response['Pragma'] = 'no-cache'
+        response['Expires'] = '0'
+        return response
     else:
         if len(md_check_list_all) == 0:
             return JsonResponse({'detail': others_message_return(language, 'Markdown file not found')})
-        return HttpResponse(f"media/{md_check_list_all[0]}")
-    
+        response = FileResponse(open(join(settings.MEDIA_ROOT, md_check_list_all[0]), 'rb'))
+        response['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        response['Pragma'] = 'no-cache'
+        response['Expires'] = '0'
+        return response
 
-def favicon(request):
+async def favicon(request):
     path = join(settings.MEDIA_ROOT, 'img', 'logo.png')
     resp = FileResponse(open(path, 'rb'))
     resp['Cache-Control'] = 'max-age=864000000000'
     return resp
 
-
-def statics(request):
+async def statics(request):
     if cache.has_key("templates_path") is False:
             CONFIG = ConfigParser()
             CONFIG.read(join(settings.WORKING_SPACE, 'setup.ini'), encoding='utf-8')
@@ -131,7 +137,7 @@ def statics(request):
     resp['Cache-Control'] = 'max-age=864000000000'
     return resp
 
-def google(request):
+async def google(request):
     return JsonResponse({})
 
 def queryset_to_json(queryset):
