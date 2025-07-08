@@ -6,5 +6,5 @@ User = get_user_model()
 fastapi_app = FastAPI(title="FastAPI APP")
 
 @fastapi_app.get("/test/")
-async def read_test():
+async def test():
     return {"msg": "This is FastAPI API"}

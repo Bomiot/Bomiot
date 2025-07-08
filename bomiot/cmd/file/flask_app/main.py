@@ -6,5 +6,5 @@ User = get_user_model()
 flask_app = Flask(__name__)
 
 @flask_app.route("/test/")
-def read_users():
+def test():
     return jsonify({"msg": "This is a Flask API"})

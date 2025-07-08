@@ -87,7 +87,6 @@ class SchedulerManager(Thread):
             config = json.loads(job.configuration)
             trigger_type = job.trigger
             if trigger_type not in ARGS_MAP:
-                print(f"Invalid trigger type: {trigger_type} for job {job.job_id}")
                 return
             trigger_args = {
                 arg: config.get(arg) 
@@ -97,18 +96,15 @@ class SchedulerManager(Thread):
             module = importlib.import_module(job.module_name)
             job_func = getattr(module, job.func_name)
             if not callable(job_func):
-                print(f"Job function {job.module_name}.{job.func_name} is not callable")
                 return
             self.scheduler.add_job(
                 func=job_func,
                 trigger=trigger_type,
                 id=job.job_id,
                 replace_existing=True,
-                **trigger_args
+                kwargs={'sender': job_func, **trigger_args}
             )
-            print(f"Job {job.job_id} updated with trigger: {trigger_type}")
         except Exception as e:
-            print(f"Error updating job {job.job_id}: {str(e)}")
             job.type = False
             job.save()
 

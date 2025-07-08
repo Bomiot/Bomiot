@@ -478,20 +478,6 @@ bomiot_signals.send(sender=my_scheduled_task, msg={
 })
 ```
 
-### One-time Execution Tasks Only
-
-```python
-from bomiot.server.core.signal import bomiot_signals
-
-def my_once_task(sender, **kwargs):
-    print("Execute one-time task")
-    
-# Send signal to bomiot anywhere to execute one-time task
-bomiot_signals.send(sender=my_once_task, msg={
-    'models': 'Function'
-})
-```
-
 ---
 
 ## 🤝 Contributing

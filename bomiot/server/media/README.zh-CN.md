@@ -458,20 +458,6 @@ bomiot_signals.send(sender=my_scheduled_task, msg={
 })
 ```
 
-### 仅一次性执行的任务
-
-```python
-from bomiot.server.core.signal import bomiot_signals
-
-def my_once_task(sender, **kwargs):
-    print("执行一次性任务")
-    
-# 任意位置给bomiot发送信号，即可以执行一次性任务
-bomiot_signals.send(sender=my_once_task, msg={
-    'models': 'Fuction'
-})
-```
-
 ---
 
 ## 🤝 贡献指南

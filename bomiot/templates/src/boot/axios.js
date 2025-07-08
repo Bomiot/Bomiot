@@ -127,37 +127,37 @@ api.interceptors.response.use(
 );
 
 async function throttledGet({ url, params }) {
-  return requestThrottler.throttleRequest(() => 
+  return requestThrottler.throttleRequest(() =>
     api.get(url, { params: { ...params } })
   );
 }
 
 async function throttledPost(url, data) {
-  return requestThrottler.throttleRequest(() => 
+  return requestThrottler.throttleRequest(() =>
     api.post(url, data)
   );
 }
 
 async function throttledPut(url, data) {
-  return requestThrottler.throttleRequest(() => 
+  return requestThrottler.throttleRequest(() =>
     api.put(url, data)
   );
 }
 
 async function throttledPatch(url, data) {
-  return requestThrottler.throttleRequest(() => 
+  return requestThrottler.throttleRequest(() =>
     api.patch(url, data)
   );
 }
 
 async function throttledDelete(url) {
-  return requestThrottler.throttleRequest(() => 
+  return requestThrottler.throttleRequest(() =>
     api.delete(url)
   );
 }
 
 async function throttledFileUpload(url, formData, onProgress = null) {
-  return requestThrottler.throttleRequest(() => 
+  return requestThrottler.throttleRequest(() =>
     api.post(url, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -178,12 +178,12 @@ export default boot(({ app }) => {
   app.config.globalProperties.$axios = axios
 })
 
-export { 
-  api, 
-  throttledGet as get, 
-  throttledPost as post, 
-  throttledPut as put, 
-  throttledPatch as patch, 
+export {
+  api,
+  throttledGet as get,
+  throttledPost as post,
+  throttledPut as put,
+  throttledPatch as patch,
   throttledDelete as deleteData,
   throttledFileUpload as fileUpload,
   baseURL

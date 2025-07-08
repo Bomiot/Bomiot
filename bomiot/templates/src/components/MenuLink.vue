@@ -64,7 +64,6 @@ const menuLinks = computed(() => [
   { tab: 'db', title: 'PostgreSQL', icon: 'img:statics/icons/postgresql.svg', link: '/postgresql' },
 ])
 
-
 function menuChange (e) {
   e.routerTo = e.link
   menuLinks.value.some(item =>{

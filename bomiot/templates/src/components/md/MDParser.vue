@@ -208,6 +208,7 @@ onMounted(() => {
 
 
 onBeforeUnmount(() => {
+  mdStore.docNameChange('')
   rightDrawerStore.controlRightDrawer(false)
 })
 
