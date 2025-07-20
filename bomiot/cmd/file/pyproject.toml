@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bomiot"
-version = "0.9.15"
+version = "1.0.0"
 description = "Powerful Distributed Document Management Framework & Full-Stack Development Platform"
 authors = ["Bomiot <Singosgu@gmail.com>"]
 readme = "README.md"
@@ -27,7 +27,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4.0"
-bomiot = ">=0.9.13"
+bomiot = ">=1.0.0"
 
 [build-system]
 requires = ["poetry-core"]
