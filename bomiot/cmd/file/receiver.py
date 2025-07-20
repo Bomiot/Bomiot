@@ -5,14 +5,6 @@ from django.core.cache import cache
 
 
 # class ExampleClass(object):
-#     def time_ns(self):
-#         """
-#         Get the current time in nanoseconds.
-#         :return: Current time in nanoseconds.
-#         """
-#         from time import time_ns
-#         import random
-#         return time_ns() + random.randint(0, 100000)
 
 #     def example_get(self, data):
 #         print(data.get('query_params').get('params'))

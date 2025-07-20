@@ -73,13 +73,13 @@ zookeeper = ["kazoo"]
 
 [[package]]
 name = "asgiref"
-version = "3.9.0"
+version = "3.9.1"
 description = "ASGI specs, helper code, and adapters"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "asgiref-3.9.0-py3-none-any.whl", hash = "sha256:06a41250a0114d2b6f6a2cb3ab962147d355b53d1de15eebc34a9d04a7b79981"},
-    {file = "asgiref-3.9.0.tar.gz", hash = "sha256:3dd2556d0f08c4fab8a010d9ab05ef8c34565f6bf32381d17505f7ca5b273767"},
+    {file = "asgiref-3.9.1-py3-none-any.whl", hash = "sha256:f3bba7092a48005b5f5bacd747d36ee4a5a61f4a269a6df590b43144355ebd2c"},
+    {file = "asgiref-3.9.1.tar.gz", hash = "sha256:a5ab6582236218e5ef1648f242fd9f10626cfd4de8dc377db215d5d5098e3142"},
 ]
 
 [package.dependencies]
@@ -145,30 +145,6 @@ files = [
     {file = "bomiot_control-0.1.2-cp39-cp39-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:178e5e326c9029e143fbf640b708e46a31c71058169dd5aef2db377417a9e64c"},
     {file = "bomiot_control-0.1.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ebef39507002bce8dd1b0333b8a7207f0a49639d9fead1311b99ebb270265a70"},
     {file = "bomiot_control-0.1.2-cp39-cp39-win_amd64.whl", hash = "sha256:597b01b133f5540481d8bc21a033577b8af4563dee7231ffcb0c9819c4bb4f0d"},
-]
-
-[[package]]
-name = "bomiot-core"
-version = "0.5.8"
-description = "Bomiot Core"
-optional = false
-python-versions = ">=3.9"
-files = [
-    {file = "bomiot_core-0.5.8-cp310-cp310-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:73c22aa53e55a4547fb17a48676647a8c31bb4abe065385a27c1fe9ce6350920"},
-    {file = "bomiot_core-0.5.8-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:fdd599caf3ecc052b783572dc31c145b9c68fffbb71e2ea52003e3773a55c071"},
-    {file = "bomiot_core-0.5.8-cp310-cp310-win_amd64.whl", hash = "sha256:ca24f006f3388bc70973ff3b58176d748199572ac8810d116855aede15c216ee"},
-    {file = "bomiot_core-0.5.8-cp311-cp311-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:20474bf48fcc2f80e3d4efd60f4c90b9d3c869f4c7227b2a560759ca86aee731"},
-    {file = "bomiot_core-0.5.8-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:594f53785d69bd8291a616423292bb3818de0ec6d4f939473b861880ea950c5d"},
-    {file = "bomiot_core-0.5.8-cp311-cp311-win_amd64.whl", hash = "sha256:1ca96f5c2ad9b99b1e3b25f180e2374a35a1ed8305c9d13bccb4faae765bea97"},
-    {file = "bomiot_core-0.5.8-cp312-cp312-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:215ac91864f2bfcc0946072828351a2d97319e9865ddb33b78d265cbc917b202"},
-    {file = "bomiot_core-0.5.8-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bd17e0f10f66ef733b3ddcf67c762df8a3b0a7aea1012371a95692ff6a8a3d69"},
-    {file = "bomiot_core-0.5.8-cp312-cp312-win_amd64.whl", hash = "sha256:33bb72cc8a3a10307ebfffe45f5640d35d18bffe6cc422b302d03cb6ab1c8c7d"},
-    {file = "bomiot_core-0.5.8-cp313-cp313-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:fa5e2448fd51f497be41d6a8f05f177734ed634b26b42ed57787f608dd400bd6"},
-    {file = "bomiot_core-0.5.8-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b39c73408e95ce715bfc283f94f4beabccfd654f2cbc92489b68d5dc497c44c1"},
-    {file = "bomiot_core-0.5.8-cp313-cp313-win_amd64.whl", hash = "sha256:c8bf9be1e09b9043aa181e8580d7f0d1ffc6dae6d610e21950f23c7b1394abd8"},
-    {file = "bomiot_core-0.5.8-cp39-cp39-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:d6ed7ceeaa6a580604ecb001ae43197072772c6c6a78dcdfe3b60d01af38fafe"},
-    {file = "bomiot_core-0.5.8-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9804680a8d97110f653d1eecc0425dfe5658e1e2297802628cd379450dcd47c8"},
-    {file = "bomiot_core-0.5.8-cp39-cp39-win_amd64.whl", hash = "sha256:7b9eba7d805623546a70fe1aa91aa2f0d89f54f37011d696934ed3108f72f896"},
 ]
 
 [[package]]
@@ -245,13 +221,13 @@ files = [
 
 [[package]]
 name = "certifi"
-version = "2025.6.15"
+version = "2025.7.14"
 description = "Python package for providing Mozilla's CA Bundle."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "certifi-2025.6.15-py3-none-any.whl", hash = "sha256:2e0c7ce7cb5d8f8634ca55d2ba7e6ec2689a2fd6537d8dec1296a477a4910057"},
-    {file = "certifi-2025.6.15.tar.gz", hash = "sha256:d747aa5a8b9bbbb1bb8c22bb13e22bd1f18e9796defa16bab421f7f7a317323b"},
+    {file = "certifi-2025.7.14-py3-none-any.whl", hash = "sha256:6b31f564a415d79ee77df69d757bb49a5bb53bd9f756cbbe24394ffd6fc1f4b2"},
+    {file = "certifi-2025.7.14.tar.gz", hash = "sha256:8ea99dbdfaaf2ba2f9bac77b9249ef62ec5218e7c2b2e903378ed5fccf765995"},
 ]
 
 [[package]]
@@ -1856,5 +1832,5 @@ type = ["pytest-mypy"]
 
 [metadata]
 lock-version = "2.0"
-python-versions = ">=3.9,<4.0"
-content-hash = "bf84272ebe1f6fff21cd7e0c673cba3ae29d23a3f48e441cd1554bd7fdf55052"
+python-versions = ">=3.9,<=3.13"
+content-hash = "6acd5cb127b74cd4bc2eba38188637400d5cc84e1a2d9dc27c05e3f56be79687"

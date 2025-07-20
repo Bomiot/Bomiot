@@ -21,6 +21,7 @@ notice.*
 /admin
 setup.ini
 asgi.py
+headers.py
 /.history
 auth_key.py
 *.egg

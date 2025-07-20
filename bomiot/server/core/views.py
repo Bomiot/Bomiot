@@ -21,7 +21,6 @@ from bomiot_message import permission_message_return, detail_message_return, msg
 from django.contrib.auth import get_user_model
 from django.db.models import Q
 from django.conf import settings
-from django.core.cache import cache
 
 User = get_user_model()
 

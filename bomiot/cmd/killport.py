@@ -19,7 +19,8 @@ def kill_process_on_port(port: int):
                         parts = line.split()
                         if len(parts) >= 5:
                             pid = parts[-1]
-                            subprocess.run(f'taskkill /PID {pid} /F', shell=True)
+                            if pid != 0:
+                                subprocess.run(f'taskkill /PID {pid} /F', shell=True)
         except Exception as e:
             print(f"Error: {e}")
     

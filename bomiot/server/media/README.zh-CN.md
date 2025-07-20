@@ -355,8 +355,7 @@ my-project/                    # 项目目录
 ├── files.py                   # 文件信号
 ├── receiver.py                # 数据API信号
 ├── server.py                  # 服务器信号
-├── README.md                  # ReadME文档
-└── setup.ini                  # 项目配置文件
+└── README.md                  # ReadME文档
 dbs/                           # 数据库文件
 logs/                          # 系统日志
 setup.ini                      # 项目配置文件

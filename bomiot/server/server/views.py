@@ -1,8 +1,9 @@
 import json, orjson
 import mimetypes
 import os
+import aiofiles
 from django.conf import settings
-from django.http import JsonResponse, HttpResponse, FileResponse
+from django.http import JsonResponse, HttpResponse, FileResponse, StreamingHttpResponse
 from wsgiref.util import FileWrapper
 from configparser import ConfigParser
 from django.contrib.auth import authenticate, login, logout
@@ -92,7 +93,11 @@ async def mdurl(request, mddocs):
             if i.startswith(start_words[0]) and i.endswith('.md'):
                 md_check_list_all.append(i)
     if len(md_check_list_only) == 1:
-        response = FileResponse(open(join(settings.MEDIA_ROOT, mddocs), 'rb'))
+        async def file_iterator():
+            async with aiofiles.open(join(settings.MEDIA_ROOT, mddocs), 'rb') as f:
+                while chunk := await f.read(8192):
+                    yield chunk
+        response = StreamingHttpResponse(file_iterator())
         response['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
         response['Pragma'] = 'no-cache'
         response['Expires'] = '0'
@@ -100,19 +105,23 @@ async def mdurl(request, mddocs):
     else:
         if len(md_check_list_all) == 0:
             return JsonResponse({'detail': others_message_return(language, 'Markdown file not found')})
-        response = FileResponse(open(join(settings.MEDIA_ROOT, md_check_list_all[0]), 'rb'))
+        async def file_iterator():
+            async with aiofiles.open(join(settings.MEDIA_ROOT, mddocs), 'rb') as f:
+                while chunk := await f.read(8192):
+                    yield chunk
+        response = StreamingHttpResponse(file_iterator())
         response['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
         response['Pragma'] = 'no-cache'
         response['Expires'] = '0'
         return response
 
-async def favicon(request):
+def favicon(request):
     path = join(settings.MEDIA_ROOT, 'img', 'logo.png')
     resp = FileResponse(open(path, 'rb'))
     resp['Cache-Control'] = 'max-age=864000000000'
     return resp
 
-async def statics(request):
+def statics(request):
     if cache.has_key("templates_path") is False:
             CONFIG = ConfigParser()
             CONFIG.read(join(settings.WORKING_SPACE, 'setup.ini'), encoding='utf-8')

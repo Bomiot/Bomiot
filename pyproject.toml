@@ -26,16 +26,15 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.9,<4.0"
+python = ">=3.9,<=3.13"
 django = "~4.2.23"
 django-cors-headers = "~4.4.0"
 pyjwt = ">=2.10.1"
 django-filter = "~24.3"
 djangorestframework-csv = "~3.0.2"
+bomiot-asgi = "==0.5.2"
 bomiot-token = ">=0.7.0"
-bomiot-asgi = ">=0.5.2"
 bomiot-message = ">=0.4.5"
-bomiot-core = ">=0.6.1"
 bomiot-control = ">=0.1.2"
 bomiot-data-control = ">=0.3.2"
 orjson = "~3.10.7"

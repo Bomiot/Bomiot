@@ -6,7 +6,6 @@ import os
 from os.path import join
 from time import sleep
 import threading
-import bomiot_core
 
 class CoreConfig(AppConfig):
     """
@@ -39,7 +38,6 @@ class CoreConfig(AppConfig):
                 sm.start()
                 ob.start()
                 def backgrun_init():
-                    # bomiot_core.cores()
                     init_permission()
                 init_thread = threading.Thread(target=backgrun_init, daemon=True)
                 init_thread.start()

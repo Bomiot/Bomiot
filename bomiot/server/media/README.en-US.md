@@ -356,8 +356,7 @@ my-project/                    # Project directory
 ├── files.py                   # File signals
 ├── receiver.py                # Data API signals
 ├── server.py                  # Server signals
-├── README.md                  # ReadME documentation
-└── setup.ini                  # Project configuration file
+└── README.md                  # ReadME documentation
 dbs/                           # Database files
 logs/                          # System logs
 setup.ini                      # Project configuration file

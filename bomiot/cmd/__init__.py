@@ -157,6 +157,7 @@ parser_run.add_argument("--limit-concurrency", type=str, default=1000, help="Lim
 parser_run.add_argument("--backlog", type=int, default=128, help="Backlog")
 parser_run.add_argument("--timeout-keep-alive", type=str, default=5, help="Backlog")
 parser_run.add_argument("--timeout-graceful-shutdown", type=str, default=30, help="Time out shut down")
+parser_run.add_argument("--server-header", type=bool, default=False, help="Server Header")
 parser_run.add_argument("--app", type=str, default="bomiot_asgi:application", help="ASGI Application")
 
 # show help info when no args
@@ -298,6 +299,7 @@ def cmd():
             ssl_certfile=args.ssl_certfile,
             proxy_headers=args.proxy_headers,
             http=args.http,
+            server_header=False,
             limit_concurrency=args.limit_concurrency,
             backlog=args.backlog,
             timeout_keep_alive=args.timeout_keep_alive,

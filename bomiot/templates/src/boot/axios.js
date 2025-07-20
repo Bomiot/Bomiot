@@ -9,49 +9,26 @@ const api = axios.create({
   // baseURL: baseURL
 })
 
-class RequestThrottler {
+class SimpleThrottler {
   constructor(interval = 250) {
     this.interval = interval
     this.lastRequestTime = 0
-    this.pendingRequests = []
-    this.isProcessing = false
   }
 
-  async throttleRequest(requestFn) {
-    return new Promise((resolve, reject) => {
-      this.pendingRequests.push({ requestFn, resolve, reject })
-      this.processQueue()
-    })
-  }
+  async throttle() {
+    const now = Date.now()
+    const timeSinceLastRequest = now - this.lastRequestTime
 
-  async processQueue() {
-    if (this.isProcessing || this.pendingRequests.length === 0) {
-      return
+    if (timeSinceLastRequest < this.interval) {
+      const delay = this.interval - timeSinceLastRequest
+      await new Promise(resolve => setTimeout(resolve, delay))
     }
-    this.isProcessing = true
-    while (this.pendingRequests.length > 0) {
-      const now = Date.now();
-      const timeSinceLastRequest = now - this.lastRequestTime;
-      if (timeSinceLastRequest < this.interval) {
-        await this.delay(this.interval - timeSinceLastRequest);
-      }
-      const { requestFn, resolve, reject } = this.pendingRequests.shift();
-      this.lastRequestTime = Date.now();
-      try {
-        const result = await requestFn();
-        resolve(result);
-      } catch (error) {
-        reject(error);
-      }
-    }
-    this.isProcessing = false;
-  }
-  delay(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+
+    this.lastRequestTime = Date.now()
   }
 }
 
-const requestThrottler = new RequestThrottler(250)
+const throttler = new SimpleThrottler(250)
 
 api.interceptors.request.use(
   (config) => {
@@ -126,38 +103,43 @@ api.interceptors.response.use(
   }
 );
 
-async function throttledGet({ url, params }) {
-  return requestThrottler.throttleRequest(() =>
+async function throttledRequest(requestFn) {
+  await throttler.throttle()
+  return requestFn()
+}
+
+async function get({ url, params }) {
+  return throttledRequest(() =>
     api.get(url, { params: { ...params } })
   );
 }
 
-async function throttledPost(url, data) {
-  return requestThrottler.throttleRequest(() =>
+async function post(url, data) {
+  return throttledRequest(() =>
     api.post(url, data)
   );
 }
 
-async function throttledPut(url, data) {
-  return requestThrottler.throttleRequest(() =>
+async function put(url, data) {
+  return throttledRequest(() =>
     api.put(url, data)
   );
 }
 
-async function throttledPatch(url, data) {
-  return requestThrottler.throttleRequest(() =>
+async function patch(url, data) {
+  return throttledRequest(() =>
     api.patch(url, data)
   );
 }
 
-async function throttledDelete(url) {
-  return requestThrottler.throttleRequest(() =>
+async function deleteData(url) {
+  return throttledRequest(() =>
     api.delete(url)
   );
 }
 
-async function throttledFileUpload(url, formData, onProgress = null) {
-  return requestThrottler.throttleRequest(() =>
+async function fileUpload(url, formData, onProgress = null) {
+  return throttledRequest(() =>
     api.post(url, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -180,11 +162,11 @@ export default boot(({ app }) => {
 
 export {
   api,
-  throttledGet as get,
-  throttledPost as post,
-  throttledPut as put,
-  throttledPatch as patch,
-  throttledDelete as deleteData,
-  throttledFileUpload as fileUpload,
+  get,
+  post,
+  put,
+  patch,
+  deleteData,
+  fileUpload,
   baseURL
 }
