@@ -100,6 +100,7 @@ export default {
     share : 'Share',
     shared_to: 'Choose user you want to share to',
     delete: 'Delete this file',
+    preview: 'Preview File',
     download: 'Download file',
     deletefile: 'Delete one file',
     deletefilenotice: 'Confirm it you want to delete this file',

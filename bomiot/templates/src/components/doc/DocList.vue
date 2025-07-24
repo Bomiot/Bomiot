@@ -40,7 +40,7 @@
         <q-td :props="props">
           <div v-if="props.col.name === 'action'">
             <q-btn round flat icon="visibility" @click="previewImg(props.rowIndex)" v-show="isImg(props.row)">
-              <q-tooltip class="bg-indigo" :offset="[10, 10]" content-style="font-size: 12px">{{ t('doc.download') }}</q-tooltip>
+              <q-tooltip class="bg-indigo" :offset="[10, 10]" content-style="font-size: 12px">{{ t('doc.preview') }}</q-tooltip>
             </q-btn>
             <q-btn round flat icon="cloud_download" @click="downloadFile(props.rowIndex)" v-show="!isImg(props.row)">
               <q-tooltip class="bg-indigo" :offset="[10, 10]" content-style="font-size: 12px">{{ t('doc.download') }}</q-tooltip>

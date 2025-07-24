@@ -100,6 +100,7 @@ export default {
     share : '分享',
     shared_to: '选择你想要分享给的用户',
     delete: '删除文件',
+    preview: '预览文件',
     download: '下载文件',
     deletefile: '删除文件',
     deletefilenotice: '确认是否要删除这个文件',
