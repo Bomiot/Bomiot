@@ -23,7 +23,6 @@
             :label="t('refresh')"
             icon="refresh"
             @click="onRequest()"
-            v-show="tokenStore.userPermissionGet('Get Example List')"
           >
             <q-tooltip
               class="bg-indigo"
@@ -49,8 +48,7 @@
           debounce="300"
           color="primary"
           v-model="search"
-          @input="onRequest()"
-          @keyup.enter="onRequest()"
+          @update:model-value="onRequest()">
         >
           <template v-slot:append>
             <q-icon name="search" />
@@ -105,6 +103,7 @@
           v-model="pagination.page"
           :max="pagesNumber"
           input
+          debounce="300"
           input-class="text-orange-10"
           @update:model-value="onRequest()"
         />
@@ -203,14 +202,14 @@ const screenHeight = ref(`${$q.screen.height * 0.73}px`)
 const screenWidth = ref(`${$q.screen.width * 0.825}px`)
 const cardBackground = ref($q.dark.isActive ? '#121212' : '#ffffff')
 
-function onRequest(props) {
+async function onRequest(props) {
   let requestData = {}
   if (props) {
     requestData = props
   } else {
     requestData.pagination = pagination.value
   }
-  get({
+  await get({
     url: 'core/example/',
     params: {
       params: JSON.stringify({ data__value__icontains: search.value }),
@@ -230,12 +229,15 @@ function onRequest(props) {
         message: err
       })
       $q.loading.hide()
+    }).finally(() => {
+      $q.loading.hide()
     })
   pagination.value = requestData.pagination
 }
 
 function createData() {
   mode.value = 'create'
+  data.value = {}
   formData.value = true
 }
 
@@ -267,6 +269,8 @@ async function submitData(e) {
       type: 'error',
       message: err
     })
+    $q.loading.hide()
+  }).finally(() => {
     $q.loading.hide()
   })
 }

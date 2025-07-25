@@ -27,7 +27,7 @@ const tabList = computed(() => [
   { name: 'basic', label: t('menuTab.basic') },
   { name: 'db', label: t('menuTab.db') },
   { name: 'signals', label: t('menuTab.signals') },
-  { name: 'component', label: t('menuTab.component') },
+  // { name: 'component', label: t('menuTab.component') },
 ])
 
 function tabChange (e) {

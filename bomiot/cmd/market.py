@@ -25,17 +25,7 @@ def copy_project(folder: str):
         if exists(project_path):
             print('Project directory already exists')
         else:
-            pip_command = "pip3" if sys.version_info.major == 3 else "pip"
             try:
-                subprocess.run([pip_command, "--version"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            except FileNotFoundError:
-                pip_command = "pip"
-                try:
-                    subprocess.run([pip_command, "--version"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                except FileNotFoundError:
-                    sys.exit(1)
-            try:
-                subprocess.run([pip_command, "install", sys.argv[2]], check=True)
                 module_path = importlib.util.find_spec(sys.argv[2]).origin
                 list_module_path = Path(module_path).resolve().parent
                 pkg_config_check = ConfigParser()
