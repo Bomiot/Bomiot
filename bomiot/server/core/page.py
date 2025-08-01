@@ -306,7 +306,7 @@ class DataCorePageNumberPagination(PageNumberPagination):
                         break
                     else:
                         continue
-                if callback_data is False:
+                if callback_data is True:
                     response_data += [('results', data_list)]
                 response_data += response
         return Response(OrderedDict(response_data))

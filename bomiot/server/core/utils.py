@@ -212,6 +212,15 @@ def all_fields_empty(json_dict):
     return is_empty_value(json_dict)
 
 
+def find_keys_by_value(dictionary, target_value):
+    if dictionary is None:
+        return [f'{target_value}']
+    res = [key for key, value in dictionary.items() if value == target_value]
+    if len(res) > 0:
+        return res
+    return [f'{target_value}']
+
+
 def check_method_in_file_by_ast(file_path, method_name):
     try:
         detail = {}

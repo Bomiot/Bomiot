@@ -34,9 +34,13 @@ export const useTokenStore = defineStore('token', {
     },
     userPermissionGet (e) {
       if (this.token !== '') {
-        let strings = this.token.split(".")
-        var userinfo = JSON.parse(decodeURIComponent(escape(window.atob(strings[1].replace(/-/g, "+").replace(/_/g, "/")))));
-        return e in userinfo.permission;
+        if (e !== '') {
+          let strings = this.token.split(".")
+          var userinfo = JSON.parse(decodeURIComponent(escape(window.atob(strings[1].replace(/-/g, "+").replace(/_/g, "/")))));
+          return e in userinfo.permission;
+        } else {
+          return true
+        }
       } else {
         return false
       }
