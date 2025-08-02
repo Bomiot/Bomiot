@@ -9,6 +9,7 @@ from bomiot.server.core.signal import bomiot_data_signals
 from rest_framework.filters import OrderingFilter
 from rest_framework.exceptions import MethodNotAllowed
 from django_filters.rest_framework import DjangoFilterBackend
+from django.utils import timezone
 from bomiot.server.core.page import DataCorePageNumberPagination
 from bomiot.server.core.utils import all_fields_empty, queryset_to_dict, compare_dicts
 
@@ -112,14 +113,14 @@ class StockUpdate(ModelViewSet):
     queryset = models.Stock.objects.filter(is_delete=False)
 
     def get_serializer_class(self):
-        if self.action in ['create']:
+        if self.action in ['update']:
             return serializers.StockSerializer
         else:
             raise MethodNotAllowed(self.request.method)
 
-    def create(self, request, *args, **kwargs):
+    def update(self, request, *args, **kwargs):
         """
-        Override the create method, combining send_robust and transaction management
+        Override the update method, combining send_robust and transaction management
         """
         data = self.request.data
         db_data = models.Stock.objects.filter(id=data.get('id'), is_delete=False)
@@ -140,7 +141,7 @@ class StockUpdate(ModelViewSet):
                         data.pop('is_delete', None)
                         data.pop('created_time', None)
                         data.pop('updated_time', None)
-                        db_data.update(data=data)
+                        db_data.update(data=data, updated_time=timezone.now())
                         return Response(response)
                     if isinstance(response, dict) and response.get("detail"):
                         return Response(response)
@@ -167,14 +168,14 @@ class StockDelete(ModelViewSet):
     queryset = models.Stock.objects.filter(is_delete=False)
 
     def get_serializer_class(self):
-        if self.action in ['create']:
+        if self.action in ['delete']:
             return serializers.StockSerializer
         else:
             raise MethodNotAllowed(self.request.method)
 
-    def create(self, request, *args, **kwargs):
+    def delete(self, request, *args, **kwargs):
         """
-        Override the create method, combining send_robust and transaction management
+        Override the delete method, combining send_robust and transaction management
         """
         data = self.request.data
         db_data = models.Stock.objects.filter(id=data.get('id'), is_delete=False)
@@ -188,7 +189,7 @@ class StockDelete(ModelViewSet):
                     if isinstance(response, Exception):
                         raise response
                     if isinstance(response, dict) and response.get("msg"):
-                        db_data.update(is_delete=True)
+                        db_data.update(is_delete=True, updated_time=timezone.now())
                         return Response(response)
                     if isinstance(response, dict) and response.get("detail"):
                         return Response(response)
