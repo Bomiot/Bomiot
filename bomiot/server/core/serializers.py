@@ -138,21 +138,6 @@ class PidsSerializer(serializers.ModelSerializer):
         read_only_fields = ['pid']
 
 
-class PyPiSerializer(serializers.ModelSerializer):
-    """
-    PyPi Serializer
-    """
-    category = serializers.CharField(read_only=True, required=False)
-    date = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d')
-    percent = serializers.FloatField(read_only=True, required=False)
-    downloads = serializers.IntegerField(read_only=True, required=False)
-
-    class Meta:
-        model = models.PyPi
-        fields = ['id', 'category', 'date', 'percent', 'downloads']
-        read_only_fields = ['id']
-
-
 class CPUSerializer(serializers.ModelSerializer):
     """
     CPU Serializer

@@ -46,11 +46,6 @@ urlpatterns += [
 ]
 
 urlpatterns += [
-    path(r'pypi/', views.PyPiList.as_view({"get": "list"})),
-    path(r'pypi/charts/', views.PyPiCharts.as_view({"get": "list"})),
-]
-
-urlpatterns += [
     path(r'pid/', client.PIDList.as_view({"get": "list"})),
     path(r'cpu/', client.CPUList.as_view({"get": "list"})),
     path(r'memory/', client.MemoryList.as_view({"get": "list"})),

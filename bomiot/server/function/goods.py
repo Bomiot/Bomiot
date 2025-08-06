@@ -10,6 +10,7 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.exceptions import MethodNotAllowed
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils import timezone
+from django.db.models import Q
 from bomiot.server.core.page import DataCorePageNumberPagination
 from bomiot.server.core.utils import all_fields_empty, queryset_to_dict, compare_dicts
 
@@ -25,7 +26,7 @@ class GoodsList(ModelViewSet):
     filter_class = filter.GoodsFilter
 
     def get_queryset(self):
-        query_params = self.request.query_params.get('params', {})
+        query_params = self.request.query_params.get('params', '')
         if query_params:
             query_str = query_params.replace("'", '"')
             query_str = query_str.replace("true", "True").replace("false", "False")
@@ -36,13 +37,26 @@ class GoodsList(ModelViewSet):
             query_data = {}
         if "is_delete" not in query_data:
             query_data['is_delete'] = False
-        ordering = query_data.pop('order_by', '-id')
         if not any(key.startswith('data__department') for key in query_data):
+            query_data = {key: value for key, value in query_data.items() if not key.startswith('data__department')}
             if self.request.auth.department == 0:
-                query_data['data__department__gte'] = 0
+                department_condition = {"data__department__gte": 0}
             else:
-                query_data['data__department'] = self.request.auth.department
-        return models.Goods.objects.filter(**query_data).order_by(ordering)
+                department_condition = {"data__department__gte": self.request.auth.department}
+        else:
+            department_condition = {"data__department__gte": self.request.auth.department}
+        ordering = query_data.pop('order_by', '-id')
+        query_conditions = Q()
+        or_conditions = []
+        if len(query_data) == 1:
+            or_conditions.append(Q(**{**department_condition, "is_delete": query_data['is_delete']}))
+        else:
+            for key, value in query_data.items():
+                if key != 'is_delete':
+                    or_conditions.append(Q(**{key: value, **department_condition, "is_delete": query_data['is_delete']}))
+        if or_conditions:
+            query_conditions &= Q(*or_conditions, _connector=Q.OR)
+        return models.Goods.objects.filter(query_conditions).order_by(ordering)
 
     def get_serializer_class(self):
         if self.action in ['list']:

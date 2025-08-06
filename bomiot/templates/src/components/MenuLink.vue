@@ -45,8 +45,6 @@ const menuLinks = computed(() => [
   { tab: 'standard', title: t('menuLink.department'), icon: 'diversity_2', link: '/department', permission: '' },
   { tab: 'docscenter', title: t('upload.center'), icon: 'upload', link: '/upload', permission: '' },
   { tab: 'docscenter', title: t('doc.center'), icon: 'download', link: '/doc', permission: '' },
-  { tab: 'standard', title: 'PyPi', icon: 'cloud_sync', link: '/pypi', permission: '' },
-  { tab: 'standard', title: 'PyPi Stats', icon: 'pie_chart', link: '/pypicharts', permission: '' },
   { tab: 'server', title: 'PID', icon: 'account_tree', link: '/pid', permission: '' },
   { tab: 'server', title: 'CPU', icon: 'select_all', link: '/cpu', permission: '' },
   { tab: 'server', title: 'Memory', icon: 'memory', link: '/memory', permission: '' },

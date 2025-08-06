@@ -48,7 +48,7 @@
           debounce="300"
           color="primary"
           v-model="search"
-          @update:model-value="onRequest()">
+          @update:model-value="onRequest()"
         >
           <template v-slot:append>
             <q-icon name="search" />
@@ -174,8 +174,6 @@ const columns = computed(() => [
 
 const token = computed(() => tokenStore.token)
 const rows = ref([])
-const teamList = ref([])
-const departmentList = ref([])
 const search = ref('')
 const formData = ref(false)
 const data = ref({})
@@ -220,8 +218,6 @@ async function onRequest(props) {
     .then((res) => {
       rows.value = res.results
       rowsCount.value = res.count
-      teamList.value = res.team
-      departmentList.value = res.department
     })
     .catch((err) => {
       $q.notify({
@@ -288,7 +284,6 @@ function listenToEvent() {
   emitter.on('needLogin', (payload) => {
     if (payload) {
       rows.value = []
-      teamList.value = []
       search.value = ''
       rowsCount.value = 0
     }

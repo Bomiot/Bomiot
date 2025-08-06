@@ -1,10 +1,9 @@
 import time
 import psutil
 import threading
-import pypistats
 import orjson
 from datetime import datetime, timedelta
-from bomiot.server.core.models import Pids, PyPi, CPU, Memory, Disk, Network
+from bomiot.server.core.models import Pids, CPU, Memory, Disk, Network
 from bomiot.server.core.utils import readable_file_size
 from bomiot.server.core.signal import bomiot_signals
 from time import sleep
@@ -174,36 +173,6 @@ class ServerManager:
         Pids.objects.bulk_create(pid_add_list, batch_size=200)  # Bulk create PIDs to improve performance
 
 
-    def cteate_pypi_database(self, data):
-        return PyPi(
-            date=data.get('date'),
-            downloads=data.get('downloads'),
-            percent=data.get('percent'),
-            category=data.get('category')
-        )
-
-    def res_pypi_data(self, data):
-        data["date"] = datetime.strptime(data.get('date'), '%Y-%m-%d')
-        data["percent"] = float(data.get('percent').split('%')[0])
-        return data
-
-    def get_pypi_stats(self):
-        today = datetime.now().date()
-        pypi_today_qs = PyPi.objects.filter(created_time__date=today)
-        if pypi_today_qs.exists() is False:
-            PyPi.objects.exclude(created_time__date=today).delete()
-            df = pypistats.overall("bomiot", total='daily', format="pandas")
-            res = df.to_dict(orient="records")
-            pypi_list = []
-            for record in res:
-                if record.get('category') == 'Total':
-                    continue
-                data = self.res_pypi_data(record)
-                pypi_obj = self.cteate_pypi_database(data)
-                pypi_list.append(pypi_obj)
-            pypi_list.sort(key=lambda x: x.date, reverse=True)
-            PyPi.objects.bulk_create(pypi_list, batch_size=200)
-
     def monitor_server(self):
         """Monitor server status"""
         while True:
@@ -217,8 +186,6 @@ class ServerManager:
             self.get_network_info()
             sleep(1)
             self.get_pid()
-            sleep(1)
-            self.get_pypi_stats()
             sleep(60)  # Perform monitoring every 60 seconds
 
 

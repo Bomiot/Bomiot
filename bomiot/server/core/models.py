@@ -332,16 +332,3 @@ class Driver(CoreModel):
         verbose_name = settings.BASE_DB_TABLE + ' Driver'
         verbose_name_plural = verbose_name
         ordering = ['-id']
-
-
-class PyPi(CoreModel):
-    category = models.CharField(max_length=255, verbose_name="Category")
-    date = models.DateTimeField(auto_now_add=False, auto_now=False, blank=True, verbose_name="PyPi Date")
-    percent = models.FloatField(default=0, verbose_name="Percent")
-    downloads = models.IntegerField(default=0, verbose_name="Downloads")
-
-    class Meta:
-        db_table = settings.BASE_DB_TABLE + '_pypi'
-        verbose_name = settings.BASE_DB_TABLE + ' PyPi'
-        verbose_name_plural = verbose_name
-        ordering = ['-id']

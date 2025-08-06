@@ -271,7 +271,10 @@ class DataCorePageNumberPagination(PageNumberPagination):
             # Fix URL SSL scheme
             corrected_url = f"{ssl_scheme}:{url_parts[1]}"
             return replace_query_param(corrected_url, self.page_query_param, page_number)
-        
+    
+    def query_data_add(self) -> list:
+        return []
+
     def get_paginated_response(self, data):
         response_data = [
             ('count', self.page.paginator.count),
@@ -309,6 +312,9 @@ class DataCorePageNumberPagination(PageNumberPagination):
                 if callback_data is True:
                     response_data += [('results', data_list)]
                 response_data += response
+            if response is None:
+                response_data += [('results', data_list)]
+        response_data += self.query_data_add()
         return Response(OrderedDict(response_data))
 
 

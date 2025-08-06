@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bomiot"
-version = "1.0.2"
+version = "1.0.7"
 description = "Powerful Distributed Document Management Framework & Full-Stack Development Platform"
 authors = ["Bomiot <Singosgu@gmail.com>"]
 readme = "README.md"
@@ -44,7 +44,6 @@ pandas = "~2.2.3"
 watchdog = "~6.0.0"
 tomlkit = "~0.13.2"
 openpyxl = "~3.1.5"
-pypistats = "^1.9.0"
 psutil = "^7.0.0"
 xlsxwriter = "~3.2.3"
 requests = "~2.32.3"

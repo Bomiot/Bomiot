@@ -133,16 +133,6 @@ class PidsFilter(FilterSet):
         filter_overrides = JSONFIELD_FILTER_OVERRIDE
 
 
-class PyPiFilter(FilterSet):
-    """
-    Pids filter
-    """
-    class Meta:
-        model = models.PyPi
-        fields = '__all__'
-        filter_overrides = JSONFIELD_FILTER_OVERRIDE
-
-
 class CPUFilter(FilterSet):
     """
     CPU filter

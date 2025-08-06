@@ -48,3 +48,5 @@ ci-logs/
 /*.swo
 /*.log
 /testing/
+/dbs/
+bomiot_ready.lock
