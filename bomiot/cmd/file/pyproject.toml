@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bomiot"
-version = "1.0.7"
+version = "1.0.8"
 description = "Powerful Distributed Document Management Framework & Full-Stack Development Platform"
 authors = ["Bomiot <Singosgu@gmail.com>"]
 readme = "README.md"

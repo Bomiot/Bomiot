@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bomiot"
-version = "1.0.7"
+version = "1.0.8"
 description = "Powerful Distributed Document Management Framework & Full-Stack Development Platform"
 authors = ["Bomiot <Singosgu@gmail.com>"]
 readme = "README.md"
@@ -35,7 +35,7 @@ djangorestframework-csv = "~3.0.2"
 bomiot-asgi = "==0.5.2"
 bomiot-token = ">=0.7.0"
 bomiot-message = ">=0.4.5"
-bomiot-control = ">=0.1.2"
+bomiot-control = ">=0.1.4"
 bomiot-data-control = ">=0.3.2"
 orjson = "~3.10.7"
 djangorestframework = "~3.15.2"

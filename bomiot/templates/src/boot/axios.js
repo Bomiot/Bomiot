@@ -66,6 +66,19 @@ api.interceptors.request.use(
       }
     }
     config.headers.language = lang
+    let project = 'bomiot'
+    if (LocalStorage.has('project')) {
+      const projectCheck = JSON.parse(LocalStorage.getItem('project'))
+      if (projectCheck !== '') {
+        for (const key in projectCheck) {
+          if (key === 'project') {
+            const projectValue = projectCheck[key]
+            project = projectValue
+          }
+        }
+      }
+    }
+    config.headers.project = project
     Loading.show()
     return config
   },

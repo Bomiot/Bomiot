@@ -42,9 +42,8 @@ def project(folder: str):
 
                 shutil.copy2(join(file_path, 'bomiotconf.ini'), project_path)
                 shutil.copy2(join(file_path, 'receiver.py'), project_path)
-                shutil.copy2(join(file_path, 'files.py'), project_path)
-                shutil.copy2(join(file_path, 'server.py'), project_path)
                 shutil.copy2(join(file_path, 'example.py'), project_path)
+                shutil.copy2(join(file_path, 'api.py'), project_path)
                 copy_files(join(file_path, 'fastapi_app'), join(project_path, 'fastapi_app'))
                 copy_files(join(file_path, 'flask_app'), join(project_path, 'flask_app'))
 

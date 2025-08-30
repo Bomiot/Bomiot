@@ -26,14 +26,10 @@ def url_exists(url_data):
 def return_static(request, path, insecure=True, **kwargs):
     return serve(request, path, insecure, **kwargs)
 
-templates_config = ConfigParser()
-templates_config.read(join(settings.WORKING_SPACE, 'setup.ini'), encoding='utf-8')
-templates_dir_name = templates_config.get('templates', 'name', fallback='templates/dist/spa/index.html')
-
 urlpatterns = [
     # path('admin/', admin.site.urls),
-    path('', TemplateView.as_view(template_name=templates_dir_name)),
-    path('test/', views.test, name='test'),
+    path('', views.index),
+    path('test/', views.test),
     path('login/', views.logins, name='login'),
     path('logout/', views.logouts, name='logout'),
     path('checktoken/', views.check_token, name='check_token'),

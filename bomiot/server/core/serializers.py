@@ -42,6 +42,7 @@ class TeamSerializer(serializers.ModelSerializer):
     """
     name = serializers.CharField(read_only=True, required=False)
     permission = serializers.JSONField(read_only=True, required=False)
+    project = serializers.CharField(read_only=True, required=False)
     is_delete = serializers.BooleanField(read_only=True, required=False)
     created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
     updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
@@ -57,6 +58,7 @@ class DepartmentSerializer(serializers.ModelSerializer):
     Department Serializer
     """
     name = serializers.CharField(read_only=True, required=False)
+    project = serializers.CharField(read_only=True, required=False)
     is_delete = serializers.BooleanField(read_only=True, required=False)
     created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
     updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
@@ -76,6 +78,7 @@ class FileSerializer(serializers.ModelSerializer):
     size = serializers.IntegerField(read_only=True, required=False)
     owner = serializers.CharField(read_only=True, required=False)
     shared_to = serializers.CharField(read_only=True, required=False)
+    project = serializers.CharField(read_only=True, required=False)
     is_delete = serializers.BooleanField(read_only=True, required=False)
     created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
     updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
@@ -94,12 +97,13 @@ class APISerializer(serializers.ModelSerializer):
     api = serializers.CharField(read_only=True, required=False)
     func_name = serializers.CharField(read_only=True, required=False)
     name = serializers.CharField(read_only=True, required=False)
+    project = serializers.CharField(read_only=True, required=False)
     is_delete = serializers.BooleanField(read_only=True, required=False)
     created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
     updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
     
     class Meta:
-        model = models.Example
+        model = models.API
         fields = ['id', 'method', 'api', 'func_name', 'name', 'is_delete', 'created_time', 'updated_time']
         read_only_fields = ['id']
 
@@ -109,6 +113,7 @@ class ExampleSerializer(serializers.ModelSerializer):
     Example Serializer
     """
     data = serializers.JSONField(read_only=True, required=False)
+    project = serializers.CharField(read_only=True, required=False)
     is_delete = serializers.BooleanField(read_only=True, required=False)
     created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
     updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
@@ -217,6 +222,7 @@ class GoodsSerializer(serializers.ModelSerializer):
     Goods Serializer
     """
     data = serializers.JSONField(read_only=True, required=False)
+    project = serializers.CharField(read_only=True, required=False)
     is_delete = serializers.BooleanField(read_only=True, required=False)
     created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
     updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
@@ -232,6 +238,7 @@ class BinSerializer(serializers.ModelSerializer):
     Bin Serializer
     """
     data = serializers.JSONField(read_only=True, required=False)
+    project = serializers.CharField(read_only=True, required=False)
     is_delete = serializers.BooleanField(read_only=True, required=False)
     created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
     updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
@@ -247,6 +254,7 @@ class StockSerializer(serializers.ModelSerializer):
     Stock Serializer
     """
     data = serializers.JSONField(read_only=True, required=False)
+    project = serializers.CharField(read_only=True, required=False)
     is_delete = serializers.BooleanField(read_only=True, required=False)
     created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
     updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
@@ -262,6 +270,7 @@ class CapitalSerializer(serializers.ModelSerializer):
     Capital Serializer
     """
     data = serializers.JSONField(read_only=True, required=False)
+    project = serializers.CharField(read_only=True, required=False)
     is_delete = serializers.BooleanField(read_only=True, required=False)
     created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
     updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
@@ -277,6 +286,7 @@ class SupplierSerializer(serializers.ModelSerializer):
     Supplier Serializer
     """
     data = serializers.JSONField(read_only=True, required=False)
+    project = serializers.CharField(read_only=True, required=False)
     is_delete = serializers.BooleanField(read_only=True, required=False)
     created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
     updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
@@ -292,6 +302,7 @@ class CustomerSerializer(serializers.ModelSerializer):
     Customer Serializer
     """
     data = serializers.JSONField(read_only=True, required=False)
+    project = serializers.CharField(read_only=True, required=False)
     is_delete = serializers.BooleanField(read_only=True, required=False)
     created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
     updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
@@ -307,6 +318,7 @@ class ASNSerializer(serializers.ModelSerializer):
     ASN Serializer
     """
     data = serializers.JSONField(read_only=True, required=False)
+    project = serializers.CharField(read_only=True, required=False)
     is_delete = serializers.BooleanField(read_only=True, required=False)
     created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
     updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
@@ -322,6 +334,7 @@ class DNSerializer(serializers.ModelSerializer):
     DN Serializer
     """
     data = serializers.JSONField(read_only=True, required=False)
+    project = serializers.CharField(read_only=True, required=False)
     is_delete = serializers.BooleanField(read_only=True, required=False)
     created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
     updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
@@ -337,6 +350,7 @@ class PurchaseSerializer(serializers.ModelSerializer):
     Purchase Serializer
     """
     data = serializers.JSONField(read_only=True, required=False)
+    project = serializers.CharField(read_only=True, required=False)
     is_delete = serializers.BooleanField(read_only=True, required=False)
     created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
     updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
@@ -352,6 +366,7 @@ class BarSerializer(serializers.ModelSerializer):
     Bar Serializer
     """
     data = serializers.JSONField(read_only=True, required=False)
+    project = serializers.CharField(read_only=True, required=False)
     is_delete = serializers.BooleanField(read_only=True, required=False)
     created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
     updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
@@ -367,6 +382,7 @@ class FeeSerializer(serializers.ModelSerializer):
     Fee Serializer
     """
     data = serializers.JSONField(read_only=True, required=False)
+    project = serializers.CharField(read_only=True, required=False)
     is_delete = serializers.BooleanField(read_only=True, required=False)
     created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
     updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
@@ -382,6 +398,7 @@ class DriverSerializer(serializers.ModelSerializer):
     Fee Serializer
     """
     data = serializers.JSONField(read_only=True, required=False)
+    project = serializers.CharField(read_only=True, required=False)
     is_delete = serializers.BooleanField(read_only=True, required=False)
     created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
     updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')

@@ -10,6 +10,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
+from django.shortcuts import render
 from bomiot.server.core.jwt_auth import create_token, parse_payload
 from bomiot.server.core.models import Permission
 from bomiot_message import login_message_return, others_message_return
@@ -17,6 +18,7 @@ from bomiot.server.server.pkgcheck import url_ignore
 from os.path import join, isdir, exists
 from os import listdir
 import importlib.util
+from configparser import ConfigParser
 from pathlib import Path
 from django.urls import get_resolver, URLPattern, URLResolver
 
@@ -24,6 +26,14 @@ User = get_user_model()
 
 async def test(request):
     return JsonResponse({"msg": "This is Django API"})
+
+def index(request):
+    project_name = request.META.get('HTTP_PROJECT', settings.PROJECT_NAME)
+    if project_name.lower() == 'bomiot':
+        template_path = join(settings.WORKING_SPACE, settings.PROJECT_NAME, 'templates/dist/spa/index.html')
+    else:
+       template_path = join(settings.WORKING_SPACE, project_name, 'templates/dist/spa/index.html')
+    return render(request, template_path)
 
 
 def logins(request):
@@ -78,10 +88,14 @@ async def check_token(request):
 
 
 async def mdurl(request, mddocs):
+    project_name = request.META.get('HTTP_PROJECT', settings.PROJECT_NAME)
     language = request.META.get('HTTP_LANUAGE', '')
     if not mddocs.endswith('.md'):
         return JsonResponse({'detail': others_message_return(language, 'Only support markdown file')})
-    folder_path = Path(settings.MEDIA_ROOT)
+    if project_name.lower() == 'bomiot':
+        folder_path = Path(settings.MEDIA_ROOT)
+    else:
+        folder_path = Path(join(settings.WORKING_SPACE, project_name, 'media'))
     all_files = [f.name for f in folder_path.iterdir() if f.is_file()]
     start_words = mddocs.split('.')
     md_check_list_all = []
@@ -116,32 +130,21 @@ async def mdurl(request, mddocs):
         return response
 
 def favicon(request):
-    path = join(settings.MEDIA_ROOT, 'img', 'logo.png')
+    project_name = request.META.get('HTTP_PROJECT', settings.PROJECT_NAME)
+    if project_name.lower() == 'bomiot':
+        path = join(settings.MEDIA_ROOT, 'img', 'logo.png')
+    else:
+        path = join(settings.WORKING_SPACE, project_name, 'media', 'img', 'logo.png')
     resp = FileResponse(open(path, 'rb'))
     resp['Cache-Control'] = 'max-age=864000000000'
     return resp
 
 def statics(request):
-    if cache.has_key("templates_path") is False:
-            CONFIG = ConfigParser()
-            CONFIG.read(join(settings.WORKING_SPACE, 'setup.ini'), encoding='utf-8')
-            templates_path = CONFIG.get('templates', 'name', fallback='templates/dist/spa/index.html')
-            cache.set("templates_path", templates_path)
+    project_name = request.META.get('HTTP_PROJECT', settings.PROJECT_NAME)
+    if project_name.lower() == 'bomiot':
+        path = join(settings.WORKING_SPACE, settings.PROJECT_NAME, 'templates', 'dist', 'spa', request.path_info)
     else:
-        templates_path = cache.get("templates_path")
-    path = join(settings.WORKING_SPACE, settings.PROJECT_NAME)
-    static_path_split = templates_path.split('/')[:-1]
-    for i in static_path_split:
-        if i == '':
-            continue
-        else:
-            path = join(path, i)
-    request_path = request.path_info.split('/')
-    for j in request_path:
-        if j == '':
-            continue
-        else:
-            path = join(path, j)
+        path = join(settings.WORKING_SPACE, project_name, 'templates', 'dist', 'spa', request.path_info)
     resp = FileResponse(open(path, 'rb'))
     resp['Cache-Control'] = 'max-age=864000000000'
     return resp

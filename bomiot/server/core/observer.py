@@ -47,18 +47,18 @@ class MyHandler(FileSystemEventHandler):
                         size=detail.stat().st_size,
                         owner=detail.parent.name
                     )
-            bomiot_signals.send(sender=Files, msg={
-                'models': 'Files',
-                'type': 'create',
-                'data': {
-                    'id': file_data.id,
-                    'name': file_data.name,
-                    'type': file_data.type,
-                    'size': file_data.size,
-                    'owner': file_data.owner,
-                    'shared_to': file_data.shared_to
-                }
-            })
+            # bomiot_signals.send(sender=Files, msg={
+            #     'models': 'Files',
+            #     'type': 'create',
+            #     'data': {
+            #         'id': file_data.id,
+            #         'name': file_data.name,
+            #         'type': file_data.type,
+            #         'size': file_data.size,
+            #         'owner': file_data.owner,
+            #         'shared_to': file_data.shared_to
+            #     }
+            # })
 
 
     def modified_file(self, data):
@@ -80,19 +80,19 @@ class MyHandler(FileSystemEventHandler):
                 data_before_update['updated_time'] = old_instance.updated_time
                 data_after_update['updated_time'] = instance.updated_time
                 updated_fields = compare_dicts(data_before_update, data_after_update)
-                bomiot_signals.send(sender=Files, msg={
-                    'models': 'Files',
-                    'type': 'update',
-                    'data': {
-                        'id': instance.id,
-                        'name': instance.name,
-                        'type': instance.type,
-                        'size': instance.size,
-                        'owner': instance.owner,
-                        'shared_to': instance.shared_to
-                    },
-                    'updated_fields': updated_fields
-                })
+                # bomiot_signals.send(sender=Files, msg={
+                #     'models': 'Files',
+                #     'type': 'update',
+                #     'data': {
+                #         'id': instance.id,
+                #         'name': instance.name,
+                #         'type': instance.type,
+                #         'size': instance.size,
+                #         'owner': instance.owner,
+                #         'shared_to': instance.shared_to
+                #     },
+                #     'updated_fields': updated_fields
+                # })
 
     def deleted_file(self, data):
         detail = Path(data)

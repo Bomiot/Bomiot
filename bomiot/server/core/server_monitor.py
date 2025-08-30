@@ -95,18 +95,6 @@ class ServerManager:
                     free=int(disk_usage.free),
                     percent=float(f'{disk_usage.percent:.2f}')
                 )
-                bomiot_signals.send(sender=Disk, msg={
-                    'models': 'Disk',
-                    'type': 'created',
-                    'data': {
-                        'device': partitions[i].device,
-                        'mountpoint': partitions[i].mountpoint,
-                        'total': int(disk_usage.total),
-                        'used': int(disk_usage.used),
-                        'free': int(disk_usage.free),
-                        'percent': float(f'{disk_usage.percent:.2f}')
-                    }
-                })
                 disk_list.append(disk_detail)
             except PermissionError:
                 print(f"{partitions[i].mountpoint}")
@@ -122,19 +110,10 @@ class ServerManager:
         newtork_info_check = Network.objects.filter()
         if newtork_info_check.count() >= 10080:
             newtork_info_check.order_by('id').first().delete()
-        instance = Network.objects.create(
-                   bytes_sent=int(bytes_sent),
-                   bytes_recv=int(bytes_recv)
-                   )
-        bomiot_signals.send(sender=Network, msg={
-            'models': 'Network',
-            'type': 'created',
-            'data': {
-                'id': instance.id,
-                'bytes_sent': int(bytes_sent),
-                'bytes_recv': int(bytes_recv)
-            }
-        })
+        Network.objects.create(
+                       bytes_sent=int(bytes_sent),
+                       bytes_recv=int(bytes_recv)
+                       )
 
     def get_pid(self):
         """PIDs"""
@@ -163,11 +142,6 @@ class ServerManager:
                 pid_add = Pids(**item)
                 pid_add_list.append(pid_add)
                 data_list.append(item)
-                bomiot_signals.send(sender=Pids, msg={
-                                                    'models': 'Pids',
-                                                    'type': 'created',
-                                                    'data': item
-                                                })
             except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
                 continue
         Pids.objects.bulk_create(pid_add_list, batch_size=200)  # Bulk create PIDs to improve performance
@@ -186,7 +160,7 @@ class ServerManager:
             self.get_network_info()
             sleep(1)
             self.get_pid()
-            sleep(60)  # Perform monitoring every 60 seconds
+            sleep(300)  # Perform monitoring every 60 seconds
 
 
 def start_monitoring():
