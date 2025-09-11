@@ -19,8 +19,10 @@ class CorePermission(BasePermission):
     """
     def has_permission(self, request, view) -> bool:
         if request.user:
-            return contains_value(request.auth.permission, request.path)
-        return False
+            # return contains_value(request.auth.permission, request.path)
+            return True
+        else:
+            return False
 
 
 class NormalPermission(BasePermission):

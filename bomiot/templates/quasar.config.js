@@ -15,7 +15,8 @@ export default defineConfig((ctx) => {
     boot: [
       'axios',
       'i18n',
-      'notify-defaults'
+      'notify-defaults',
+      'pinia'
     ],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#css
@@ -116,6 +117,7 @@ export default defineConfig((ctx) => {
         'Loading',
         'Meta',
         'LocalStorage',
+        'Cookies',
         'Notify'
       ]
     },

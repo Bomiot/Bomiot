@@ -28,7 +28,7 @@ def return_static(request, path, insecure=True, **kwargs):
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
-    path('', views.index),
+    path('', views.IndexTemplateView.as_view()),
     path('test/', views.test),
     path('login/', views.logins, name='login'),
     path('logout/', views.logouts, name='logout'),

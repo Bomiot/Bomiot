@@ -11,6 +11,7 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.exceptions import MethodNotAllowed
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils import timezone
+from django.conf import settings
 from django.db.models import Q
 from bomiot.server.core.page import DataCorePageNumberPagination
 from bomiot.server.core.utils import all_fields_empty, queryset_to_dict, compare_dicts
@@ -28,6 +29,9 @@ class ExampleList(ModelViewSet):
     filter_class = filter.ExampleFilter
 
     def get_queryset(self):
+        project_name = self.request.META.get('HTTP_PROJECT', settings.PROJECT_NAME)
+        if project_name.lower() == 'bomiot':
+            project_name = settings.PROJECT_NAME
         query_params = self.request.query_params.get('params', '')
         if query_params:
             query_str = query_params.replace("'", '"')
@@ -51,11 +55,11 @@ class ExampleList(ModelViewSet):
         query_conditions = Q()
         or_conditions = []
         if len(query_data) == 1:
-            or_conditions.append(Q(**{**department_condition, "is_delete": query_data['is_delete']}))
+            or_conditions.append(Q(**{**department_condition, "is_delete": query_data['is_delete'], "project": project_name}))
         else:
             for key, value in query_data.items():
                 if key != 'is_delete':
-                    or_conditions.append(Q(**{key: value, **department_condition, "is_delete": query_data['is_delete']}))
+                    or_conditions.append(Q(**{key: value, **department_condition, "is_delete": query_data['is_delete'], "project": project_name}))
         if or_conditions:
             query_conditions &= Q(*or_conditions, _connector=Q.OR)
         return models.Example.objects.filter(query_conditions).order_by(ordering)
@@ -91,6 +95,9 @@ class ExampleCreate(ModelViewSet):
         Override the create method, combining send_robust and transaction management
         """
         data = self.request.data
+        project_name = self.request.META.get('HTTP_PROJECT', settings.PROJECT_NAME)
+        if project_name.lower() == 'bomiot':
+            project_name = settings.PROJECT_NAME
         try:
             with transaction.atomic():
                 responses = bomiot_data_signals.send_robust(sender=self.__class__,
@@ -103,7 +110,7 @@ class ExampleCreate(ModelViewSet):
                     if isinstance(response, dict) and response.get("msg"):
                         data['department'] = self.request.auth.department if self.request.auth else 0
                         data['creater'] = self.request.auth.username
-                        models.Example.objects.create(data=data)
+                        models.Example.objects.create(data=data, project=project_name)
                         return Response(response)
                     if isinstance(response, dict) and response.get("detail"):
                         return Response(response)
@@ -141,6 +148,9 @@ class ExampleUpdate(ModelViewSet):
         Override the update method, combining send_robust and transaction management
         """
         data = self.request.data
+        project_name = self.request.META.get('HTTP_PROJECT', settings.PROJECT_NAME)
+        if project_name.lower() == 'bomiot':
+            project_name = settings.PROJECT_NAME
         db_data = models.Example.objects.filter(id=data.get('id'), is_delete=False)
         db_check_data = queryset_to_dict(db_data)
         updated_fields = compare_dicts(db_check_data[0], data)
@@ -159,7 +169,7 @@ class ExampleUpdate(ModelViewSet):
                         data.pop('is_delete', None)
                         data.pop('created_time', None)
                         data.pop('updated_time', None)
-                        db_data.update(data=data, updated_time=timezone.now())
+                        db_data.update(data=data, project=project_name, updated_time=timezone.now())
                         return Response(response)
                     if isinstance(response, dict) and response.get("detail"):
                         return Response(response)
@@ -197,6 +207,9 @@ class ExampleDelete(ModelViewSet):
         Override the delete method, combining send_robust and transaction management
         """
         data = self.request.data
+        project_name = self.request.META.get('HTTP_PROJECT', settings.PROJECT_NAME)
+        if project_name.lower() == 'bomiot':
+            project_name = settings.PROJECT_NAME
         db_data = models.Example.objects.filter(id=data.get('id'), is_delete=False)
         try:
             with transaction.atomic():
@@ -208,7 +221,7 @@ class ExampleDelete(ModelViewSet):
                     if isinstance(response, Exception):
                         raise response
                     if isinstance(response, dict) and response.get("msg"):
-                        db_data.update(is_delete=True, updated_time=timezone.now())
+                        db_data.update(project=project_name, is_delete=True, updated_time=timezone.now())
                         return Response(response)
                     if isinstance(response, dict) and response.get("detail"):
                         return Response(response)

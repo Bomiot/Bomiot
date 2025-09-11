@@ -23,7 +23,6 @@
             :label="t('refresh')"
             icon="refresh"
             @click="onRequest()"
-            v-show="tokenStore.userPermissionGet('Get User List')"
           >
             <q-tooltip
               class="bg-indigo"
@@ -35,7 +34,6 @@
             :label="t('new')"
             icon="add"
             @click="createUser()"
-            v-show="tokenStore.userPermissionGet('Create One User')"
           >
             <q-tooltip
               class="bg-indigo"
@@ -74,7 +72,6 @@
               flat
               icon="published_with_changes"
               @click="changPWD(props.rowIndex)"
-              v-show="tokenStore.userPermissionGet('Change Password')"
             >
               <q-tooltip
                 class="bg-indigo"
@@ -87,7 +84,6 @@
               flat
               icon="diversity_3"
               @click="setTeam(props.rowIndex)"
-              v-show="tokenStore.userPermissionGet('Set Team For User')"
             >
               <q-tooltip
                 class="bg-indigo"
@@ -100,7 +96,6 @@
               flat
               icon="diversity_2"
               @click="setDepartment(props.rowIndex)"
-              v-show="tokenStore.userPermissionGet('Set Department For User')"
             >
               <q-tooltip
                 class="bg-indigo"
@@ -112,7 +107,7 @@
               round
               flat
               icon="lock_person"
-              v-show="!props.row.is_active && tokenStore.userPermissionGet('Lock & Unlock User')"
+              v-show="!props.row.is_active"
               @click="lockUser(props.rowIndex)"
             >
               <q-tooltip
@@ -125,7 +120,7 @@
               round
               flat
               icon="lock_open"
-              v-show="props.row.is_active && tokenStore.userPermissionGet('Lock & Unlock User')"
+              v-show="props.row.is_active"
               @click="lockUser(props.rowIndex)"
             >
               <q-tooltip
@@ -139,7 +134,6 @@
               flat
               icon="delete_sweep"
               @click="deleteUser(props.rowIndex)"
-              v-show="tokenStore.userPermissionGet('Delete One User')"
             >
               <q-tooltip
                 class="bg-indigo"
@@ -230,30 +224,28 @@ function onRequest(props) {
   } else {
     requestData.pagination = pagination.value
   }
-  if (tokenStore.userPermissionGet('Get User List')) {
-    get({
-      url: 'core/user/',
-      params: {
-        search: search.value,
-        page: requestData.pagination.page,
-        max_page: requestData.pagination.rowsPerPage
-      }
+  get({
+    url: 'core/user/',
+    params: {
+      search: search.value,
+      page: requestData.pagination.page,
+      max_page: requestData.pagination.rowsPerPage
+    }
+  })
+    .then((res) => {
+      rows.value = res.results
+      rowsCount.value = res.count
+      teamList.value = res.team
+      departmentList.value = res.department
     })
-      .then((res) => {
-        rows.value = res.results
-        rowsCount.value = res.count
-        teamList.value = res.team
-        departmentList.value = res.department
+    .catch((err) => {
+      $q.notify({
+        type: 'error',
+        message: err
       })
-      .catch((err) => {
-        $q.notify({
-          type: 'error',
-          message: err
-        })
-        $q.loading.hide()
-      })
-    pagination.value = requestData.pagination
-  }
+      $q.loading.hide()
+    })
+  pagination.value = requestData.pagination
 }
 
 async function createUser() {

@@ -19,10 +19,10 @@
     >
       <template v-slot:top="props">
         <q-btn-group flat>
-          <q-btn :label="t('refresh')" icon="refresh" @click="onRequest()" v-show="tokenStore.userPermissionGet('Get User List')">
+          <q-btn :label="t('refresh')" icon="refresh" @click="onRequest()">
             <q-tooltip class="bg-indigo" :offset="[10, 10]" content-style="font-size: 12px">{{ t('refreshdata') }}</q-tooltip>
           </q-btn>
-          <q-btn :label="t('new')" icon="add" @click="createUser()" v-show="tokenStore.userPermissionGet('Create One User')">
+          <q-btn :label="t('new')" icon="add" @click="createUser()">
             <q-tooltip class="bg-indigo" :offset="[10, 10]" content-style="font-size: 12px">{{ t('newUser') }}</q-tooltip>
           </q-btn>
         </q-btn-group>
@@ -42,19 +42,19 @@
       <template v-slot:body-cell="props">
         <q-td :props="props">
           <div v-if="props.col.name === 'action'">
-            <q-btn round flat icon="published_with_changes" @click="changPWD(props.rowIndex)" v-show="tokenStore.userPermissionGet('Change Password')">
+            <q-btn round flat icon="published_with_changes" @click="changPWD(props.rowIndex)">
               <q-tooltip class="bg-indigo" :offset="[10, 10]" content-style="font-size: 12px">{{ t('changepassword') }}</q-tooltip>
             </q-btn>
-            <q-btn round flat icon="admin_panel_settings" @click="setPermission(props.rowIndex)" v-show="tokenStore.userPermissionGet('Set Permission For User')">
+            <q-btn round flat icon="admin_panel_settings" @click="setPermission(props.rowIndex)">
               <q-tooltip class="bg-indigo" :offset="[10, 10]" content-style="font-size: 12px">{{ t('permission') }}</q-tooltip>
             </q-btn>
-            <q-btn round flat icon="lock_person" v-show="!props.row.is_active && tokenStore.userPermissionGet('Lock & Unlock User')" @click="lockUser(props.rowIndex)">
+            <q-btn round flat icon="lock_person" v-show="!props.row.is_active" @click="lockUser(props.rowIndex)">
               <q-tooltip class="bg-indigo" :offset="[10, 10]" content-style="font-size: 12px">{{ t('isnotactive') }}</q-tooltip>
             </q-btn>
-            <q-btn round flat icon="lock_open" v-show="props.row.is_active && tokenStore.userPermissionGet('Lock & Unlock User')" @click="lockUser(props.rowIndex)">
+            <q-btn round flat icon="lock_open" v-show="props.row.is_active" @click="lockUser(props.rowIndex)">
               <q-tooltip class="bg-indigo" :offset="[10, 10]" content-style="font-size: 12px">{{ t('isactive') }}</q-tooltip>
             </q-btn>
-            <q-btn round flat icon="delete_sweep" @click="deleteUser(props.rowIndex)" v-show="tokenStore.userPermissionGet('Delete One User')">
+            <q-btn round flat icon="delete_sweep" @click="deleteUser(props.rowIndex)">
               <q-tooltip class="bg-indigo" :offset="[10, 10]" content-style="font-size: 12px">{{ t('deleteuser') }}</q-tooltip>
             </q-btn>
           </div>
@@ -136,27 +136,25 @@ function onRequest (props) {
   } else {
     requestData.pagination = pagination.value
   }
-  if (tokenStore.userPermissionGet('Get User List')) {
-    get({
-      url: 'core/user/',
-      params: {
-        search: search.value,
-        ordering: (pagination.value.descending? '-' : '') + '' + pagination.value.sortBy,
-        page: requestData.pagination.page,
-        max_page: requestData.pagination.rowsPerPage
-      }
-    }).then(res => {
-      if (!res.login) {
-        rows.value = res.results
-        rowsCount.value = res.count
-        permissionList.value = res.permission
-      }
-    }).catch(err => {
-      $q.loading.hide()
-      return Promise.reject(err)
-    })
-    pagination.value = requestData.pagination
-  }
+  get({
+    url: 'core/user/',
+    params: {
+      search: search.value,
+      ordering: (pagination.value.descending? '-' : '') + '' + pagination.value.sortBy,
+      page: requestData.pagination.page,
+      max_page: requestData.pagination.rowsPerPage
+    }
+  }).then(res => {
+    if (!res.login) {
+      rows.value = res.results
+      rowsCount.value = res.count
+      permissionList.value = res.permission
+    }
+  }).catch(err => {
+    $q.loading.hide()
+    return Promise.reject(err)
+  })
+  pagination.value = requestData.pagination
 }
 
 function createUser() {

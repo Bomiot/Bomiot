@@ -4,7 +4,16 @@ from django.db import models
 
 
 class CoreModel(models.Model):
-    project = models.CharField(default='bomiot', verbose_name='Project Name')
+    is_delete = models.BooleanField(default=False, verbose_name='Delete Label')
+    created_time = models.DateTimeField(auto_now_add=True, verbose_name="Created Time")
+    updated_time = models.DateTimeField(auto_now=True, blank=True, null=True, verbose_name="Updated Time")
+
+    class Meta:
+        ordering = ['-id']
+        abstract = True
+
+class DataCoreModel(models.Model):
+    project = models.CharField(max_length=255, default='bomiot', verbose_name='Project Name')
     is_delete = models.BooleanField(default=False, verbose_name='Delete Label')
     created_time = models.DateTimeField(auto_now_add=True, verbose_name="Created Time")
     updated_time = models.DateTimeField(auto_now=True, blank=True, null=True, verbose_name="Updated Time")
@@ -38,23 +47,6 @@ class Permission(CoreModel):
         verbose_name = settings.BASE_DB_TABLE + ' Permission'
         verbose_name_plural = verbose_name
         ordering = ['-id']
-
-
-class API(CoreModel):
-    id = models.AutoField(primary_key=True)
-    method = models.CharField(max_length=18, verbose_name="Method", default='GET')
-    api = models.CharField(max_length=255, verbose_name="API API")
-    func_name = models.CharField(max_length=255, verbose_name="API Name")
-    name = models.CharField(max_length=255, verbose_name="API Description", default='')
-
-    def __str__(self):
-        return self.api
-
-    class Meta:
-        db_table = settings.BASE_DB_TABLE + '_api'
-        verbose_name = settings.BASE_DB_TABLE + ' API'
-        verbose_name_plural = verbose_name
-        ordering = ['id']
 
 
 class ThrottleModel(CoreModel):
@@ -184,7 +176,7 @@ class Network(CoreModel):
         ordering = ['-id']
 
 
-class Team(CoreModel):
+class Team(DataCoreModel):
     name = models.CharField(default='', max_length=255, verbose_name="Team Name")
     permission = models.JSONField(default=dict, null=True, verbose_name="Permission")
 
@@ -195,7 +187,7 @@ class Team(CoreModel):
         ordering = ['-id']
 
 
-class Example(CoreModel):
+class Example(DataCoreModel):
     data = models.JSONField()
 
     class Meta:
@@ -215,7 +207,7 @@ class Department(CoreModel):
         ordering = ['-id']
 
 
-class Goods(CoreModel):
+class Goods(DataCoreModel):
     data = models.JSONField()
 
     class Meta:
@@ -225,7 +217,7 @@ class Goods(CoreModel):
         ordering = ['-id']
 
 
-class Bin(CoreModel):
+class Bin(DataCoreModel):
     data = models.JSONField()
 
     class Meta:
@@ -235,7 +227,7 @@ class Bin(CoreModel):
         ordering = ['-id']
 
 
-class Stock(CoreModel):
+class Stock(DataCoreModel):
     data = models.JSONField()
 
     class Meta:
@@ -245,7 +237,17 @@ class Stock(CoreModel):
         ordering = ['-id']
 
 
-class Capital(CoreModel):
+class StockBin(DataCoreModel):
+    data = models.JSONField()
+
+    class Meta:
+        db_table = settings.BASE_DB_TABLE + '_stock_bin'
+        verbose_name = settings.BASE_DB_TABLE + ' Stock Bin'
+        verbose_name_plural = verbose_name
+        ordering = ['-id']
+
+
+class Capital(DataCoreModel):
     data = models.JSONField()
 
     class Meta:
@@ -255,7 +257,7 @@ class Capital(CoreModel):
         ordering = ['-id']
 
 
-class Supplier(CoreModel):
+class Supplier(DataCoreModel):
     data = models.JSONField()
 
     class Meta:
@@ -265,7 +267,7 @@ class Supplier(CoreModel):
         ordering = ['-id']
 
 
-class Customer(CoreModel):
+class Customer(DataCoreModel):
     data = models.JSONField()
 
     class Meta:
@@ -275,7 +277,7 @@ class Customer(CoreModel):
         ordering = ['-id']
 
 
-class ASN(CoreModel):
+class ASN(DataCoreModel):
     data = models.JSONField()
 
     class Meta:
@@ -285,7 +287,17 @@ class ASN(CoreModel):
         ordering = ['-id']
 
 
-class DN(CoreModel):
+class ASNDetail(DataCoreModel):
+    data = models.JSONField()
+
+    class Meta:
+        db_table = settings.BASE_DB_TABLE + '_asn_detail'
+        verbose_name = settings.BASE_DB_TABLE + ' ASN Detail'
+        verbose_name_plural = verbose_name
+        ordering = ['-id']
+
+
+class DN(DataCoreModel):
     data = models.JSONField()
 
     class Meta:
@@ -295,7 +307,17 @@ class DN(CoreModel):
         ordering = ['-id']
 
 
-class Purchase(CoreModel):
+class DNDetail(DataCoreModel):
+    data = models.JSONField()
+
+    class Meta:
+        db_table = settings.BASE_DB_TABLE + '_dn_detail'
+        verbose_name = settings.BASE_DB_TABLE + ' DN Detail'
+        verbose_name_plural = verbose_name
+        ordering = ['-id']
+
+
+class Purchase(DataCoreModel):
     data = models.JSONField()
 
     class Meta:
@@ -305,7 +327,7 @@ class Purchase(CoreModel):
         ordering = ['-id']
 
 
-class Bar(CoreModel):
+class Bar(DataCoreModel):
     data = models.JSONField()
 
     class Meta:
@@ -315,7 +337,7 @@ class Bar(CoreModel):
         ordering = ['-id']
 
 
-class Fee(CoreModel):
+class Fee(DataCoreModel):
     data = models.JSONField()
 
     class Meta:
@@ -325,7 +347,7 @@ class Fee(CoreModel):
         ordering = ['-id']
 
 
-class Driver(CoreModel):
+class Driver(DataCoreModel):
     data = models.JSONField()
 
     class Meta:

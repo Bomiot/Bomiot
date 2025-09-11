@@ -13,6 +13,17 @@
           </q-avatar>
             {{ appNameStore.appName }} Team©
         </q-toolbar-title>
+        <q-space />
+        <q-btn dense flat round icon='reply_all' style="margin-right: 10px" @click="projectStore.projectChange('bomiot')">
+          <q-tooltip class="bg-indigo" :offset="[15, 15]" content-style="font-size: 12px">
+            Bomiot
+          </q-tooltip>
+        </q-btn>
+        <!-- <q-btn dense flat round icon='reply' style="margin-right: 10px" @click="projectStore.projectChange('greaterwms')">
+          <q-tooltip class="bg-indigo" :offset="[15, 15]" content-style="font-size: 12px">
+            Greaterwms
+          </q-tooltip>
+        </q-btn> -->
         <q-btn dense flat round style="margin-right: 10px" @click="openLink('https://space.bilibili.com/407321291')">
           <img src="/statics/icons/bilibili.svg" style="width: 25px" :alt="appNameStore.appName + ' Bilibili'"/>
           <q-tooltip class="bg-indigo" :offset="[15, 15]" content-style="font-size: 12px">
@@ -105,6 +116,7 @@ import { userightDrawerStore } from "stores/rightDrawer"
 import { useleftDrawerStore } from "stores/leftDrawer"
 import { useTokenStore } from "stores/token"
 import { useLanguageStore } from 'stores/language'
+import { useProjectStore } from 'stores/project'
 import { useI18n } from "vue-i18n"
 import { useQuasar, openURL } from "quasar"
 import { useRouter } from 'vue-router'
@@ -123,6 +135,7 @@ const rightDrawerStore = userightDrawerStore()
 const leftDrawerStore = useleftDrawerStore()
 const tokenStore = useTokenStore()
 const langStore = useLanguageStore()
+const projectStore = useProjectStore()
 
 const loginForm = ref(false)
 const isPwd = ref(true)
@@ -189,6 +202,14 @@ function listenToEvent() {
 watch(() => langStore.langData, val => {
   if (val) {
     return
+  }
+})
+
+watch(() => projectStore.project, val => {
+  if (val) {
+    console.log('Project changed:', val)
+    $q.cookies.set('project', val)
+    window.location.reload(true)
   }
 })
 

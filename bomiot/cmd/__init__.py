@@ -72,10 +72,10 @@ subparsers = parser.add_subparsers(
     dest='command', title='Available commands', metavar='')
 
 # new
-parser_new = subparsers.add_parser(
-    'new', help='Create APP for project')
-parser_new.add_argument('folder', default='',
-                         nargs='?', type=str, help='Create APP')
+# parser_new = subparsers.add_parser(
+#     'new', help='Create APP for project')
+# parser_new.add_argument('folder', default='',
+#                          nargs='?', type=str, help='Create APP')
 
 # project
 parser_project = subparsers.add_parser(
@@ -198,9 +198,9 @@ def cmd():
         from bomiot.cmd.initpwd import init_password
         init_password()
     # create app
-    elif command == 'new':
-        from bomiot.cmd.createapp import new_app
-        new_app(args.folder)
+    # elif command == 'new':
+    #     from bomiot.cmd.createapp import new_app
+    #     new_app(args.folder)
     # marketplace
     elif command == 'market':
         from bomiot.cmd.market import copy_project

@@ -38,7 +38,6 @@ const routes = [
       { path: 'observer', component: () => import('pages/signals/ObserverReader.vue') },
       { path: 'server', component: () => import('pages/signals/ServerReader.vue') },
       { path: 'data', component: () => import('pages/signals/DataReader.vue') },
-      { path: 'api', component: () => import('pages/signals/APIReader.vue') },
       { path: 'example', component: () => import('pages/signals/ExampleReader.vue') },
       { path: 'interaction', component: () => import('pages/signals/InteractionReader.vue') },
     ]

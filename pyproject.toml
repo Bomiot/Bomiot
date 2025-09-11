@@ -27,7 +27,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = ">=3.9,<=3.13"
-django = "~4.2.23"
+django = "~4.2.24"
 django-cors-headers = "~4.4.0"
 pyjwt = ">=2.10.1"
 django-filter = "~24.3"
@@ -36,7 +36,6 @@ bomiot-asgi = "==0.5.2"
 bomiot-token = ">=0.7.0"
 bomiot-message = ">=0.4.5"
 bomiot-control = ">=0.1.4"
-bomiot-data-control = ">=0.3.2"
 orjson = "~3.10.7"
 djangorestframework = "~3.15.2"
 django-apscheduler = "~0.7.0"
@@ -51,8 +50,6 @@ uvicorn = "~0.34.3"
 httptools = "^0.6.4"
 aiofiles = "^24.1.0"
 starlette = "~0.46.2"
-fastapi = "~0.115.14"
-flask = "~3.1.1"
 
 [build-system]
 requires = ["poetry-core"]

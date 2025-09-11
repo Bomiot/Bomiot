@@ -103,16 +103,6 @@ class DepartmentFilter(FilterSet):
         filter_overrides = JSONFIELD_FILTER_OVERRIDE
 
 
-class APIFilter(FilterSet):
-    """
-    API filter
-    """
-    class Meta:
-        model = models.API
-        fields = '__all__'
-        filter_overrides = JSONFIELD_FILTER_OVERRIDE
-
-
 class ExampleFilter(FilterSet):
     """
     Example filter
@@ -204,6 +194,16 @@ class StockFilter(FilterSet):
         filter_overrides = JSONFIELD_FILTER_OVERRIDE
 
 
+class StockBinFilter(FilterSet):
+    """
+    Stock Bin filter
+    """
+    class Meta:
+        model = models.StockBin
+        fields = '__all__'
+        filter_overrides = JSONFIELD_FILTER_OVERRIDE
+
+
 class CapitalFilter(FilterSet):
     """
     Capital filter
@@ -244,12 +244,32 @@ class ASNFilter(FilterSet):
         filter_overrides = JSONFIELD_FILTER_OVERRIDE
 
 
+class ASNDetailFilter(FilterSet):
+    """
+    ASN Detail filter
+    """
+    class Meta:
+        model = models.ASNDetail
+        fields = '__all__'
+        filter_overrides = JSONFIELD_FILTER_OVERRIDE
+
+
 class DNFilter(FilterSet):
     """
     DN filter
     """
     class Meta:
         model = models.DN
+        fields = '__all__'
+        filter_overrides = JSONFIELD_FILTER_OVERRIDE
+
+
+class DNDetailFilter(FilterSet):
+    """
+    DN Detail filter
+    """
+    class Meta:
+        model = models.DNDetail
         fields = '__all__'
         filter_overrides = JSONFIELD_FILTER_OVERRIDE
 

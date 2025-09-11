@@ -145,8 +145,3 @@ urlpatterns += [
     path(r'driver/update/', driver.DriverUpdate.as_view({"post": "update"}), name="Update Driver"),
     path(r'driver/delete/', driver.DriverDelete.as_view({"post": "delete"}), name="Delete Driver")
 ]
-
-urlpatterns += [
-    path(r'api/', views.APIList.as_view({"get": "list"})),
-    path(r'api/change/', views.APIChange.as_view({"post": "create"})),
-]

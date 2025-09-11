@@ -23,7 +23,6 @@
             :label="t('refresh')"
             icon="refresh"
             @click="onRequest()"
-            v-show="tokenStore.userPermissionGet('Get User List')"
           >
             <q-tooltip
               class="bg-indigo"
@@ -35,7 +34,6 @@
             :label="t('new')"
             icon="add"
             @click="createTeam()"
-            v-show="tokenStore.userPermissionGet('Create One Team')"
           >
             <q-tooltip
               class="bg-indigo"
@@ -74,7 +72,6 @@
               flat
               icon="edit"
               @click="changTeam(props.rowIndex)"
-              v-show="tokenStore.userPermissionGet('Change Team')"
             >
               <q-tooltip
                 class="bg-indigo"
@@ -87,7 +84,6 @@
               flat
               icon="admin_panel_settings"
               @click="setPermission(props.rowIndex)"
-              v-show="tokenStore.userPermissionGet('Set Permission For Team')"
             >
               <q-tooltip
                 class="bg-indigo"
@@ -100,7 +96,6 @@
               flat
               icon="delete_sweep"
               @click="deleteTeam(props.rowIndex)"
-              v-show="tokenStore.userPermissionGet('Delete Team')"
             >
               <q-tooltip
                 class="bg-indigo"
@@ -190,29 +185,27 @@ function onRequest(props) {
   } else {
     requestData.pagination = pagination.value
   }
-  if (tokenStore.userPermissionGet('Get Team List')) {
-    get({
-      url: 'core/team/',
-      params: {
-        search: search.value,
-        page: requestData.pagination.page,
-        max_page: requestData.pagination.rowsPerPage
-      }
+  get({
+    url: 'core/team/',
+    params: {
+      search: search.value,
+      page: requestData.pagination.page,
+      max_page: requestData.pagination.rowsPerPage
+    }
+  })
+    .then((res) => {
+      rows.value = res.results
+      rowsCount.value = res.count
+      permissionList.permissionChange(res.permission_list)
     })
-      .then((res) => {
-        rows.value = res.results
-        rowsCount.value = res.count
-        permissionList.permissionChange(res.permission_list)
+    .catch((err) => {
+      $q.notify({
+        type: 'error',
+        message: err
       })
-      .catch((err) => {
-        $q.notify({
-          type: 'error',
-          message: err
-        })
-        $q.loading.hide()
-      })
-    pagination.value = requestData.pagination
-  }
+      $q.loading.hide()
+    })
+  pagination.value = requestData.pagination
 }
 
 function createTeam() {

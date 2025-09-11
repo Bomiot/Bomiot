@@ -9,6 +9,10 @@ import importlib.util
 import importlib
 from pathlib import Path
 from bomiot_message import msg_message_return
+import os
+import shutil
+import filecmp
+from filecmp import dircmp
 
 def get_job_id(task):
     """
@@ -277,7 +281,7 @@ def check_method_in_file_by_ast(file_path, method_name):
         return False, detail
 
 def receiver_callback(data, method) -> dict:
-    project_name = data.get('request').META.get('HTTP_PROJECT', settings.PROJECT_NAME)
+    project_name = data.get('request').COOKIES.get('project', settings.PROJECT_NAME)
     if project_name.lower() == 'bomiot':
         receiver_path = join(settings.WORKING_SPACE, settings.PROJECT_NAME, 'receiver.py')
     else:
@@ -342,3 +346,77 @@ def sync_write_file(file_path, file_data):
         return result
     finally:
         loop.close()
+
+
+def are_folders_identical(folder1, folder2, subfolder_path='dist', print_log=True):
+    """
+    mirror templates
+    """
+    subfolder1 = os.path.join(folder1, subfolder_path)
+    subfolder2 = os.path.join(folder2, subfolder_path)
+    for subfolder in [subfolder1, subfolder2]:
+        if not os.path.exists(subfolder):
+            os.makedirs(subfolder)
+    def _sync_subdirs(dcmp):
+        for item in dcmp.funny_files:
+            src = os.path.join(dcmp.left, item)
+            dest = os.path.join(dcmp.right, item)
+            if os.path.exists(dest):
+                if os.path.isfile(dest):
+                    os.remove(dest)
+                else:
+                    shutil.rmtree(dest)
+            if os.path.isfile(src):
+                shutil.copy2(src, dest)
+            else:
+                shutil.copytree(src, dest)
+        for item in dcmp.right_only:
+            path = os.path.join(dcmp.right, item)
+            if os.path.isfile(path):
+                os.remove(path)
+            else:
+                shutil.rmtree(path)
+        for item in dcmp.left_only:
+            src = os.path.join(dcmp.left, item)
+            dest = os.path.join(dcmp.right, item)
+            if os.path.isfile(src):
+                shutil.copy2(src, dest)
+            else:
+                shutil.copytree(src, dest)
+        for item in dcmp.diff_files:
+            src = os.path.join(dcmp.left, item)
+            dest = os.path.join(dcmp.right, item)
+            shutil.copy2(src, dest)
+        for sub_dcmp in dcmp.subdirs.values():
+            _sync_subdirs(sub_dcmp)
+    dcmp = dircmp(subfolder1, subfolder2)
+    _sync_subdirs(dcmp)
+    final_dcmp = dircmp(subfolder1, subfolder2)
+    is_identical = not (final_dcmp.left_only or final_dcmp.right_only or 
+                       final_dcmp.diff_files or final_dcmp.funny_files)
+    return is_identical
+
+def dynamic_import_and_call(module_path, function_name, *args, **kwargs):
+    """
+    Dynamically import a method from a module and execute it.
+
+    Args:
+        module_path (str): The path of the module, e.g. 'my_module.my_functions'.
+        function_name (str): The name of the method, e.g. 'greet_person'.
+        *args: Positional arguments to pass to the method.
+        **kwargs: Keyword arguments to pass to the method.
+
+    Returns:
+        any: The return value of the called method.
+    """
+    try:
+        module = importlib.import_module(module_path)
+        func = getattr(module, function_name)
+        result = func(*args, **kwargs)
+        return result
+    except ImportError:
+        print(f"Error: Module '{module_path}' could not be imported.")
+        return None
+    except AttributeError:
+        print(f"Error: Function '{function_name}' not found in module '{module_path}'.")
+        return None

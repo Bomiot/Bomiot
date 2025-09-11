@@ -23,7 +23,6 @@
             :label="t('refresh')"
             icon="refresh"
             @click="onRequest()"
-            v-show="tokenStore.userPermissionGet('Get Department List')"
           >
             <q-tooltip
               class="bg-indigo"
@@ -35,7 +34,6 @@
             :label="t('new')"
             icon="add"
             @click="createDepartment()"
-            v-show="tokenStore.userPermissionGet('Create Department')"
           >
             <q-tooltip
               class="bg-indigo"
@@ -74,7 +72,6 @@
               flat
               icon="edit"
               @click="changDepartment(props.rowIndex)"
-              v-show="tokenStore.userPermissionGet('Change Department')"
             >
               <q-tooltip
                 class="bg-indigo"
@@ -87,7 +84,6 @@
               flat
               icon="delete_sweep"
               @click="deleteDepartment(props.rowIndex)"
-              v-show="tokenStore.userPermissionGet('Delete Department')"
             >
               <q-tooltip
                 class="bg-indigo"
@@ -176,28 +172,26 @@ function onRequest(props) {
   } else {
     requestData.pagination = pagination.value
   }
-  if (tokenStore.userPermissionGet('Get Department List')) {
-    get({
-      url: 'core/department/',
-      params: {
-        search: search.value,
-        page: requestData.pagination.page,
-        max_page: requestData.pagination.rowsPerPage
-      }
+  get({
+    url: 'core/department/',
+    params: {
+      search: search.value,
+      page: requestData.pagination.page,
+      max_page: requestData.pagination.rowsPerPage
+    }
+  })
+    .then((res) => {
+      rows.value = res.results
+      rowsCount.value = res.count
     })
-      .then((res) => {
-        rows.value = res.results
-        rowsCount.value = res.count
+    .catch((err) => {
+      $q.notify({
+        type: 'error',
+        message: err
       })
-      .catch((err) => {
-        $q.notify({
-          type: 'error',
-          message: err
-        })
-        $q.loading.hide()
-      })
-    pagination.value = requestData.pagination
-  }
+      $q.loading.hide()
+    })
+  pagination.value = requestData.pagination
 }
 
 function createDepartment() {

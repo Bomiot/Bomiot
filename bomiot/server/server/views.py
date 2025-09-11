@@ -1,11 +1,12 @@
 import json, orjson
 import mimetypes
 import os
+import glob
 import aiofiles
 from django.conf import settings
 from django.http import JsonResponse, HttpResponse, FileResponse, StreamingHttpResponse
 from wsgiref.util import FileWrapper
-from configparser import ConfigParser
+from django.views.generic import TemplateView
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
@@ -15,11 +16,13 @@ from bomiot.server.core.jwt_auth import create_token, parse_payload
 from bomiot.server.core.models import Permission
 from bomiot_message import login_message_return, others_message_return
 from bomiot.server.server.pkgcheck import url_ignore
-from os.path import join, isdir, exists
+from os.path import join, isdir, exists, isfile
 from os import listdir
 import importlib.util
 from configparser import ConfigParser
 from pathlib import Path
+from bomiot.cmd.copyfile import copy_files
+from bomiot.server.core.utils import are_folders_identical
 from django.urls import get_resolver, URLPattern, URLResolver
 
 User = get_user_model()
@@ -27,13 +30,30 @@ User = get_user_model()
 async def test(request):
     return JsonResponse({"msg": "This is Django API"})
 
-def index(request):
-    project_name = request.META.get('HTTP_PROJECT', settings.PROJECT_NAME)
-    if project_name.lower() == 'bomiot':
-        template_path = join(settings.WORKING_SPACE, settings.PROJECT_NAME, 'templates/dist/spa/index.html')
-    else:
-       template_path = join(settings.WORKING_SPACE, project_name, 'templates/dist/spa/index.html')
-    return render(request, template_path)
+
+class IndexTemplateView(TemplateView):
+    def get_template_names(self):
+        project_name = self.request.COOKIES.get('project', settings.PROJECT_NAME)
+        if project_name.lower() == 'bomiot':
+            template_path = join(settings.WORKING_SPACE, settings.PROJECT_NAME, 'templates/dist/spa/index.html')
+        else:
+            if project_name == settings.PROJECT_NAME:
+                template_path = join(settings.WORKING_SPACE, settings.PROJECT_NAME, 'templates/dist/spa/index.html')
+            else:
+                project_template = join(settings.WORKING_SPACE, project_name, 'templates')
+                working_template = join(settings.WORKING_SPACE, settings.PROJECT_NAME, 'templates', 'project', project_name)
+                if exists(working_template):
+                    while True:
+                        template_mirror = are_folders_identical(project_template, working_template)
+                        if template_mirror is True:
+                            break
+                        else:
+                            continue
+                else:
+                    os.makedirs(working_template)
+                    copy_files(project_template, working_template)
+                template_path = join(working_template, 'dist/spa/index.html')
+        return [template_path]
 
 
 def logins(request):
@@ -88,7 +108,7 @@ async def check_token(request):
 
 
 async def mdurl(request, mddocs):
-    project_name = request.META.get('HTTP_PROJECT', settings.PROJECT_NAME)
+    project_name = request.COOKIES.get('project', settings.PROJECT_NAME)
     language = request.META.get('HTTP_LANUAGE', '')
     if not mddocs.endswith('.md'):
         return JsonResponse({'detail': others_message_return(language, 'Only support markdown file')})
@@ -130,7 +150,7 @@ async def mdurl(request, mddocs):
         return response
 
 def favicon(request):
-    project_name = request.META.get('HTTP_PROJECT', settings.PROJECT_NAME)
+    project_name = request.COOKIES.get('project', settings.PROJECT_NAME)
     if project_name.lower() == 'bomiot':
         path = join(settings.MEDIA_ROOT, 'img', 'logo.png')
     else:
@@ -140,14 +160,23 @@ def favicon(request):
     return resp
 
 def statics(request):
-    project_name = request.META.get('HTTP_PROJECT', settings.PROJECT_NAME)
+    project_name = request.COOKIES.get('project', settings.PROJECT_NAME)
     if project_name.lower() == 'bomiot':
-        path = join(settings.WORKING_SPACE, settings.PROJECT_NAME, 'templates', 'dist', 'spa', request.path_info)
+        base_dir = join(settings.WORKING_SPACE, settings.PROJECT_NAME, 'templates', 'dist', 'spa')
     else:
-        path = join(settings.WORKING_SPACE, project_name, 'templates', 'dist', 'spa', request.path_info)
-    resp = FileResponse(open(path, 'rb'))
-    resp['Cache-Control'] = 'max-age=864000000000'
-    return resp
+        base_dir = join(settings.WORKING_SPACE, settings.PROJECT_NAME, 'templates', 'project', project_name, 'dist', 'spa')
+    path = join(base_dir, request.path_info.lstrip('/'))
+    if exists(path) and isfile(path):
+        resp = FileResponse(open(path, 'rb'))
+        resp['Cache-Control'] = 'max-age=864000000000'
+        return resp
+    pattern = join(base_dir, '**', 'index-*.js')
+    index_js_files = glob.glob(pattern, recursive=True)
+    if index_js_files:
+        fallback_path = index_js_files[0]
+        resp = FileResponse(open(fallback_path, 'rb'))
+        resp['Cache-Control'] = 'max-age=864000000000'
+        return resp
 
 async def google(request):
     return JsonResponse({})

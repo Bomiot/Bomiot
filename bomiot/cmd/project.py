@@ -27,8 +27,6 @@ def project(folder: str):
                 print('Project directory already exists')
             else:
                 makedirs(project_path)
-                static_path = join(project_path, 'static')
-                exists(static_path) or os.makedirs(static_path)
                 current_path = Path(__file__).resolve()
                 file_path = join(current_path.parent, 'file')
 
@@ -44,15 +42,19 @@ def project(folder: str):
                 shutil.copy2(join(file_path, 'receiver.py'), project_path)
                 shutil.copy2(join(file_path, 'example.py'), project_path)
                 shutil.copy2(join(file_path, 'api.py'), project_path)
-                copy_files(join(file_path, 'fastapi_app'), join(project_path, 'fastapi_app'))
-                copy_files(join(file_path, 'flask_app'), join(project_path, 'flask_app'))
 
                 create_file(str(sys.argv[2]))
 
+                setup_ini_path = join(getcwd(), 'setup.ini')
+                if not exists(setup_ini_path):
+                    shutil.copy2(join(file_path, 'setup.ini'), setup_ini_path)
                 setup_config = ConfigParser()
-                setup_config.read(join(join(getcwd()), 'setup.ini'), encoding='utf-8')
-                setup_config.set('project', 'name', folder)
-                setup_config.write(open(join(join(getcwd()), 'setup.ini'), "wt"))
+                setup_config.read(setup_ini_path, encoding='utf-8')
+                project_name = setup_config.get('project', 'name', fallback='bomiot')
+                if project_name.lower() == 'bomiot':
+                    setup_config.set('project', 'name', folder)
+                with open(setup_ini_path, "wt", encoding='utf-8') as f:
+                    setup_config.write(f)
 
                 copy_files(join(join(current_path.parent.parent, 'server'), 'media'), join(project_path, 'media'))
                 copy_files(join(join(current_path.parent.parent, 'server'), 'language'), join(project_path, 'language'))

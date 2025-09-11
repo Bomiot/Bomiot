@@ -89,25 +89,6 @@ class FileSerializer(serializers.ModelSerializer):
         read_only_fields = ['id']
 
 
-class APISerializer(serializers.ModelSerializer):
-    """
-    API Serializer
-    """
-    method = serializers.CharField(read_only=True, required=False)
-    api = serializers.CharField(read_only=True, required=False)
-    func_name = serializers.CharField(read_only=True, required=False)
-    name = serializers.CharField(read_only=True, required=False)
-    project = serializers.CharField(read_only=True, required=False)
-    is_delete = serializers.BooleanField(read_only=True, required=False)
-    created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
-    updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
-    
-    class Meta:
-        model = models.API
-        fields = ['id', 'method', 'api', 'func_name', 'name', 'is_delete', 'created_time', 'updated_time']
-        read_only_fields = ['id']
-
-
 class ExampleSerializer(serializers.ModelSerializer):
     """
     Example Serializer
@@ -120,7 +101,7 @@ class ExampleSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = models.Example
-        fields = ['id', 'data', 'is_delete', 'created_time', 'updated_time']
+        fields = ['id', 'data', 'project', 'is_delete', 'created_time', 'updated_time']
         read_only_fields = ['id']
 
 
@@ -229,7 +210,7 @@ class GoodsSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = models.Goods
-        fields = ['id', 'data', 'is_delete', 'created_time', 'updated_time']
+        fields = ['id', 'data', 'project', 'is_delete', 'created_time', 'updated_time']
         read_only_fields = ['id']
 
 
@@ -245,7 +226,7 @@ class BinSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = models.Bin
-        fields = ['id', 'data', 'is_delete', 'created_time', 'updated_time']
+        fields = ['id', 'data', 'project', 'is_delete', 'created_time', 'updated_time']
         read_only_fields = ['id']
 
 
@@ -261,7 +242,23 @@ class StockSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = models.Stock
-        fields = ['id', 'data', 'is_delete', 'created_time', 'updated_time']
+        fields = ['id', 'data', 'project', 'is_delete', 'created_time', 'updated_time']
+        read_only_fields = ['id']
+
+
+class StockBinSerializer(serializers.ModelSerializer):
+    """
+    Stock Serializer
+    """
+    data = serializers.JSONField(read_only=True, required=False)
+    project = serializers.CharField(read_only=True, required=False)
+    is_delete = serializers.BooleanField(read_only=True, required=False)
+    created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    
+    class Meta:
+        model = models.StockBin
+        fields = ['id', 'data', 'project', 'is_delete', 'created_time', 'updated_time']
         read_only_fields = ['id']
 
 
@@ -277,7 +274,7 @@ class CapitalSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = models.Capital
-        fields = ['id', 'data', 'is_delete', 'created_time', 'updated_time']
+        fields = ['id', 'data', 'project', 'is_delete', 'created_time', 'updated_time']
         read_only_fields = ['id']
 
 
@@ -293,7 +290,7 @@ class SupplierSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = models.Supplier
-        fields = ['id', 'data', 'is_delete', 'created_time', 'updated_time']
+        fields = ['id', 'data', 'project', 'is_delete', 'created_time', 'updated_time']
         read_only_fields = ['id']
 
 
@@ -309,7 +306,7 @@ class CustomerSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = models.Customer
-        fields = ['id', 'data', 'is_delete', 'created_time', 'updated_time']
+        fields = ['id', 'data', 'project', 'is_delete', 'created_time', 'updated_time']
         read_only_fields = ['id']
 
 
@@ -325,7 +322,23 @@ class ASNSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = models.ASN
-        fields = ['id', 'data', 'is_delete', 'created_time', 'updated_time']
+        fields = ['id', 'data', 'project', 'is_delete', 'created_time', 'updated_time']
+        read_only_fields = ['id']
+
+
+class ASNDetailSerializer(serializers.ModelSerializer):
+    """
+    ASN Detail Serializer
+    """
+    data = serializers.JSONField(read_only=True, required=False)
+    project = serializers.CharField(read_only=True, required=False)
+    is_delete = serializers.BooleanField(read_only=True, required=False)
+    created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    
+    class Meta:
+        model = models.ASNDetail
+        fields = ['id', 'data', 'project', 'is_delete', 'created_time', 'updated_time']
         read_only_fields = ['id']
 
 
@@ -341,7 +354,23 @@ class DNSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = models.DN
-        fields = ['id', 'data', 'is_delete', 'created_time', 'updated_time']
+        fields = ['id', 'data', 'project', 'is_delete', 'created_time', 'updated_time']
+        read_only_fields = ['id']
+
+
+class DNDetailSerializer(serializers.ModelSerializer):
+    """
+    DN Detail Serializer
+    """
+    data = serializers.JSONField(read_only=True, required=False)
+    project = serializers.CharField(read_only=True, required=False)
+    is_delete = serializers.BooleanField(read_only=True, required=False)
+    created_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    updated_time = serializers.DateTimeField(read_only=True, required=False, format='%Y-%m-%d %H:%M:%S')
+    
+    class Meta:
+        model = models.DNDetail
+        fields = ['id', 'data', 'project', 'is_delete', 'created_time', 'updated_time']
         read_only_fields = ['id']
 
 
@@ -357,7 +386,7 @@ class PurchaseSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = models.Purchase
-        fields = ['id', 'data', 'is_delete', 'created_time', 'updated_time']
+        fields = ['id', 'data', 'project', 'is_delete', 'created_time', 'updated_time']
         read_only_fields = ['id']
 
 
@@ -373,7 +402,7 @@ class BarSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = models.Bar
-        fields = ['id', 'data', 'is_delete', 'created_time', 'updated_time']
+        fields = ['id', 'data', 'project', 'is_delete', 'created_time', 'updated_time']
         read_only_fields = ['id']
 
 
@@ -389,7 +418,7 @@ class FeeSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = models.Fee
-        fields = ['id', 'data', 'is_delete', 'created_time', 'updated_time']
+        fields = ['id', 'data', 'project', 'is_delete', 'created_time', 'updated_time']
         read_only_fields = ['id']
 
 
@@ -405,5 +434,5 @@ class DriverSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = models.Fee
-        fields = ['id', 'data', 'is_delete', 'created_time', 'updated_time']
+        fields = ['id', 'data', 'project', 'is_delete', 'created_time', 'updated_time']
         read_only_fields = ['id']
