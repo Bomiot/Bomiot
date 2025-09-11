@@ -82,18 +82,6 @@
             <q-btn
               round
               flat
-              icon="admin_panel_settings"
-              @click="setPermission(props.rowIndex)"
-            >
-              <q-tooltip
-                class="bg-indigo"
-                :offset="[10, 10]"
-                content-style="font-size: 12px"
-              >{{ t('team.permission') }}</q-tooltip>
-            </q-btn>
-            <q-btn
-              round
-              flat
               icon="delete_sweep"
               @click="deleteTeam(props.rowIndex)"
             >
@@ -249,33 +237,6 @@ function changTeam(e) {
   })
     .onOk(async (data) => {
       await post('core/team/change/', { id: rows.value[e].id, name: data })
-        .then(() => {
-          onRequest()
-        })
-        .catch((err) => {
-          $q.notify({
-            type: 'error',
-            message: err
-          })
-          $q.loading.hide()
-        })
-    })
-}
-
-function setPermission(e) {
-  $q.dialog({
-    title: t('team.permission'),
-    message: t('team.choosepermission'),
-    options: {
-      type: 'checkbox',
-      model: Object.keys(rows.value[e].permission),
-      inline: true,
-      items: permissionList.permissionGet
-    },
-    cancel: true
-  })
-    .onOk(async (data) => {
-      await post('core/team/setpermission/', { id: rows.value[e].id, permission: data })
         .then(() => {
           onRequest()
         })
