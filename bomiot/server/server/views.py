@@ -154,7 +154,10 @@ def favicon(request):
     if project_name.lower() == 'bomiot':
         path = join(settings.MEDIA_ROOT, 'img', 'logo.png')
     else:
-        path = join(settings.WORKING_SPACE, project_name, 'media', 'img', 'logo.png')
+        if project_name == settings.PROJECT_NAME:
+            path = join(settings.MEDIA_ROOT, 'img', 'logo.png')
+        else:
+            path = join(settings.WORKING_SPACE, project_name, 'media', 'img', 'logo.png')
     resp = FileResponse(open(path, 'rb'))
     resp['Cache-Control'] = 'max-age=864000000000'
     return resp
@@ -164,7 +167,10 @@ def statics(request):
     if project_name.lower() == 'bomiot':
         base_dir = join(settings.WORKING_SPACE, settings.PROJECT_NAME, 'templates', 'dist', 'spa')
     else:
-        base_dir = join(settings.WORKING_SPACE, settings.PROJECT_NAME, 'templates', 'project', project_name, 'dist', 'spa')
+        if project_name == settings.PROJECT_NAME:
+            base_dir = join(settings.WORKING_SPACE, settings.PROJECT_NAME, 'templates', 'dist', 'spa')
+        else:
+            base_dir = join(settings.WORKING_SPACE, settings.PROJECT_NAME, 'templates', 'project', project_name, 'dist', 'spa')
     path = join(base_dir, request.path_info.lstrip('/'))
     if exists(path) and isfile(path):
         resp = FileResponse(open(path, 'rb'))
