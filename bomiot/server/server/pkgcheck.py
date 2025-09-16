@@ -1,6 +1,7 @@
 import importlib.util
 from pathlib import Path
 from os.path import join, isfile
+from os import getcwd
 from configparser import ConfigParser
 
 def pkg_check(module: str):
@@ -27,12 +28,7 @@ def cwd_check(module: str):
     """
     # TODO: Implement package check
     try:
-        current_path = Path(__file__).resolve().parent.parent
-        workspace_path = join(current_path, 'workspace.ini')
-        workspace_config = ConfigParser()
-        workspace_config.read(workspace_path, encoding='utf-8')
-        working_space = workspace_config.get('space', 'name')
-        config_path = join(join(working_space, module),'bomiotconf.ini')
+        config_path = join(join(join(getcwd()), module),'bomiotconf.ini')
         if isfile(config_path):
             return module
         else:

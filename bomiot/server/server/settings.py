@@ -13,9 +13,7 @@ from os.path import join, isdir, exists, isfile
 
 BASE_DIR = join(Path(bomiot.__file__).resolve().parent, 'server')
 
-WORKING_SPACE_CONFIG = ConfigParser()
-WORKING_SPACE_CONFIG.read(join(BASE_DIR, 'workspace.ini'), encoding='utf-8')
-WORKING_SPACE = WORKING_SPACE_CONFIG.get('space', 'name', fallback='Create your working space first')
+WORKING_SPACE = os.path.join(os.getcwd())
 sys.path.insert(0, WORKING_SPACE)
 
 CONFIG = ConfigParser()

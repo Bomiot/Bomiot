@@ -38,14 +38,6 @@ def create_file(folder: str):
     deploy_path = join(working_space, 'deploy')
     exists(deploy_path) or makedirs(deploy_path)
 
-    working_config = ConfigParser()
-    working_path = join(join(current_path.parent.parent, 'server'), 'workspace.ini')
-    working_config.read(working_path, encoding='utf-8')
-    if not working_config.has_section('space'):
-        working_config.add_section('space')
-    working_config.set('space', 'name', working_space)
-    working_config.write(open(working_path, "wt"))
-
     print('')
     print("  $$$$$$    $$$$$   $$$       $$$  $$   $$$$$   $$$$$$")
     print("  $$   $$  $$   $$  $$ $     $ $$  $$  $$   $$    $$")

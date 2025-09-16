@@ -833,6 +833,6 @@ websockets==15.0.1 ; python_version >= "3.9" and python_full_version <= "3.13.0"
     --hash=sha256:f29d80eb9a9263b8d109135351caf568cc3f80b9928bccde535c235de55c22d9 \
     --hash=sha256:f7a866fbc1e97b5c617ee4116daaa09b722101d4a3c170c787450ba409f9736f \
     --hash=sha256:fcd5cf9e305d7b8338754470cf69cf81f420459dbae8a3b40cee57417f4614a7
-xlsxwriter==3.2.5 ; python_version >= "3.9" and python_full_version <= "3.13.0" \
-    --hash=sha256:4f4824234e1eaf9d95df9a8fe974585ff91d0f5e3d3f12ace5b71e443c1c6abd \
-    --hash=sha256:7e88469d607cdc920151c0ab3ce9cf1a83992d4b7bc730c5ffdd1a12115a7dbe
+xlsxwriter==3.2.8 ; python_version >= "3.9" and python_full_version <= "3.13.0" \
+    --hash=sha256:8c0dc8f1538c4052a4d4e07a1962750949c2a469138a6cfbc73349c88f6b39a7 \
+    --hash=sha256:cb0baf8c9bcce14fdadd01297f4e6cd64901cf536283a1f4ab5d07290d85a66b
