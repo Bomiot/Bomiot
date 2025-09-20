@@ -1,6 +1,6 @@
 import importlib.metadata
 import importlib.util
-
+import os
 from os import listdir
 from os.path import join, isdir, exists, isfile
 from django.contrib import admin
@@ -14,6 +14,9 @@ from bomiot.server.server.pkgcheck import pkg_check, cwd_check, ignore_pkg, igno
 from configparser import ConfigParser
 from pathlib import Path
 from django.urls import resolve, Resolver404
+from bomiot.server.core.scheduler import sm
+from bomiot.server.core.observer import ob
+from bomiot.server.core.server_monitor import start_monitoring
 
 
 def url_exists(url_data):
@@ -124,3 +127,9 @@ if len(filtered_current_path) > 0:
                         import traceback
                         traceback.print_exc()
                         continue
+
+if os.environ.get('IS_LAN', 'false') == 'true':
+    views.init_bomiot()
+    start_monitoring()
+    sm.start()
+    ob.start()
