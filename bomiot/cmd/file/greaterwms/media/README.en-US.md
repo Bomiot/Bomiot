@@ -1,529 +1,452 @@
 <div align="center">
-  <img src="media/img/logo.png" alt="Bomiot logo" width="200" height="auto" />
+  <img src="bomiot/templates/dist/spa/icons/logo.png" alt="Bomiot logo" width="180" height="auto" />
   <h1>🚀 Bomiot</h1>
-  <p><strong>One App you can do everything</strong></p>
-  <p><em>Powerful Distributed Document Management Framework & Full-Stack Development Platform</em></p>
+  <p><strong>One App You Can Do Everything</strong></p>
+  <p><em>Enterprise System Integration Platform · Full-Stack Node-Based Development Platform — Connect Systems · Node Networking · Portable Distribution · Open-Source Sharing</em></p>
+  <p><strong>🏢 Connect ERP / WMS / CRM / MES / OA, End Enterprise Data Silos</strong></p>
 
-<!-- Badges -->
-![License: APLv2](https://img.shields.io/github/license/Bomiot/Bomiot)
-![Release Version (latest Version)](https://img.shields.io/github/v/release/Bomiot/Bomiot?color=orange&include_prereleases)
-![i18n Support](https://img.shields.io/badge/i18n-Support-orange.svg)
+  [English](README.md) | [中文](README_CN.md)
 
-![repo size](https://img.shields.io/github/repo-size/Bomiot/Bomiot)
-![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Bomiot/Bomiot)
-![Contributors](https://img.shields.io/github/contributors/Bomiot/Bomiot?color=blue)
-
-![GitHub Org's stars](https://img.shields.io/github/stars/Bomiot?style=social)
-![GitHub Follows](https://img.shields.io/github/followers/Singosgu?style=social)
-![GitHub Forks](https://img.shields.io/github/forks/Bomiot/Bomiot?style=social)
-![GitHub Watch](https://img.shields.io/github/watchers/Bomiot/Bomiot?style=social)
-
-![Python](https://img.shields.io/badge/Python-3.9+-yellowgreen)
-![Django](https://img.shields.io/badge/Django-4.2+-yellowgreen)
-![Quasar Cli](https://img.shields.io/badge/Quasar/cli-2.4.1+-yellowgreen)
-![Vue](https://img.shields.io/badge/Vue-3.4.18+-yellowgreen)
-![NodeJS](https://img.shields.io/badge/NodeJS-18.19.1+-yellowgreen)
-
-[![YouTube](https://img.shields.io/youtube/channel/subscribers/UCPW1wciGMIEh7CYOdLnsloA?color=red&label=YouTube&logo=youtube&style=for-the-badge)](https://www.youtube.com/channel/UCPW1wciGMIEh7CYOdLnsloA)
-
+  [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+  [![Python](https://img.shields.io/badge/python-3670A0?logo=python&logoColor=white)](https://www.python.org/)
+  [![Django](https://img.shields.io/badge/django-092E20?logo=django&logoColor=white)](https://www.djangoproject.com/)
+  [![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+  [![Flask](https://img.shields.io/badge/flask-000000?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+  [![Vue.js](https://img.shields.io/badge/vue-4FC08D?logo=vue.js&logoColor=white)](https://vuejs.org/)
+  [![GitHub Stars](https://img.shields.io/github/stars/greaterwms/bomiot?style=social)](https://github.com/greaterwms/bomiot)
+  [![Website](https://img.shields.io/badge/Website-Online-brightgreen)](https://www.bomiot.com)
 </div>
 
 ---
 
-## 🌟 Project Introduction
+## 📑 Table of Contents
 
-Bomiot is a revolutionary distributed document management framework and full-stack development platform, with core components written in Rust, designed to solve modern development pain points. We believe that excellent open-source projects should not only have powerful technology stacks but also focus on developer experience and team collaboration efficiency, making it simple and easy to learn.
-
-### 🎯 Design Philosophy
-
-- **Learning Curve**: Backend supports Django, FastAPI, Flask; Frontend supports React, Angular, Vue, Django built-in Templates (official provides a Vue set)
-- **Developer Friendly**: Seamless experience from 0 to 1, no complex configuration required
-- **Team Collaboration**: Efficient development team interaction mechanisms
-- **Modular Design**: Plugin-based architecture with extensible functionality
-- **Easy Deployment**: pip installation, convenient for team deployment, supports Python 3.9+
-- **Signal Mechanism**: Data management through signal mechanism, more convenient custom API support
-- **Enterprise Ready**: Production-ready, supports large-scale deployment
-
----
-
-## ✨ Core Features
-
-### 🔧 Development Tools
-- ✅ **Project Scaffolding**: One-click project and application creation
-- ✅ **Plugin System**: Rich plugin ecosystem
-- ✅ **Real-time File Monitoring**: Enhanced development efficiency
-
-### 🕐 Task Management
-- ✅ **Scheduled Tasks**: Powerful scheduling system
-- ✅ **Task Monitoring**: Real-time task status tracking
-- ✅ **Error Handling**: Intelligent exception handling mechanism
-- ✅ **Log Management**: Complete logging system
-
-### 🔐 Access Control
-- ✅ **Fine-grained Permissions**: Role-based access control
-- ✅ **JWT Authentication**: Secure identity authentication
-- ✅ **API Permissions**: Interface-level permission management
-- ✅ **Operation Audit**: Complete operation logs
-
-### 🌍 Internationalization
-- ✅ **Multi-language Support**: Built-in internationalization framework
-- ✅ **Dynamic Language Switching**: Runtime language switching
-- ✅ **Localization Configuration**: Regional settings
-
-### 📊 System Monitoring
-- ✅ **Performance Monitoring**: CPU, memory, disk monitoring
-- ✅ **Process Management**: Real-time system process monitoring
-- ✅ **Network Monitoring**: Network traffic statistics
-- ✅ **Health Checks**: System health status detection
-
-### 📚 Application Market
-- ✅ **Application Sharing**: Application market pip installation, convenient and fast
-- ✅ **Component Market**: Hot-pluggable components, dynamic import
+- [About Bomiot](#-about-bomiot)
+- [Video Introduction](#-video-introduction)
+- [Core Features Overview](#-core-features-overview)
+- [Use Case Examples](#-use-case-examples)
+- [Quick Start](#-quick-start-5-minute-hands-on)
+- [CLI Reference](#-cli-reference)
+- [Configuration Reference](#-configuration-reference-setupini)
+- [Scheduled Tasks](#-scheduled-tasks)
+- [File Monitoring & Upload](#-file-monitoring--upload)
+- [Real-time System Monitoring](#-real-time-system-monitoring)
+- [Real-time WebSocket Communication](#-real-time-websocket-communication)
+- [Deployment & Distribution](#-deployment--distribution)
+- [Security Notice](#-security-notice)
+- [Contributing](#-contributing)
+- [License](#-license)
 
 ---
 
-## 🚀 Quick Start
+## 🌟 About Bomiot
 
-### 1. Install Bomiot
+Bomiot is an enterprise system integration platform and also a full-stack node-based development platform, with its core ASGI gateway rewritten in Rust, designed specifically to connect all systems within an enterprise.
+
+Whether it's ERP, WMS, CRM, MES or OA, Bomiot's node-based architecture helps you achieve system connectivity, data flow and unified management — ending enterprise data silos. Every user / every device can be an independent node; nodes collaborate directly over the local area network. Applications can be compiled into portable distributions in one click — double-click to run, no environment dependencies. Bomiot also ships with a built-in free application marketplace with pre-installed industry templates such as ERP / WMS, where developers can freely publish and share applications.
+
+| Enterprise Pain Points | Bomiot Solutions |
+| :--- | :--- |
+| 🏢 **Fragmented Systems, Data Silos** | ✅ **Enterprise System Integration** — unified access for ERP/WMS/CRM/MES/OA, data flows on demand |
+| 🐢 **Bulky Deployment, Environment Coupling** | ✅ **Portable Distribution**, compiled to binary, drastically reduced runtime dependencies |
+| 🔗 **Multi-Site / Multi-Facility Collaboration** | ✅ **Node-based Networking** — nodes connect directly via LAN, decentralized, no central server required |
+| 🧩 **Separated Frontend & Backend, Complex Integration** | ✅ **Full-Stack Unification** — Python backends (Django/FastAPI/Flask) + mainstream frontends, flexible combinations |
+| 📡 **No Real-Time Channels, Inefficient Polling** | ✅ **Built-in WebSocket**, native ASGI implementation, real-time bidirectional communication |
+| 🛡️ **Performance Bottlenecks, Code Leakage** | ✅ **Rust-rewritten ASGI Gateway**, compiled to native binary, more stable performance and effective code protection |
+| 💰 **Closed Ecosystem, Hard to Reuse** | ✅ **Own Free Application Marketplace** with pre-built industry templates; developers freely publish and share applications |
+
+---
+
+## 📹 Video Introduction
+
+Watch the video introduction of Bomiot to quickly understand the core features and usage of the platform.
+
+▶ **[Click to Watch Video Introduction](https://youtube.com/@greaterwms3682?si=gShTwLvMtyVNqoqC)** (YouTube)
+
+---
+
+## ✨ Core Features Overview
+
+### 1. Enterprise System Integration (Unified Multi-System Access · End Data Silos)
+**Purpose-built for connecting internal enterprise systems**. ERP, WMS, CRM, MES, OA — inconsistent interfaces don't matter. Bomiot connects everything for you.
+- 🏢 **Multi-System Connectivity**: Standard APIs, direct database access, or UI-level automation — all can be unified into Bomiot nodes.
+- 🔄 **Real-Time Data Flow**: Real-time fetch and push between nodes; business states sync across systems at millisecond level.
+- 🧩 **Unified Permission System**: Single account for all subsystems; centralized role & API permission control.
+- 📊 **Unified Monitoring Dashboard**: All node statuses, system health and core business metrics on one screen.
+- 🌐 **Node-based Networking**: Multi-site, multi-facility and multi-branch nodes interconnect over LAN — decentralized, no central server required.
+
+### 2. Cross-Platform Node-Based Architecture (Zero-Dependency)
+**Develop once, distribute cross-platform**. The compiled and encrypted portable program turns every Windows / macOS / Linux device into an independent server node, supporting industrial PCs and edge gateways for IoT devices.
+- 🌍 **Full Platform Support**: Native support for Windows, macOS and Linux, one codebase runs everywhere.
+- 📦 **Portable Distribution**: Packages code, runtime and resources into an encrypted portable program through compilation, no installation required, ready to use after extraction.
+- ⚡ **Instant Run**: No need to install Python, no need to configure environment, double-click to run.
+- 🔒 **Local Data**: Data is stored on each node, complying with data sovereignty requirements.
+- 🤖 **Edge Device Support**: Compatible with industrial PCs, Raspberry Pi, edge gateways and other IoT devices to build edge computing nodes.
+
+### 3. Multi-Language Full-Stack Framework Freedom
+No restrictions on tech stack, use the tools you are most familiar with. Bomiot supports a flexible combination of Python backend + JavaScript frontend.
+- **Backend Support (Python)**:
+  - 🟢 **Django** (Enterprise-grade preferred)
+  - 🚀 **FastAPI** (High concurrency performance)
+  - ⚪ **Flask** (Lightweight and flexible)
+- **Frontend Support (JavaScript/TypeScript)**:
+  - 💚 **Quasar / Vue 3** (Primary support, fully integrated)
+  - 🔄 Abstraction layer reserved, extendable to React and Angular.
+
+### 4. Rust Rewritten ASGI Gateway
+Bomiot uses Rust to rewrite the core ASGI gateway, compiles it into native binaries, bringing more stable performance and code protection.
+- 🦀 **Rust ASGI Gateway**: The core gateway is written in Rust, compiled to native binaries, with more stable performance.
+- 🚀 **Stable Performance**: The compiled binaries have lower latency and more stable operation under high-concurrency requests.
+- 🔐 **Code Protection**: Python code is converted to native binaries along with compilation, effectively improving code protection.
+
+### 5. Built-In Free Application Marketplace · One-Click Industry Template Installation
+Bomiot has a **free and open application marketplace** with pre-installed industry templates such as ERP / WMS. Developers can also freely publish and share applications.
+- 🏪 **Free Application Marketplace**: Built-in official marketplace, developers can freely publish applications, users can download with one click, **completely free**.
+- 🎯 **Industry Templates**: Pre-built templates including GreaterWMS (WMS), install in one click and ready to use.
+- 🔓 **Open Sharing**: All marketplace content is open for download to everyone, promoting the rapid dissemination and reuse of technology.
+- 🔐 **Secure Distribution**: Applications can be compiled and encrypted before publishing, protecting developers' code choices.
+
+### 6. Built-In Scheduled Task Scheduling
+A built-in database-driven scheduled task system supports multiple trigger methods.
+- ⏰ **Three Triggers**: Supports `cron` (scheduled), `interval` (interval), `date` (date) three trigger methods.
+- 💾 **Database Persistence**: Tasks are stored in the database, automatically restored after service restart.
+- 🔄 **Auto Sync**: SchedulerManager automatically synchronizes task status every 60 seconds, adding, deleting and modifying take effect immediately.
+- 📝 **Task Template**: Define task functions in `task.py`, which can be called and executed by the scheduler.
+
+### 7. File Monitoring & Upload
+Real-time file monitoring system automatically manages user-uploaded files.
+- 👀 **Real-Time Monitoring**: Automatically monitors the media directory, captures file creation, modification, deletion and movement operations.
+- 📋 **Auto Registration**: File changes are automatically written to the database, recording file name, type, size and owner.
+- 📡 **Event Notification**: File changes are broadcast in real-time through the signal mechanism, convenient for frontend or third-party subscriptions.
+- ⚙️ **Flexible Configuration**: Set file size limits and allowed file types in `setup.ini`.
+
+### 8. Real-Time WebSocket Communication
+Bomiot's Rust ASGI gateway natively supports WebSocket. You can directly write WebSocket routes in the application's `main.py`. For details, see the [WebSocket Section](#-real-time-websocket-communication).
+- 💬 **Minimal Development**: Directly use the standard WebSocket syntax of FastAPI/Flask, zero learning cost.
+- ⚡ **Gateway Forwarding**: The Rust gateway automatically identifies WebSocket requests and efficiently forwards them to the corresponding application.
+- 🔌 **Full Framework Support**: Can be used in `main.py` of Django, FastAPI or Flask applications.
+
+### 9. Real-Time System Monitoring
+Backend system monitoring, real-time collection of server running status.
+- 💻 **CPU Monitoring**: Collects CPU usage, physical cores, logical cores, frequency information.
+- 🧠 **Memory Monitoring**: Collects total, used, available and usage of physical memory and swap partitions.
+- 💽 **Disk Monitoring**: Collects capacity, used, available and usage of each partition.
+- 🌐 **Network Monitoring**: Collects bytes sent and received over the network.
+- 📊 **Process Monitoring**: Collects PID, name, CPU usage and memory usage of all running processes.
+- 🗄️ **Auto Cleanup**: Historical data is automatically cleaned up (upper limit of 10080 entries) to prevent database bloating.
+
+### 10. Built-In API Rate Limiting Protection
+Provides out-of-the-box API security protection for your applications to ensure system stability.
+- 🛡️ **Intelligent Rate Limiting**: Fine-grained rate limiting based on IP address and HTTP request method (GET/POST, etc.).
+- 🛡️ **Anti-Scraping Protection**: Effectively prevents malicious crawlers, interface scraping and denial-of-service (DoS) attacks.
+- ⚙️ **Flexible Configuration**: Customize the rate limiting time window and request frequency in the `[throttle]` section of `setup.ini`.
+
+---
+
+## 💡 Use Case Examples
+
+Bomiot's platform capabilities make it suitable for a variety of real-world business scenarios. Here are some typical examples:
+
+### 🏭 Automated Enterprise System Integration
+Various enterprise internal systems (WMS, ERP, MES, OA, CRM, etc.) are often difficult to integrate due to inconsistent interfaces. With Bomiot + browser automation tools (such as Playwright), you can achieve UI-level automation **without modifying any system code**:
+- Real-time fetch data from one system and automatically fill it into another
+- Monitor business status changes and synchronize across systems in real time
+- No need for the target system to provide an API; complete data transfer directly through UI operations
+- Cooperate with Scheduled Tasks + WebSocket notifications to alert exceptions immediately
+
+### 🛒 E-Commerce Price & Inventory Monitoring
+Build automated e-commerce monitoring applications to help operations teams stay on top of market dynamics:
+- Periodically scrape competitor prices and promotional information, generating price change reports
+- Monitor product inventory status and automatically trigger alerts when stock is low
+- Support simultaneous monitoring across multiple platforms (Taobao, JD, Pinduoduo, etc.)
+- Data changes are pushed to the frontend dashboard in real time via WebSocket
+- After development, it can be compiled into a portable version, distributed to multiple operators for independent operation, data does not affect each other
+
+### 📊 Data Inspection & Automated Reporting
+Leverage scheduled tasks + file monitoring capabilities to build automated data processing pipelines:
+- Periodically collect business data from data sources (databases, files, APIs)
+- Automatically generate Excel / PDF reports and distribute them to designated personnel
+- Monitor key business indicators and automatically trigger alert notifications on anomalies
+- Portable distribution, deployed to various departments for independent operation, data stays local
+
+### 🔧 General Automation Toolkit
+Transform repetitive tasks into automated workflows to boost team efficiency:
+- Automated form filling and submission (HR systems, finance systems, etc.)
+- Automated document generation and archiving
+- System health inspection and automatic restart
+- One-click compilation to portable runtime files after development, easy distribution across multiple devices and personnel
+
+### 🤖 Industrial IoT & Edge Computing
+Deploy Bomiot nodes to industrial PCs and edge gateways to build decentralized IoT solutions:
+- **Edge Data Collection**: Real-time collection of sensor data on on-site equipment in workshops and warehouses
+- **Local Processing & Alerts**: Data processed locally at edge nodes, low-latency alert triggering
+- **Multi-Node Collaboration**: Multiple edge nodes collaborate over local network without cloud servers
+- **Data Sovereignty**: Sensitive production data retained on local nodes, complying with industrial security requirements
+- **Remote Operations**: Remote monitoring of edge node running status via WebSocket
+
+### 🏠 Smart Home & Edge Gateway
+Use Bomiot as an edge gateway for homes or offices to centrally manage smart devices:
+- **Unified Device Access**: Connect various smart devices (lights, sensors, cameras, etc.) via MQTT protocol
+- **Automation Orchestration**: Define automation rules, such as "automatically turn on AC when temperature is too high"
+- **Local Automation**: Offline operation, data stays local, protecting privacy
+- **Portable Distribution**: Plug-and-play deployment to home servers or mini PCs
+
+---
+
+## 🚀 Quick Start (5-Minute Hands-On)
 
 ```bash
-# Install using pip
+# 1. Install Bomiot
 pip install bomiot
 
-# Or install using poetry
-poetry add bomiot
-```
-
-### 2. Initialize Workspace
-
-```bash
-# Initialize Bomiot workspace
+# 2. Initialize workspace
 bomiot init
-```
 
-### 3. Create Project
-
-```bash
-# Create new project
+# 3. Create project, app and API
 bomiot project my-project
+bomiot app my-app
+bomiot api my-api
 
-# Create new application
-bomiot new my-app
-```
-
-### 4. Database
-
-```bash
-# Initialize database
+# 4. Initialize database and admin
 bomiot migrate
-
-# If you created a new application, you can generate new database migration files
-bomiot makemigrations
-```
-
-### 5. Create Administrator
-
-```bash
-# Initialize administrator
 bomiot initadmin
 
-# Reset administrator account password
-bomiot initpwd
+# 5. Start service
+bomiot run --host 0.0.0.0 --port 8000
 ```
 
-### 6. Start Service
-
-```bash
-# Start development server
-bomiot run
-
-# Or specify port
-bomiot run --host 0.0.0.0 --port 8080
-```
+**Done!** Open `http://127.0.0.1:8000/` to start your development journey.
 
 ---
 
-## 📦 Installation Guide
+## 🛠️ CLI Reference
 
-### System Requirements
-
-- **Python**: 3.9 or higher
-- **Node.js**: 18.19.1 or higher
-- **Operating System**: Windows, macOS, Linux
-
-### Modify Frontend
-
-#### 1. Install Frontend Dependencies
-
-```bash
-# Enter frontend directory
-cd my-project/templates
-
-# Install dependencies
-yarn install
-```
-
-#### 2. Open Development baseUrl
-
-```bash
-# Change axios.js
-vim my-project/templates/src/boot/axios.js
-
-```
-
-```bash
-# axios.js code snippet modification
- ...
-const baseURL = 'http://127.0.0.1:8000' // Replace with your actual API URL
-
-const api = axios.create({
-  baseURL: baseURL ##Open this
-})
- ...
-```
-
-
-#### 3. Frontend Development Debugging
-
-```bash
-# Ensure backend is already started
-bomiot run
-```
-
-```bash
-# Restart frontend
-cd my-project/templates
-
-&
-
-quasar dev
-```
+| Category | Command | Description |
+| :--- | :--- | :--- |
+| **Project** | `bomiot init` | Initialize workspace |
+| | `bomiot project <name>` | Create new project |
+| | `bomiot app <name>` | Create new app |
+| | `bomiot api <name>` | Create new API |
+| **Database** | `bomiot makemigrations` | Generate migration files |
+| | `bomiot migrate` | Execute database migration |
+| | `bomiot loaddata <source>` | Load initial data |
+| | `bomiot dumpdata [appname]` | Export data |
+| **Service** | `bomiot run [options]` | Start development server |
+| | `bomiot deploy` | Deploy project (compile and package) |
+| **Admin** | `bomiot initadmin` | Create admin account |
+| | `bomiot initpwd` | Reset admin password |
 
 ---
 
-## 🛠️ Command Line Tools
-
-Bomiot provides powerful command line tools to make development and management simple and efficient.
-
-### 📋 Command Overview
-
-```bash
-bomiot [command] [options]
-```
-
-### 🔧 Core Commands
-
-#### Project Management
-
-```bash
-# Help command
-bomiot -h
-
-# View version number
-bomiot -v
-
-# Initialize workspace
-bomiot init
-
-# Create new project
-bomiot project <project_name>
-
-# Create new application
-bomiot new <app_name>
-
-# Create plugin
-bomiot plugins <plugin_name>
-```
-
-#### Application Market
-
-```bash
-# Application market
-bomiot market <project_name>
-
-# Plugin installation, plugins are automatically hot-imported
-pip install -y <plugin_name>
-
-or
-
-poetry add <plugin_name>
-```
-
-#### Database Management
-
-```bash
-# Create database migration
-bomiot makemigrations
-
-# Execute database migration
-bomiot migrate
-
-# Load initial data
-bomiot loaddata <source>
-
-# Export data
-bomiot dumpdata [appname]
-```
-
-#### User Management
-
-```bash
-# Create administrator account
-bomiot initadmin
-
-# Reset administrator password
-bomiot initpwd
-```
-
-#### Service Management
-
-```bash
-# Start server
-bomiot run [options]
-
-# Deploy project
-bomiot deploy <project_name>
-```
-
-#### System Validation
-
-```bash
-# Initialize validation Keys
-bomiot keys
-```
-
-### 🚀 Server Startup Options
-
-```bash
-bomiot run [options]
-
-Options:
-  --host, -b HOST                Server host address (default: 127.0.0.1)
-  --port, -p PORT                Server port (default: 8000)
-  --workers -w WORKERS           Number of worker processes (default: 1)
-  --log-level LEVEL              Log level (critical/error/warning/info/debug/trace)
-  --ssl-keyfile FILE             SSL key file
-  --ssl-certfile FILE            SSL certificate file
-  --proxy-headers                Enable proxy headers
-  --http HTTP                    HTTP implementation (auto/h11/httptools)
-  --loop LOOP                    Async loop (auto/asyncio/uvloop)
-  --limit-concurrency            Maximum concurrent requests (default: 1000)
-  --backlog                      Maximum waiting connections (default: 128)
-  --timeout-keep-alive           HTTP keep-alive timeout (default: 5)
-  --timeout-graceful-shutdown    Graceful shutdown timeout (default: 30)
-```
-
-### 📝 Usage Examples
-
-```bash
-# Basic startup
-bomiot run
-
-# Test api，method("GET")
-"name": "django", "url": "http://127.0.0.1:8000/test/"
-"name": "fastapi", "url": "http://127.0.0.1:8000/fastapi/test/"
-"name": "flask", "url": "http://127.0.0.1:8000/flask/test/"
-
-# Specify port and host
-bomiot run --host 0.0.0.0 --port 8080
-
-# Production environment configuration
-bomiot run --host 0.0.0.0 --port 80 --workers 4 --log-level info
-
-# SSL configuration
-bomiot run --ssl-keyfile key.pem --ssl-certfile cert.pem
-```
-
----
-
-## 🏗️ Project Structure
-
-```
-my-project/                    # Project directory
-├── fastapi_app/               # fastapi app
-│   └── main.py                # Main file
-├── flask_app/                 # flask app
-│   └── main.py                # Main file
-├── language/                  # Backend language files
-│   ├── en-US.toml             # English translation file       
-│   └── zh-CN.toml             # Chinese translation file
-├── media/                     # Static files
-│   ├── img/                   # Public images       
-│   └── ***.md                 # Various md documents
-├── static/                    # Static files
-├── __version__.py             # my-project version
-├── bomiotconf.ini             # Bomiot project identifier file
-├── files.py                   # File signals
-├── receiver.py                # Data API signals
-├── server.py                  # Server signals
-└── README.md                  # ReadME documentation
-dbs/                           # Database files
-logs/                          # System logs
-setup.ini                      # Project configuration file
-...
-```
-
----
-
-## 🔧 Configuration
-
-### Environment Configuration
-
-Bomiot uses configuration files to manage different environment settings:
+## 🔧 Configuration Reference (`setup.ini`)
 
 ```ini
-# setup.ini
 [project]
-name = my-project
+name = greaterwms
 
-[database](requires keys validation)
-# Supports multiple databases (sqlite, mysql, oracle, postgresql)
+[database]
+# engine: sqlite | mysql | postgresql | oracle
 engine = sqlite
-name = db_name
-user = db_user
-password = db_pwd
-host = db_host
-port = db_port
+# ... other database connection information ...
 
-[local]
-time_zone = UTC
+[debug]
+# Control production/debug mode
+debug = True
 
-[jwt]
-user_jwt_time = 1000000
-
-[throttle]
-allocation_seconds = 1
-throttle_seconds = 10
-
-[request]
-limit = 2
-
-[file](requires keys validation)
-file_size = 102400000
+[file]
+# File upload configuration
+file_size = 102400000    # Maximum file size (bytes), default 100MB
 file_extension = py,png,jpg,jpeg,gif,bmp,webp,txt,md,html,htm,js,css,json,xml,csv,xlsx,xls,ppt,pptx,doc,docx,pdf
+
+[system_control]
+# Backend service switches
+observer = True        # File monitoring
+scheduler = True       # Scheduled task scheduling
+server_monitor = True  # System resource monitoring
+
+# ... (other configuration items)
 ```
-
-### Database Configuration
-
-Supports multiple databases:
-
-- **SQLite** (default)
-- **MySQL** (requires keys validation)
-- **PostgreSQL** (requires keys validation)
-- **Oracle** (requires keys validation)
 
 ---
 
-## 🌐 Deployment Guide
+## ⏰ Scheduled Tasks
 
-### Supervisor
+Bomiot has a built-in scheduled task system, defines tasks through `task.py`, and supports three trigger methods.
+
+### Define Tasks
+Define task functions in `task.py` of the workspace:
+
+```python
+def example_job(**kwargs):
+    """Example task function"""
+    from datetime import datetime
+    print(f"Execution time: {datetime.now()}")
+    # Write your business logic here
+```
+
+### Trigger Types
+| Type | Description | Example |
+| :--- | :--- | :--- |
+| `cron` | Trigger regularly according to Cron expression | Execute backup at 02:00 every day |
+| `interval` | Trigger at fixed intervals | Check once every 5 minutes |
+| `date` | Trigger once at the specified time | Execute at 23:59 on 2026-12-31 |
+
+### Enable Scheduling
+Ensure `scheduler = True` in `[system_control]` of `setup.ini`. The scheduler will run automatically after the service starts.
+
+---
+
+## 📁 File Monitoring & Upload
+
+Bomiot has a built-in file monitoring system that automatically tracks changes in user-uploaded files.
+
+### Monitoring Mechanism
+- **Real-Time Monitoring**: Monitors the `MEDIA_ROOT` media directory, recursively listens to all subdirectories.
+- **Event Capture**: Automatically captures four operations of file **creation**, **modification**, **deletion** and **movement**.
+- **User Association**: Automatically identifies the file owner according to the directory level and writes it to the `Files` data table.
+- **Signal Notification**: Every file change broadcasts an event through `bomiot_signals`, and the frontend can subscribe in real-time.
+
+### Upload Configuration
+Configure upload parameters in the `[file]` section of `setup.ini`:
+
+```ini
+[file]
+file_size = 102400000    # Maximum file size (default 100MB)
+file_extension = png,jpg,pdf,docx,...  # Allowed file extensions
+```
+
+### Enable File Monitoring
+Ensure `observer = True` in `[system_control]` of `setup.ini`. File monitoring will be automatically enabled after the service starts.
+
+---
+
+## 📊 Real-time System Monitoring
+
+Bomiot has a built-in system monitoring module that collects core operating indicators of the server in the background. The data is stored in the database and broadcast in real-time through signals.
+
+### Monitoring Indicators
+| Indicator | Collection Content | Storage Model |
+| :--- | :--- | :--- |
+| **CPU** | Usage, physical cores, logical cores, frequency | `CPU` |
+| **Memory** | Total, used, available, Swap information | `Memory` |
+| **Disk** | Capacity, used, available, usage of each partition | `Disk` |
+| **Network** | Bytes sent, bytes received | `Network` |
+| **Process** | PID, name, CPU usage, memory usage | `Pids` |
+
+### Collection Frequency
+- Perform a complete collection every **5 minutes**
+- CPU, memory, network data are automatically cleaned up (upper limit of 10080 entries ≈ 7 days)
+- Disk and processes are fully refreshed each time
+
+### Enable System Monitoring
+Ensure `server_monitor = True` in `[system_control]` of `setup.ini`. The monitoring will automatically run in a background thread after the service starts.
+
+---
+
+## 📡 Real-time WebSocket Communication
+
+Bomiot's Rust ASGI gateway natively supports WebSocket, no additional configuration required. Just write WebSocket routes directly in the application's `main.py`.
+
+### Development Example
+In the FastAPI application's `main.py`:
+
+```python
+from fastapi import FastAPI, WebSocket
+
+app = FastAPI()
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    while True:
+        data = await websocket.receive_text()
+        await websocket.send_text(f"Message text was: {data}")
+```
+
+### Core Features
+- 💬 **Minimal Development**: Directly use the standard WebSocket syntax of FastAPI/Flask, zero learning cost.
+- ⚡ **Gateway Forwarding**: The Rust gateway automatically identifies WebSocket requests and efficiently forwards them to the corresponding application.
+- 🔄 **Bidirectional Communication**: Supports server-side active push, enabling real-time notifications, data broadcasting and other scenarios.
+- 🔌 **Ready-to-Use**: No additional dependencies required, natively supported by the framework.
+
+### Typical Use Cases
+- Real-time Data Dashboard: Monitor metric changes pushed to the frontend in real time
+- System Alert Notifications: Alert users immediately through WebSocket when exceptions occur
+- Collaborative Editing: Multiple people collaboratively operating the same data in real time
+- Chat & Messaging: Instant messages, notification broadcasting
+
+---
+
+## 🌐 Deployment & Distribution
+
+### Traditional Server Deployment (Free)
+You can deploy Bomiot applications to any server like a traditional Django/FastAPI project, **completely free, no restrictions**.
 
 ```bash
-# Generate deployment files
-bomiot deploy my-project
-
-# Point supervisord.conf to this file to complete daemon process deployment
-
+# Traditional server deployment
+bomiot run --host 0.0.0.0 --port 8000
 ```
 
-## Scheduled Tasks
-
-### Supported Scheduled Tasks
-
-```python
-ARGS_MAP = {
-    'cron': ['year', 'month', 'day', 'week', 'day_of_week', 'hour', 'minute', 'second', 'start_date', 'end_date','timezone'],
-    'interval': ['weeks', 'days', 'hours', 'minutes', 'seconds', 'start_date', 'end_date', 'timezone'],
-    'date': ['run_date', 'timezone']
-}
+### Node-Based Distribution (Sponsor Only)
+```bash
+bomiot deploy  # Cross-platform compilation to portable runtime files
 ```
+Generates portable runtime files through cross-platform compilation and packaging, **copy it to the target machine and double-click to run**. This distribution method is Sponsor Only, featuring compiled encryption and instant cross-platform deployment.
 
-### Writing Scheduled Tasks
+> ⚠️ **Important Notice: Node-based distribution targets physical devices / local nodes only; cloud server deployment is NOT supported.** The portable runtime files generated by `bomiot deploy` are intended to run on actual physical devices within the enterprise intranet (PCs, industrial PCs, edge gateways, Raspberry Pi, on-premise data-center servers, etc.). If you need to deploy to a cloud server, please use the "Traditional Server Deployment" method above.
 
-```python
-from bomiot.server.core.signal import bomiot_signals
+**Device-Bound Verification Mechanism:**
+- On first run, the program automatically generates `auth_key.py` based on the local network card information
+- Visit the official website with `auth_key.py` to complete verification and exchange for `sponsor.py`
+- All verifications are completed **locally**, bound to the unique device identifier, only valid for the current device
+- Each device can only have one `sponsor.py`, a new device requires re-binding
+- For cloud server scenarios, use the "Traditional Server Deployment" method above. This deployment method does NOT involve the `auth_key.py` / `sponsor.py` device-bound verification mechanism.
 
-def my_scheduled_task(sender, **kwargs):
-    print("Execute scheduled task")
-    
-# Send signal to bomiot anywhere, usually written in urls.py, refresh web page to take effect
-bomiot_signals.send(sender=my_scheduled_task, msg={
-    'models': 'JobList',
-    'data': {
-        'trigger': 'interval',
-        'seconds': 60,
-        'end_date': '2099-05-30',
-        'description': 'Execute every 60 seconds, end on May 30, 2099'
-    }
-})
-```
+> **Privacy Protection Commitment**: All verifications are completed **locally**, and your node information or business data will not be uploaded to any server. Your code, configuration and operational data are always retained on local nodes.
+
+---
+
+## ⚠️ Security Notice
+
+### Data Ownership and Privacy
+- **Local Verification**: All verification mechanisms run entirely locally, no network connection required, and no user data collected.
+- **Data Sovereignty**: All business data, configuration files and operation logs are stored on local nodes, and you have absolute control over your data.
+- **No Third-Party Dependencies**: Except for the operating system itself, Bomiot will not force you to install any cloud service or send telemetry data to third parties.
+
+### About Code Protection
+Compilation converts Python code to native binaries, effectively improving code protection.
+
+- It is recommended to place core algorithms and sensitive logic on the **server-side node** rather than the client-side
+- For high security requirements, it is recommended to cooperate with **code signing** and **local verification** mechanisms
+
+### Deployment Recommendations
+- For production environments, please set `debug` in `[debug]` of `setup.ini` to `False`
+- External network deployment must configure HTTPS (`--ssl-keyfile` + `--ssl-certfile`)
+- Regularly back up the database (`bomiot dumpdata`) and `setup.ini` configuration
 
 ---
 
 ## 🤝 Contributing
 
-We welcome all forms of contributions!
+We welcome contributions of any form!
 
-### Ways to Contribute
-
-1. **Report Bugs**: [Create Issue](https://github.com/Bomiot/Bomiot/issues/new?template=bug_report.md)
-2. **Feature Requests**: [Submit Feature Request](https://github.com/Bomiot/Bomiot/issues/new?template=feature_request.md)
-3. **Code Contributions**: Fork the project and submit Pull Request
-4. **Documentation Improvements**: Help improve documentation
-5. **Community Support**: Answer other users' questions
-
-### Ways to Contribute Code
-
-```bash
-# 1. Fork the project
-# 2. Clone your Fork
-git clone https://github.com/your-username/Bomiot.git
-
-# 3. Create feature branch
-git checkout -b feature/amazing-feature
-
-# 4. Commit changes
-git commit -m 'Add amazing feature'
-
-# 5. Push to branch
-git push origin feature/amazing-feature
-
-# 6. Create Pull Request
-```
-
-### Code Standards
-
-- Follow PEP 8 Python code standards
-- Add appropriate comments and docstrings
-- Write unit tests
-- Ensure all tests pass
+- 🔗 **Official Website**: [https://www.bomiot.com](https://www.bomiot.com)
+- 🐛 **Submit Bug**: [Create Issue](https://github.com/Bomiot/Bomiot/issues/new?template=bug_report.md)
+- ✨ **Feature Suggestion**: [Submit Feature Request](https://github.com/Bomiot/Bomiot/issues/new?template=feature_request.md)
+- 💻 **Code Contribution**: Fork the repository -> Create a branch -> Submit a Pull Request
+- 🧩 **Share Applications**: Develop industry applications based on Bomiot and publish them to the free application marketplace to share with the community
 
 ---
 
 ## 📄 License
 
-This project is licensed under the [APLv2](LICENSE) License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🔗 Related Links
-
-### 📺 Video Tutorials
-- [YouTube Channel](https://www.youtube.com/channel/UCPW1wciGMIEh7CYOdLnsloA)
-
-### 🐛 Issue Reporting
-- [Report Bug](https://github.com/Bomiot/Bomiot/issues/new?template=bug_report.md)
-- [Feature Request](https://github.com/Bomiot/Bomiot/issues/new?template=feature_request.md)
-
-### 💬 Community
-- [GitHub Discussions](https://github.com/Bomiot/Bomiot/discussions)
-- [Issues](https://github.com/Bomiot/Bomiot/issues)
+This project is licensed under the **Apache License 2.0**, see [LICENSE](LICENSE) file for details.
 
 ---
 
 <div align="center">
 
-**⭐ If this project helps you, please give us a Star!**
+**⭐ If Bomiot is helpful to you, please give the project a Star!**
 
 Made with ❤️ by [Bomiot Team](https://github.com/Bomiot)
 

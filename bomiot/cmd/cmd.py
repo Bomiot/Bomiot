@@ -148,7 +148,7 @@ parser_dumpdata.add_argument(
 # run
 parser_run = subparsers.add_parser(
     'run', help='Run server')
-parser_run.add_argument("--host", "-b", type=str, default="127.0.0.1", help="Default Domin: 127.0.0.1")
+parser_run.add_argument("--host", "-b", type=str, default="0.0.0.0", help="Default Domin: 0.0.0.0")
 parser_run.add_argument("--port", "-p", type=int, default=8000, help="Default Pore: 8000")
 parser_run.add_argument("--workers", "-w", type=int, default=1, help="CPU Core")
 parser_run.add_argument("--log-level", type=str, default="info", choices=["critical", "error", "warning", "info", "debug", "trace"], help="Log Level")

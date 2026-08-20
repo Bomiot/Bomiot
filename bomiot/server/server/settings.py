@@ -16,6 +16,8 @@ except Exception:
     resources = None
 import os
 
+import warnings
+warnings.filterwarnings('ignore', message='StreamingHttpResponse must consume synchronous iterators')
 
 BASE_DIR = join(Path(bomiot.__file__).resolve().parent, 'server')
 

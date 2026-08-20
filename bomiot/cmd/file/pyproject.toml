@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bomiot"
-version = "1.2.3"
+version = "1.2.4"
 description = "Ultra Enterprise Application System"
 authors = ["Bomiot <Singosgu@gmail.com>"]
 readme = "README.md"
