@@ -84,6 +84,16 @@ def create_file(folder: str = ''):
             except Exception as e:
                 logging.error(f"Failed to copy 'greaterwms' folder: {str(e)}")
 
+        # Copy the greaterwms2 folder if it exists
+        greaterwms2_source = join(file_path, 'greaterwms2')
+        greaterwms2_dest = join(working_space, 'greaterwms2')
+        if exists(greaterwms2_source) and not exists(greaterwms2_dest):
+            try:
+                shutil.copytree(greaterwms2_source, greaterwms2_dest)
+                print(f"{Fore.BLUE}Copied 'greaterwms2' folder to project.{Style.RESET_ALL}")
+            except Exception as e:
+                logging.error(f"Failed to copy 'greaterwms2' folder: {str(e)}")
+
         # Copy task.py to greaterwms directory
         task_source = join(file_path, 'task.py')
         task_dest = join(working_space, 'greaterwms', 'task.py')

@@ -1,9 +1,38 @@
 name: Bomiot Build
 
-env:
-  APP_NAME: "GreaterWMS"  # Application name (globally shared)
-  BASE_VERSION: "3.0.0"  # Base version number (globally shared)
+# APP_NAME / BASE_VERSION are not hardcoded here; they are read from launcher.py below.
+# (launcher.py is the single source of truth for app_name and version.)
 
+env:
+  # Shared Nuitka build params (used by all platforms, edit once)
+  # include-package and include-package-data share the same package list
+  BOMIOT_INCLUDE_PACKAGES: |
+    bomiot
+    django
+    fastapi
+    flask
+    orjson
+    uvicorn
+    pandas
+    openpyxl
+    watchdog
+    tomlkit
+    psutil
+    xlsxwriter
+    requests
+    httptools
+    aiofiles
+    starlette
+    bomiot_asgi
+    bomiot_message
+    bomiot_token
+    django_filters
+    rest_framework
+    rest_framework_csv
+    django_apscheduler
+    corsheaders
+    greaterwms
+    bomiot_test
 
 on:
   push:
@@ -23,6 +52,16 @@ jobs:
       # Check-out repository
       - uses: actions/checkout@v4
 
+      # Extract app_name & version from launcher.py (single source of truth)
+      - name: Read app_name & version from launcher.py
+        shell: bash
+        run: |
+          APP_NAME_VAL=$(grep '^app_name = ' launcher.py | head -1 | sed 's/.*app_name = "//;s/".*//')
+          VERSION=$(grep '^version = ' launcher.py | head -1 | sed 's/.*version = "//;s/".*//')
+          echo "APP_NAME=$APP_NAME_VAL" >> $GITHUB_ENV
+          echo "BASE_VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Detected app_name: $APP_NAME_VAL  version: $VERSION"
+
       # Setup Python
       - uses: actions/setup-python@v5
         with:
@@ -31,6 +70,31 @@ jobs:
           cache: 'pip'
           cache-dependency-path: |
             **/requirements*.txt
+
+      # Determine platform labels (OS + arch + display name) for manifest filename and release folder name
+      # Outputs: os / arch / display / manifest / folder
+      - name: Set platform labels
+        id: platform
+        shell: bash
+        run: |
+          case "${{ runner.os }}" in
+            Windows) OS_LABEL="windows"; DISPLAY_LABEL="Windows" ;;
+            macOS)   OS_LABEL="macos";   DISPLAY_LABEL="macOS"   ;;
+            Linux)   OS_LABEL="linux";   DISPLAY_LABEL="Linux"   ;;
+            *)       OS_LABEL="unknown"; DISPLAY_LABEL="${{ runner.os }}" ;;
+          esac
+          case "${{ runner.os }}" in
+            macOS) ARCH_LABEL="arm64" ;;
+            *)
+              MACH="$(uname -m 2>/dev/null || echo x86_64)"
+              if [ "$MACH" = "aarch64" ] || [ "$MACH" = "arm64" ]; then ARCH_LABEL="arm64"; else ARCH_LABEL="x64"; fi
+              ;;
+          esac
+          echo "os=$OS_LABEL" >> $GITHUB_OUTPUT
+          echo "arch=$ARCH_LABEL" >> $GITHUB_OUTPUT
+          echo "display=$DISPLAY_LABEL" >> $GITHUB_OUTPUT
+          echo "manifest=manifest-${OS_LABEL}-${ARCH_LABEL}.json" >> $GITHUB_OUTPUT
+          echo "folder=${{ env.APP_NAME }}-${{ env.BASE_VERSION }}-${DISPLAY_LABEL}" >> $GITHUB_OUTPUT
 
       - name: Install dependencies
         run: |
@@ -49,13 +113,22 @@ jobs:
           $p = '${{ github.workspace }}'.Replace('\', '/')
           python -c "import sys; sys.path.insert(0, '$p'); from discovered_apps import main; main('$p')"
 
+      # Rename entry script → APP_NAME-VERSION-OS.py
+      #   Nuitka basename rule: {folder}.py  →  {folder}.dist/{folder}.exe  (windows)
+      #                                      →  {folder}.dist/{folder}      (linux)
+      #   Follow-up step strips the ".dist" suffix, leaving exactly the version-named folder.
+      - name: Rename launcher.py → ${{ env.APP_NAME }}.py (windows)
+        if: matrix.os == 'windows-latest'
+        shell: bash
+        run: cp launcher.py "${{ env.APP_NAME }}.py"
+
       # Build python script into a single execute or app folder (windows)
       - uses: Nuitka/Nuitka-Action@main
         if: matrix.os == 'windows-latest'
         with:
           jobs: 16
           nuitka-version: 4.1.3
-          script-name: launcher.py
+          script-name: ${{ env.APP_NAME }}.py
           mode: standalone
           company-name: ${{ env.APP_NAME }}
           product-name: ${{ env.APP_NAME }}
@@ -68,6 +141,7 @@ jobs:
           enable-plugins: tk-inter
           # Included data files
           include-data-files: |
+            .gitignore=.gitignore
             setup.ini=setup.ini
             splash.png=splash.png
             ${{ github.workspace }}/apps.json=apps.json
@@ -76,59 +150,8 @@ jobs:
             greaterwms/files.py=greaterwms/files.py
             greaterwms/task.py=greaterwms/task.py
           # Included packages
-          include-package-data: |
-            bomiot
-            django
-            fastapi
-            flask
-            orjson
-            uvicorn
-            pandas
-            openpyxl
-            watchdog
-            tomlkit
-            psutil
-            xlsxwriter
-            requests
-            httptools
-            aiofiles
-            starlette
-            bomiot_asgi
-            bomiot_message
-            bomiot_token
-            django_filters
-            rest_framework
-            rest_framework_csv
-            django_apscheduler
-            corsheaders
-            greaterwms
-            bomiot_test
-          include-package: |
-            bomiot
-            django
-            fastapi
-            flask
-            orjson
-            uvicorn
-            pandas
-            openpyxl
-            watchdog
-            tomlkit
-            psutil
-            xlsxwriter
-            requests
-            httptools
-            aiofiles
-            starlette
-            bomiot_asgi
-            bomiot_message
-            django_filters
-            rest_framework
-            rest_framework_csv
-            django_apscheduler
-            corsheaders
-            greaterwms
-            bomiot_test
+          include-package-data: ${{ env.BOMIOT_INCLUDE_PACKAGES }}
+          include-package: ${{ env.BOMIOT_INCLUDE_PACKAGES }}
           # Included modules
           include-module: |
             django.core.management
@@ -142,13 +165,30 @@ jobs:
           PYTHONPATH: "${{ github.workspace }};${{ github.workspace }}/bomiot"
           PYTHONIOENCODING: "utf-8"
 
+      # Strip ".dist" suffix so the build folder is exactly APP_NAME-VERSION-OS (no extra extension)
+      - name: Rename GreaterWMS.dist → {folder} (windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          $SRC = "build/${{ env.APP_NAME }}.dist"
+          $DST = "build/${{ steps.platform.outputs.folder }}"
+          if (Test-Path $DST) { Remove-Item -Recurse -Force $DST }
+          Rename-Item -Path $SRC -NewName "${{ steps.platform.outputs.folder }}" -Force
+          Write-Host "Renamed: $SRC -> $DST"
+
+      # Rename entry script → APP_NAME-VERSION-OS.py (macos)
+      - name: Rename launcher.py → ${{ env.APP_NAME }}.py (macos)
+        if: matrix.os == 'macos-latest'
+        shell: bash
+        run: cp launcher.py "${{ env.APP_NAME }}.py"
+
       # Build python script into a single execute or app folder (macos)
       - uses: Nuitka/Nuitka-Action@main
         if: matrix.os == 'macos-latest'
         with:
           jobs: 16
           nuitka-version: 4.1.3
-          script-name: launcher.py
+          script-name: ${{ env.APP_NAME }}.py
           mode: standalone
           company-name: ${{ env.APP_NAME }}
           product-name: ${{ env.APP_NAME }}
@@ -163,6 +203,7 @@ jobs:
           enable-plugins: tk-inter
           # Included data files
           include-data-files: |
+            .gitignore=.gitignore
             setup.ini=setup.ini
             splash.png=splash.png
             ${{ github.workspace }}/apps.json=apps.json
@@ -171,59 +212,8 @@ jobs:
             greaterwms/files.py=greaterwms/files.py
             greaterwms/task.py=greaterwms/task.py
           # Included packages
-          include-package-data: |
-            bomiot
-            django
-            fastapi
-            flask
-            orjson
-            uvicorn
-            pandas
-            openpyxl
-            watchdog
-            tomlkit
-            psutil
-            xlsxwriter
-            requests
-            httptools
-            aiofiles
-            starlette
-            bomiot_asgi
-            bomiot_message
-            bomiot_token
-            django_filters
-            rest_framework
-            rest_framework_csv
-            django_apscheduler
-            corsheaders
-            greaterwms
-            bomiot_test
-          include-package: |
-            bomiot
-            django
-            fastapi
-            flask
-            orjson
-            uvicorn
-            pandas
-            openpyxl
-            watchdog
-            tomlkit
-            psutil
-            xlsxwriter
-            requests
-            httptools
-            aiofiles
-            starlette
-            bomiot_asgi
-            bomiot_message
-            django_filters
-            rest_framework
-            rest_framework_csv
-            django_apscheduler
-            corsheaders
-            greaterwms
-            bomiot_test
+          include-package-data: ${{ env.BOMIOT_INCLUDE_PACKAGES }}
+          include-package: ${{ env.BOMIOT_INCLUDE_PACKAGES }}
           # Included modules
           include-module: |
             django.core.management
@@ -237,13 +227,34 @@ jobs:
           PYTHONPATH: "${{ github.workspace }}:${{ github.workspace }}/bomiot"
           PYTHONIOENCODING: "utf-8"
 
+      # Strip ".dist" suffix for macOS if present (macOS standalone also produces a .app bundle which is used for manifest)
+      - name: Rename GreaterWMS.dist → {folder} (macos, if applicable)
+        if: matrix.os == 'macos-latest'
+        shell: bash
+        run: |
+          SRC="build/${{ env.APP_NAME }}.dist"
+          DST="build/${{ steps.platform.outputs.folder }}"
+          if [ -d "$SRC" ]; then
+            if [ -d "$DST" ]; then rm -rf "$DST"; fi
+            mv "$SRC" "$DST"
+            echo "Renamed: $SRC -> $DST"
+          else
+            echo "Skipped: $SRC does not exist (standalone mode with macos-app-name uses .app bundle instead; .dist may not be created)"
+          fi
+
+      # Rename entry script → APP_NAME-VERSION-OS.py (ubuntu)
+      - name: Rename launcher.py → ${{ env.APP_NAME }}.py (ubuntu)
+        if: matrix.os == 'ubuntu-22.04'
+        shell: bash
+        run: cp launcher.py "${{ env.APP_NAME }}.py"
+
       # Build python script into a single execute or app folder (Ubuntu)
       - uses: Nuitka/Nuitka-Action@main
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-22.04'
         with:
           jobs: 16
           nuitka-version: 4.1.3
-          script-name: launcher.py
+          script-name: ${{ env.APP_NAME }}.py
           mode: standalone
           company-name: ${{ env.APP_NAME }}
           product-name: ${{ env.APP_NAME }}
@@ -255,65 +266,17 @@ jobs:
           enable-plugins: tk-inter
           # Included data files
           include-data-files: |
+            .gitignore=.gitignore
             setup.ini=setup.ini
             splash.png=splash.png
             ${{ github.workspace }}/apps.json=apps.json
             greaterwms/server.py=greaterwms/server.py
             greaterwms/receiver.py=greaterwms/receiver.py
             greaterwms/files.py=greaterwms/files.py
+            greaterwms/task.py=greaterwms/task.py
           # Included packages
-          include-package-data: |
-            bomiot
-            django
-            fastapi
-            flask
-            orjson
-            uvicorn
-            pandas
-            openpyxl
-            watchdog
-            tomlkit
-            psutil
-            xlsxwriter
-            requests
-            httptools
-            aiofiles
-            starlette
-            bomiot_asgi
-            bomiot_message
-            django_filters
-            rest_framework
-            rest_framework_csv
-            django_apscheduler
-            corsheaders
-            greaterwms
-            bomiot_test
-          include-package: |
-            bomiot
-            django
-            fastapi
-            flask
-            orjson
-            uvicorn
-            pandas
-            openpyxl
-            watchdog
-            tomlkit
-            psutil
-            xlsxwriter
-            requests
-            httptools
-            aiofiles
-            starlette
-            bomiot_asgi
-            bomiot_message
-            django_filters
-            rest_framework
-            rest_framework_csv
-            django_apscheduler
-            corsheaders
-            greaterwms
-            bomiot_test
+          include-package-data: ${{ env.BOMIOT_INCLUDE_PACKAGES }}
+          include-package: ${{ env.BOMIOT_INCLUDE_PACKAGES }}
           # Included modules
           include-module: |
             django.core.management
@@ -327,7 +290,171 @@ jobs:
           PYTHONPATH: "${{ github.workspace }}:${{ github.workspace }}/bomiot"
           PYTHONIOENCODING: "utf-8"
 
-      # Uploads artifact
+      # Strip ".dist" suffix: build/GreaterWMS-3.0.0-Linux.dist → build/GreaterWMS-3.0.0-Linux
+      - name: Rename GreaterWMS.dist → {folder} (ubuntu)
+        if: matrix.os == 'ubuntu-22.04'
+        shell: bash
+        run: |
+          SRC="build/${{ env.APP_NAME }}.dist"
+          DST="build/${{ steps.platform.outputs.folder }}"
+          if [ -d "$DST" ]; then rm -rf "$DST"; fi
+          mv "$SRC" "$DST"
+          echo "Renamed: $SRC -> $DST"
+
+      # Generate manifest.json after Nuitka build completes
+      # Scans the compiled binary files, computes SHA256, excludes files matching .gitignore
+      - name: Generate manifest.json
+        shell: python
+        run: |
+          import hashlib, json, os, fnmatch, sys
+
+          # ------------------------------------------------------------------
+          # Find build output directory
+          #   - Windows / Linux : previous step renamed {folder}.dist → build/{folder}
+          #                        directly (e.g. build/GreaterWMS-3.0.0-Windows)
+          #   - macOS           : may be a .app bundle (GreaterWMS.app) produced by
+          #                        macos-app-name, or also build/{folder} if
+          #                        rename-dist step succeeded on the .dist output
+          # ------------------------------------------------------------------
+          folder_name = "${{ steps.platform.outputs.folder }}"
+          dist = os.path.join("build", folder_name)
+          if not os.path.isdir(dist):
+              # Fallback 1: macOS .app bundle
+              import glob
+              apps = sorted(glob.glob(os.path.join("build", "*.app")))
+              if apps:
+                  dist = apps[0]
+              else:
+                  # Fallback 2: legacy {folder}.dist (rename-dist step was skipped)
+                  legacy = os.path.join("build", f"{folder_name}.dist")
+                  if os.path.isdir(legacy):
+                      dist = legacy
+
+          if not os.path.isdir(dist):
+              print(f"ERROR: build output directory not found")
+              sys.exit(1)
+          print(f"Using build output directory: {dist}")
+
+          # Read .gitignore patterns
+          ignore_patterns = []
+          gitignore = os.path.join(dist, ".gitignore")
+          if os.path.exists(gitignore):
+              with open(gitignore) as f:
+                  for line in f:
+                      line = line.strip()
+                      if line and not line.startswith("#"):
+                          ignore_patterns.append(line)
+
+          # Also read root .gitignore
+          root_gitignore = ".gitignore"
+          if os.path.exists(root_gitignore):
+              with open(root_gitignore) as f:
+                  for line in f:
+                      line = line.strip()
+                      if line and not line.startswith("#"):
+                          ignore_patterns.append(line)
+
+          def is_ignored(rel_path):
+              """Check if a file path matches any .gitignore pattern."""
+              basename = os.path.basename(rel_path)
+              for pattern in ignore_patterns:
+                  # Match full path or basename
+                  if fnmatch.fnmatch(rel_path, pattern) or fnmatch.fnmatch(basename, pattern):
+                      return True
+                  # Match directory patterns (e.g. "logs/")
+                  if pattern.endswith("/"):
+                      dir_name = pattern.rstrip("/")
+                      if rel_path.startswith(dir_name + "/") or ("/" + dir_name + "/") in rel_path:
+                          return True
+              return False
+
+          # Scan all files in build output
+          # Use manifest-{os}-{arch}.json consistently; same filename on client side and server releases/ root
+          manifest_name = "${{ steps.platform.outputs.manifest }}"
+
+          files = {}
+          for root, dirs, filenames in os.walk(dist):
+              for fn in filenames:
+                  if fn == manifest_name:
+                      continue
+                  full = os.path.join(root, fn)
+                  rel = os.path.relpath(full, dist).replace(os.sep, "/")
+
+                  # Skip files matching .gitignore (the .gitignore inside dist is the repo original, covering dbs/ logs/ __pycache__ *.sqlite3 *.db *.log *.pyc etc.)
+                  if is_ignored(rel):
+                      continue
+
+                  # Large files (>=8MiB) use block format: store overall sha256 + per-block sha256,
+                  # so the client only downloads changed blocks (HTTP Range), significantly reducing traffic.
+                  BLOCK_SIZE = 1024 * 1024
+                  BLOCK_THRESHOLD = 8 * 1024 * 1024
+                  file_size = os.path.getsize(full)
+                  if file_size >= BLOCK_THRESHOLD:
+                      full_hash = hashlib.sha256()
+                      blocks = []
+                      with open(full, "rb") as f:
+                          while True:
+                              chunk = f.read(BLOCK_SIZE)
+                              if not chunk:
+                                  break
+                              full_hash.update(chunk)
+                              blocks.append(hashlib.sha256(chunk).hexdigest())
+                      files[rel] = {
+                          "size": file_size,
+                          "sha256": full_hash.hexdigest(),
+                          "block_size": BLOCK_SIZE,
+                          "blocks": blocks,
+                      }
+                  else:
+                      with open(full, "rb") as f:
+                          files[rel] = hashlib.sha256(f.read()).hexdigest()
+
+          manifest = {
+              "app_name": os.environ.get("APP_NAME", "GreaterWMS"),
+              "version": os.environ.get("BASE_VERSION", "3.0.0"),
+              "os": "${{ steps.platform.outputs.os }}",
+              "arch": "${{ steps.platform.outputs.arch }}",
+              "files": files
+          }
+
+          build_dir = "build"
+          import shutil
+
+          # 1) Manifest inside dist folder — the client reads it from its own directory (e.g. GreaterWMS-3.0.0-Windows/)
+          in_dist_manifest = os.path.join(dist, manifest_name)
+          with open(in_dist_manifest, "w", encoding="utf-8") as f:
+              json.dump(manifest, f, indent=2, ensure_ascii=False)
+          print(f"Generated {in_dist_manifest}: {len(files)} files, {os.path.getsize(in_dist_manifest)} bytes")
+
+          # 2) build/manifest-{os}-{arch}.json — used by the server releases/ root directory
+          server_manifest = os.path.join(build_dir, manifest_name)
+          shutil.copyfile(in_dist_manifest, server_manifest)
+
+          # 3) Ensure build/{APP_NAME}-{VERSION}-{Platform}/ exists fully:
+          #    - Windows / Linux : dist is already folder_dir, no copy needed (handled by rename-dist step)
+          #    - macOS           : dist is a .app bundle (different path), need copytree into the version folder
+          folder_dir = os.path.join(build_dir, folder_name)
+          if os.path.abspath(dist) != os.path.abspath(folder_dir):
+              if os.path.exists(folder_dir):
+                  shutil.rmtree(folder_dir)
+              shutil.copytree(dist, folder_dir)
+              print(f"Copied dist ({dist}) → release folder ({folder_dir})")
+          else:
+              print(f"Dist already equals release folder: {folder_dir} (copy skipped)")
+          print(f"Release folder ready: {folder_dir}")
+
+          # Show first 20 entries for verification
+          for i, (path, h) in enumerate(sorted(files.items())):
+              if i >= 20:
+                  print(f"  ... and {len(files) - 20} more")
+                  break
+              if isinstance(h, dict):
+                  print(f"  {path}: [block] {h['sha256'][:16]}... ({h['size']} bytes, {len(h['blocks'])} blocks)")
+              else:
+                  print(f"  {path}: {h[:16]}...")
+
+      # Uploads artifact: version-named folder (for server releases/) + platform manifest file
+      # Unzipping the artifact yields: GreaterWMS-x.x.x-OS/ (all files) + manifest-dev.json
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -336,5 +463,6 @@ jobs:
             build/*.exe
             build/*.bin
             build/*.app/**/*
-            build/*.dist/**/*
+            build/manifest-*.json
+            build/${{ steps.platform.outputs.folder }}/**/*
           include-hidden-files: true

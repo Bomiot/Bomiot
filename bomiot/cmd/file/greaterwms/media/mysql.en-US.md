@@ -2,19 +2,21 @@
 
 ## Introduction
 
-- **Bomiot** Support change to MySQL database
+- **Bomiot** supports switching to a MySQL database.
 
 ---
 
-## Install Libery
+## Install Library
 
 ```bash
 pip install mysqlclient
 ```
 
+---
+
 ## Edit setup.ini
 
-```bash
+```ini
 [database]
 engine = mysql
 name = db_name            # your db name

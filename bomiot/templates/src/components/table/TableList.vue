@@ -145,10 +145,10 @@ function onRequest (props) {
       max_page: requestData.pagination.rowsPerPage
     }
   }).then(res => {
-    if (!res.login) {
-      rows.value = res.results
-      rowsCount.value = res.count
-      permissionList.value = res.permission
+    if (!res?.login) {
+      rows.value = res?.results || []
+      rowsCount.value = res?.count || 0
+      permissionList.value = res?.permission || []
     }
   }).catch(err => {
     $q.loading.hide()

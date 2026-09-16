@@ -1,9 +1,8 @@
 <div align="center">
   <img src="bomiot/templates/dist/spa/icons/logo.png" alt="Bomiot logo" width="180" height="auto" />
   <h1>🚀 Bomiot</h1>
-  <p><strong>One App You Can Do Everything</strong></p>
-  <p><em>Enterprise System Integration Platform · Full-Stack Node-Based Development Platform — Connect Systems · Node Networking · Portable Distribution · Open-Source Sharing</em></p>
-  <p><strong>🏢 Connect ERP / WMS / CRM / MES / OA, End Enterprise Data Silos</strong></p>
+  <p><strong>No-environment delivery tool for Python apps</strong></p>
+  <p><em>Compile to binary · Cross-platform · Incremental updates · Source code protection</em></p>
 
   [English](README.md) | [中文](README_CN.md)
 
@@ -13,7 +12,7 @@
   [![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
   [![Flask](https://img.shields.io/badge/flask-000000?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
   [![Vue.js](https://img.shields.io/badge/vue-4FC08D?logo=vue.js&logoColor=white)](https://vuejs.org/)
-  [![GitHub Stars](https://img.shields.io/github/stars/greaterwms/bomiot?style=social)](https://github.com/greaterwms/bomiot)
+  [![GitHub Stars](https://img.shields.io/github/stars/bomiot/bomiot?style=social)](https://github.com/bomiot/bomiot)
   [![Website](https://img.shields.io/badge/Website-Online-brightgreen)](https://www.bomiot.com)
 </div>
 
@@ -41,19 +40,27 @@
 
 ## 🌟 About Bomiot
 
-Bomiot is an enterprise system integration platform and also a full-stack node-based development platform, with its core ASGI gateway rewritten in Rust, designed specifically to connect all systems within an enterprise.
+Bomiot is a command-line tool for Python programmers, with its core ASGI gateway rewritten in Rust. It lets you ship your Python apps to **anyone without any environment** — no Python installation, no dependency configuration, just double-click to run, boots on startup, and silently updates in the background.
 
-Whether it's ERP, WMS, CRM, MES or OA, Bomiot's node-based architecture helps you achieve system connectivity, data flow and unified management — ending enterprise data silos. Every user / every device can be an independent node; nodes collaborate directly over the local area network. Applications can be compiled into portable distributions in one click — double-click to run, no environment dependencies. Bomiot also ships with a built-in free application marketplace with pre-installed industry templates such as ERP / WMS, where developers can freely publish and share applications.
+> 💡 **Bomiot is not some "revolutionary magic framework"** — technically, any capable engineer can replicate it.
+>
+> Its real value lies in turning a **real but often-overlooked need** — **no-environment delivery + continuous updates + code protection** for Python apps — into a **complete, out-of-the-box pipeline**:
+>
+> **Enabling Python developers to ship their apps — without environment dependencies, without exposing source code, with continuous updates — into the hands of non-technical users, ready to use out of the box.**
 
-| Enterprise Pain Points | Bomiot Solutions |
+For developers, a single `bomiot deploy` command packages your Django / FastAPI / Flask app into a portable executable — copy it to the target machine and double-click to run, with zero environment setup. For end users, the experience is on par with a mobile app: boot-and-use, silent automatic version updates, and automatic rollback if an update fails — all with zero awareness. Every user / every device can be an independent node; nodes collaborate directly over the local area network. Bomiot also ships with a built-in free application marketplace where developers can freely publish and share apps, with pre-installed industry templates such as ERP / WMS available for one-click installation.
+
+| Pain Points | Bomiot Solutions |
 | :--- | :--- |
-| 🏢 **Fragmented Systems, Data Silos** | ✅ **Enterprise System Integration** — unified access for ERP/WMS/CRM/MES/OA, data flows on demand |
-| 🐢 **Bulky Deployment, Environment Coupling** | ✅ **Portable Distribution**, compiled to binary, drastically reduced runtime dependencies |
-| 🔗 **Multi-Site / Multi-Facility Collaboration** | ✅ **Node-based Networking** — nodes connect directly via LAN, decentralized, no central server required |
-| 🧩 **Separated Frontend & Backend, Complex Integration** | ✅ **Full-Stack Unification** — Python backends (Django/FastAPI/Flask) + mainstream frontends, flexible combinations |
-| 📡 **No Real-Time Channels, Inefficient Polling** | ✅ **Built-in WebSocket**, native ASGI implementation, real-time bidirectional communication |
-| 🛡️ **Performance Bottlenecks, Code Leakage** | ✅ **Rust-rewritten ASGI Gateway**, compiled to native binary, more stable performance and effective code protection |
-| 💰 **Closed Ecosystem, Hard to Reuse** | ✅ **Own Free Application Marketplace** with pre-built industry templates; developers freely publish and share applications |
+| 🐢 **Hard to ship Python apps, environment coupling** | ✅ **Portable Distribution**, compiled to binary, no Python or dependencies needed, double-click to run |
+| 🔄 **Releases rely on manual notification, users don't update** | ✅ **Incremental Auto-Update**, silent delta download in background, takes effect on next launch, auto rollback on failure |
+| 🖥️ **Won't auto-run on boot, hard to maintain** | ✅ **Boot-and-Use**, portable programs can be configured to auto-start on boot, ready to run out of the box |
+| 🏢 **Fragmented enterprise systems, data silos** | ✅ **Enterprise System Integration**, unified access for ERP/WMS/CRM/MES/OA, data flows on demand |
+| 🔗 **Multi-site / multi-facility collaboration difficulties** | ✅ **Node-based Networking**, nodes connect directly via LAN, decentralized, no central server required |
+| 🧩 **Separated frontend & backend, complex integration** | ✅ **Full-Stack Unification**, Python backends (Django/FastAPI/Flask) + mainstream frontends, flexible combinations |
+| 📡 **No real-time channels, inefficient polling** | ✅ **Built-in WebSocket**, native ASGI implementation, real-time bidirectional communication |
+| 🛡️ **Performance bottlenecks, code leakage** | ✅ **Rust-rewritten ASGI Gateway**, compiled to native binary, more stable performance and effective code protection |
+| 💰 **Closed ecosystem, hard to reuse** | ✅ **Own Free Application Marketplace** with pre-built industry templates; developers freely publish and share applications |
 
 ---
 
@@ -67,24 +74,64 @@ Watch the video introduction of Bomiot to quickly understand the core features a
 
 ## ✨ Core Features Overview
 
-### 1. Enterprise System Integration (Unified Multi-System Access · End Data Silos)
+### 1. Portable Distribution / No-Environment Delivery
+
+**Bomiot's core selling point.** Compile Python apps into portable executables — copy to the target machine and double-click to run, no Python installation, no environment configuration needed.
+
+- 📦 **Portable Packaging**: Code, runtime and resources are compiled into a portable program, no installation required, ready to use after extraction.
+- ⚡ **Instant Run**: No Python install, no environment setup, no dependencies — just double-click to run.
+- 🔐 **Effective Code Protection**: Python code is compiled into native binaries, significantly improving code protection.
+- 🎯 **For Non-Technical Users**: Deliver to bosses, warehouse managers, sales staff — not just engineers.
+
+### 2. Incremental Auto-Update (Silent Upgrade · Zero Awareness)
+
+**Distribution is just the beginning — continuous iteration is the norm.** Bomiot's built-in incremental update mechanism lets distributed portable apps automatically detect, download, and apply new versions, ending the primitive practice of "messaging customers to reinstall."
+
+- 🔍 **Automatic Version Check**: Automatically checks for new versions at startup, no manual intervention required.
+- 📦 **Incremental Delta Download**: Downloads only the changed parts (not the full package), small update size and fast speed, completed in seconds.
+- 🤫 **Background Silent Upgrade**: Applies the update in the background after download, takes effect on next launch, users are completely unaware.
+- ↩️ **Automatic Rollback on Failure**: If an anomaly occurs during the update, automatically rolls back to the previous working version, ensuring the app is always runnable.
+- 🔄 **Unified Version Management**: After developers publish a new version, all installed nodes automatically converge to the latest version, ending the ops nightmare of "100 customers on 100 different versions."
+
+### 3. Cross-Platform Node-Based Architecture
+
+**Develop once, run cross-platform.** Turn every Windows / macOS / Linux device into an independent server node, supporting industrial PCs and edge gateways for IoT devices.
+
+- 🌍 **Full Platform Support**: Native support for Windows, macOS and Linux, one codebase runs everywhere.
+- 🔒 **Local Data**: Data is stored on each node, complying with data sovereignty requirements, suitable for intranet / offline environments.
+- 🤖 **Edge Device Support**: Compatible with industrial PCs, Raspberry Pi, edge gateways and other IoT devices to build edge computing nodes.
+- 🌐 **Node-based Networking**: Multi-site, multi-facility and multi-branch nodes interconnect over LAN — decentralized, no central server required.
+
+### 4. Rust Rewritten ASGI Gateway
+
+Bomiot uses Rust to rewrite the core ASGI gateway, compiles it into native binaries, bringing more stable performance and code protection.
+
+- 🦀 **Rust ASGI Gateway**: The core gateway is written in Rust, compiled to native binaries, with more stable performance.
+- 🚀 **Stable Performance**: The compiled binaries have lower latency and more stable operation under high-concurrency requests.
+- 🔐 **Code Protection**: Python code is converted to native binaries along with compilation, effectively improving code protection.
+
+### 5. Enterprise System Integration (Unified Multi-System Access · End Data Silos)
+
 **Purpose-built for connecting internal enterprise systems**. ERP, WMS, CRM, MES, OA — inconsistent interfaces don't matter. Bomiot connects everything for you.
+
 - 🏢 **Multi-System Connectivity**: Standard APIs, direct database access, or UI-level automation — all can be unified into Bomiot nodes.
 - 🔄 **Real-Time Data Flow**: Real-time fetch and push between nodes; business states sync across systems at millisecond level.
 - 🧩 **Unified Permission System**: Single account for all subsystems; centralized role & API permission control.
 - 📊 **Unified Monitoring Dashboard**: All node statuses, system health and core business metrics on one screen.
-- 🌐 **Node-based Networking**: Multi-site, multi-facility and multi-branch nodes interconnect over LAN — decentralized, no central server required.
 
-### 2. Cross-Platform Node-Based Architecture (Zero-Dependency)
-**Develop once, distribute cross-platform**. The compiled and encrypted portable program turns every Windows / macOS / Linux device into an independent server node, supporting industrial PCs and edge gateways for IoT devices.
-- 🌍 **Full Platform Support**: Native support for Windows, macOS and Linux, one codebase runs everywhere.
-- 📦 **Portable Distribution**: Packages code, runtime and resources into an encrypted portable program through compilation, no installation required, ready to use after extraction.
-- ⚡ **Instant Run**: No need to install Python, no need to configure environment, double-click to run.
-- 🔒 **Local Data**: Data is stored on each node, complying with data sovereignty requirements.
-- 🤖 **Edge Device Support**: Compatible with industrial PCs, Raspberry Pi, edge gateways and other IoT devices to build edge computing nodes.
+### 6. Built-In Free Application Marketplace · One-Click Industry Template Installation
 
-### 3. Multi-Language Full-Stack Framework Freedom
+Bomiot has a **free and open application marketplace** with pre-installed industry templates such as ERP / WMS. Developers can also freely publish and share applications.
+
+- 🏪 **Free Application Marketplace**: Built-in official marketplace, developers can freely publish applications, users can download with one click, **completely free**.
+- 🎯 **Industry Templates**: Pre-built templates including GreaterWMS (WMS), install in one click and ready to use.
+- 🔓 **Open Sharing**: All marketplace content is open for download to everyone, promoting the rapid dissemination and reuse of technology.
+- 🔐 **Secure Distribution**: Applications can be compiled and encrypted before publishing, protecting developers' code choices.
+
+### 7. Multi-Language Full-Stack Framework Freedom
+
 No restrictions on tech stack, use the tools you are most familiar with. Bomiot supports a flexible combination of Python backend + JavaScript frontend.
+
 - **Backend Support (Python)**:
   - 🟢 **Django** (Enterprise-grade preferred)
   - 🚀 **FastAPI** (High concurrency performance)
@@ -93,41 +140,36 @@ No restrictions on tech stack, use the tools you are most familiar with. Bomiot 
   - 💚 **Quasar / Vue 3** (Primary support, fully integrated)
   - 🔄 Abstraction layer reserved, extendable to React and Angular.
 
-### 4. Rust Rewritten ASGI Gateway
-Bomiot uses Rust to rewrite the core ASGI gateway, compiles it into native binaries, bringing more stable performance and code protection.
-- 🦀 **Rust ASGI Gateway**: The core gateway is written in Rust, compiled to native binaries, with more stable performance.
-- 🚀 **Stable Performance**: The compiled binaries have lower latency and more stable operation under high-concurrency requests.
-- 🔐 **Code Protection**: Python code is converted to native binaries along with compilation, effectively improving code protection.
+### 8. Built-In Scheduled Task Scheduling
 
-### 5. Built-In Free Application Marketplace · One-Click Industry Template Installation
-Bomiot has a **free and open application marketplace** with pre-installed industry templates such as ERP / WMS. Developers can also freely publish and share applications.
-- 🏪 **Free Application Marketplace**: Built-in official marketplace, developers can freely publish applications, users can download with one click, **completely free**.
-- 🎯 **Industry Templates**: Pre-built templates including GreaterWMS (WMS), install in one click and ready to use.
-- 🔓 **Open Sharing**: All marketplace content is open for download to everyone, promoting the rapid dissemination and reuse of technology.
-- 🔐 **Secure Distribution**: Applications can be compiled and encrypted before publishing, protecting developers' code choices.
-
-### 6. Built-In Scheduled Task Scheduling
 A built-in database-driven scheduled task system supports multiple trigger methods.
+
 - ⏰ **Three Triggers**: Supports `cron` (scheduled), `interval` (interval), `date` (date) three trigger methods.
 - 💾 **Database Persistence**: Tasks are stored in the database, automatically restored after service restart.
 - 🔄 **Auto Sync**: SchedulerManager automatically synchronizes task status every 60 seconds, adding, deleting and modifying take effect immediately.
 - 📝 **Task Template**: Define task functions in `task.py`, which can be called and executed by the scheduler.
 
-### 7. File Monitoring & Upload
+### 9. File Monitoring & Upload
+
 Real-time file monitoring system automatically manages user-uploaded files.
+
 - 👀 **Real-Time Monitoring**: Automatically monitors the media directory, captures file creation, modification, deletion and movement operations.
 - 📋 **Auto Registration**: File changes are automatically written to the database, recording file name, type, size and owner.
 - 📡 **Event Notification**: File changes are broadcast in real-time through the signal mechanism, convenient for frontend or third-party subscriptions.
 - ⚙️ **Flexible Configuration**: Set file size limits and allowed file types in `setup.ini`.
 
-### 8. Real-Time WebSocket Communication
+### 10. Real-Time WebSocket Communication
+
 Bomiot's Rust ASGI gateway natively supports WebSocket. You can directly write WebSocket routes in the application's `main.py`. For details, see the [WebSocket Section](#-real-time-websocket-communication).
+
 - 💬 **Minimal Development**: Directly use the standard WebSocket syntax of FastAPI/Flask, zero learning cost.
 - ⚡ **Gateway Forwarding**: The Rust gateway automatically identifies WebSocket requests and efficiently forwards them to the corresponding application.
 - 🔌 **Full Framework Support**: Can be used in `main.py` of Django, FastAPI or Flask applications.
 
-### 9. Real-Time System Monitoring
+### 11. Real-Time System Monitoring
+
 Backend system monitoring, real-time collection of server running status.
+
 - 💻 **CPU Monitoring**: Collects CPU usage, physical cores, logical cores, frequency information.
 - 🧠 **Memory Monitoring**: Collects total, used, available and usage of physical memory and swap partitions.
 - 💽 **Disk Monitoring**: Collects capacity, used, available and usage of each partition.
@@ -135,8 +177,10 @@ Backend system monitoring, real-time collection of server running status.
 - 📊 **Process Monitoring**: Collects PID, name, CPU usage and memory usage of all running processes.
 - 🗄️ **Auto Cleanup**: Historical data is automatically cleaned up (upper limit of 10080 entries) to prevent database bloating.
 
-### 10. Built-In API Rate Limiting Protection
+### 12. Built-In API Rate Limiting Protection
+
 Provides out-of-the-box API security protection for your applications to ensure system stability.
+
 - 🛡️ **Intelligent Rate Limiting**: Fine-grained rate limiting based on IP address and HTTP request method (GET/POST, etc.).
 - 🛡️ **Anti-Scraping Protection**: Effectively prevents malicious crawlers, interface scraping and denial-of-service (DoS) attacks.
 - ⚙️ **Flexible Configuration**: Customize the rate limiting time window and request frequency in the `[throttle]` section of `setup.ini`.
@@ -379,6 +423,17 @@ async def websocket_endpoint(websocket: WebSocket):
 
 ## 🌐 Deployment & Distribution
 
+Bomiot provides two deployment methods for different scenarios:
+
+| Comparison | Traditional Server Deployment (`bomiot run`) | Node-Based Distribution (`bomiot deploy`) |
+| :--- | :--- | :--- |
+| **Cost** | ✅ Completely Free | 💎 Sponsor Only |
+| **Runtime** | Requires Python & dependencies | Portable, double-click to run, no environment |
+| **Incremental Update** | Self-managed | Built-in silent incremental update |
+| **Code Protection** | Source code in plaintext | Compiled to binary, effective code protection |
+| **Use Case** | Server deployment, development | Field PCs, industrial PCs, multi-device distribution |
+| **Device Binding** | None | Supported (unique per device) |
+
 ### Traditional Server Deployment (Free)
 You can deploy Bomiot applications to any server like a traditional Django/FastAPI project, **completely free, no restrictions**.
 
@@ -393,14 +448,13 @@ bomiot deploy  # Cross-platform compilation to portable runtime files
 ```
 Generates portable runtime files through cross-platform compilation and packaging, **copy it to the target machine and double-click to run**. This distribution method is Sponsor Only, featuring compiled encryption and instant cross-platform deployment.
 
-> ⚠️ **Important Notice: Node-based distribution targets physical devices / local nodes only; cloud server deployment is NOT supported.** The portable runtime files generated by `bomiot deploy` are intended to run on actual physical devices within the enterprise intranet (PCs, industrial PCs, edge gateways, Raspberry Pi, on-premise data-center servers, etc.). If you need to deploy to a cloud server, please use the "Traditional Server Deployment" method above.
+> 💡 **Note: Node-based distribution supports both on-premises physical devices and cloud server environments.** The portable runtime files generated by `bomiot deploy` can be deployed directly to physical devices on the enterprise intranet (PCs, industrial PCs, edge gateways, Raspberry Pi, on-premise data-center servers, etc.), as well as to cloud server instances. The device-bound verification mechanism is consistent across all scenarios.
 
 **Device-Bound Verification Mechanism:**
 - On first run, the program automatically generates `auth_key.py` based on the local network card information
 - Visit the official website with `auth_key.py` to complete verification and exchange for `sponsor.py`
 - All verifications are completed **locally**, bound to the unique device identifier, only valid for the current device
-- Each device can only have one `sponsor.py`, a new device requires re-binding
-- For cloud server scenarios, use the "Traditional Server Deployment" method above. This deployment method does NOT involve the `auth_key.py` / `sponsor.py` device-bound verification mechanism.
+- Each device can only have one `sponsor.py`; changing hardware or cloud server instance requires re-binding.
 
 > **Privacy Protection Commitment**: All verifications are completed **locally**, and your node information or business data will not be uploaded to any server. Your code, configuration and operational data are always retained on local nodes.
 

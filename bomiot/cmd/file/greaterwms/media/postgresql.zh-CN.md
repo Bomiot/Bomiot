@@ -2,7 +2,7 @@
 
 ## 介绍
 
-- **Bomiot**支持修改为PostgreSQL数据库
+- **Bomiot** 支持切换为 PostgreSQL 数据库。
 
 ---
 
@@ -12,13 +12,15 @@
 pip install psycopg2
 ```
 
-## 修改setup.ini
+---
 
-```bash
+## 修改 setup.ini
+
+```ini
 [database]
 engine = postgresql
-name = db_name            # 你的db设置的name
-user = root               # 一般为root
+name = db_name            # 你的数据库名称
+user = root               # 一般为 root
 password = password       # 密码
 host = localhost
 port = 5432

@@ -58,6 +58,11 @@ class IndexTemplateView(TemplateView):
                 template_path = join(working_template, 'dist/spa/index.html')
         return [template_path]
 
+    def render_to_response(self, context, **response_kwargs):
+        response = super().render_to_response(context, **response_kwargs)
+        response['Cache-Control'] = 'no-cache'
+        return response
+
 async def ProjectList(request):
     current_path = list(set([p for p in listdir(settings.WORKING_SPACE) if isdir(p)]).difference(set(ignore_cwd())))
     cur_squared = list(map(lambda data: cwd_check(data), current_path))
@@ -130,7 +135,7 @@ async def check_token(request):
 
 
 async def mdurl(request, mddocs):
-    language = request.META.get('HTTP_LANUAGE', '')
+    language = request.META.get('HTTP_LANGUAGE', '')
     if not mddocs.endswith('.md'):
         return JsonResponse({'detail': others_message_return(language, 'Only support markdown file')})
     folder_path = Path(join(settings.WORKING_SPACE, 'greaterwms', 'media'))
@@ -177,7 +182,7 @@ def favicon(request):
         else:
             path = join(settings.WORKING_SPACE, project_name, 'media', 'img', 'logo.png')
     resp = FileResponse(open(path, 'rb'))
-    resp['Cache-Control'] = 'max-age=864000000000'
+    resp['Cache-Control'] = 'no-cache'
     return resp
 
 def statics(request):
@@ -192,14 +197,14 @@ def statics(request):
     path = join(base_dir, request.path_info.lstrip('/'))
     if exists(path) and isfile(path):
         resp = FileResponse(open(path, 'rb'))
-        resp['Cache-Control'] = 'max-age=864000000000'
+        resp['Cache-Control'] = 'no-cache'
         return resp
     pattern = join(base_dir, '**', 'index-*.js')
     index_js_files = glob.glob(pattern, recursive=True)
     if index_js_files:
         fallback_path = index_js_files[0]
         resp = FileResponse(open(fallback_path, 'rb'))
-        resp['Cache-Control'] = 'max-age=864000000000'
+        resp['Cache-Control'] = 'no-cache'
         return resp
 
 async def google(request):

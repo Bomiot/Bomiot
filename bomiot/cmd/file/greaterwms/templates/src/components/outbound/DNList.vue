@@ -266,8 +266,8 @@ async function onRequest(props) {
     }
   })
     .then((res) => {
-      rows.value = res.results
-      rowsCount.value = res.count
+      rows.value = res?.results || []
+      rowsCount.value = res?.count || 0
     })
     .catch((err) => {
       $q.notify({
@@ -376,7 +376,8 @@ watch(() => goodsSearch.value, (val) => {
     }
   })
     .then((res) => {
-      goodsOptions.value = res.results.map(item => {
+      const results = res?.results || []
+      goodsOptions.value = results.map(item => {
         return {
           name: item.goods_name,
           label: item.goods_code

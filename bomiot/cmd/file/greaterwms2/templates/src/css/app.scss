@@ -1,0 +1,355 @@
+// app global css in SCSS form
+
+.main-headers-sun {
+  background: linear-gradient(to right, #00b4db, #0083b0)
+}
+
+.main-headers-dark {
+  background: linear-gradient(to right, #0f2027, #203a43, #2c5364)
+}
+
+.drawer-background-dark {
+  background: #121212
+}
+
+.linkClass {
+  text-decoration:none;
+  color: black;
+}
+
+.linkDarkClass {
+  text-decoration:none;
+  color: white;
+}
+
+.markdownStyle h1{
+  font-size: 26px;
+  line-height: 1.6;
+}
+
+.markdownStyle h2{
+  font-size: 24px;
+  line-height: 1.6;
+}
+
+.markdownStyle h3{
+  font-size: 22px;
+  line-height: 1.6;
+}
+
+.markdownStyle h4{
+  font-size: 20px;
+  line-height: 1.6;
+}
+
+.markdownStyle h5{
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.markdownStyle h6{
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.markdownStyle-dark h1{
+  font-size: 26px;
+  line-height: 1.6;
+}
+
+.markdownStyle-dark h2{
+  font-size: 24px;
+  line-height: 1.6;
+}
+
+.markdownStyle-dark h3{
+  font-size: 22px;
+  line-height: 1.6;
+}
+
+.markdownStyle-dark h4{
+  font-size: 20px;
+  line-height: 1.6;
+}
+
+.markdownStyle-dark h5{
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.markdownStyle-dark h6{
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.markdownStyle h1{
+  font-size: 26px;
+  line-height: 1.6;
+}
+
+.markdownStyle h2{
+  font-size: 24px;
+  line-height: 1.6;
+}
+
+.markdownStyle h3{
+  font-size: 22px;
+  line-height: 1.6;
+}
+
+.markdownStyle h4{
+  font-size: 20px;
+  line-height: 1.6;
+}
+
+.markdownStyle h5{
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.markdownStyle h6{
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.markdownStyle-dark {
+  width: 70%;
+  padding-right: 20px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #fff;
+  opacity: 0;
+  transform: translateY(200px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  
+  &.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  h1 { font-size: 2em; }
+  h2 { font-size: 1.5em; }
+  h3 { font-size: 1.25em; }
+  h4 { font-size: 1em; }
+  h5 { font-size: 0.875em; }
+  h6 { font-size: 0.85em; }
+
+  p {
+    margin-bottom: 16px;
+  }
+
+  code {
+    background-color: #333;
+    color: #fff;
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 0.9em;
+  }
+
+  pre {
+    background-color: #333;
+    border-radius: 6px;
+    padding: 16px;
+    overflow: auto;
+    margin-bottom: 16px;
+
+    code {
+      background-color: transparent;
+      padding: 0;
+      color: #fff;
+    }
+  }
+
+  blockquote {
+    margin: 0 0 16px;
+    padding: 0 1em;
+    color: #6a737d;
+    border-left: 0.25em solid #dfe2e5;
+  }
+}
+
+.markdownStyle {
+  width: 70%;
+  padding-right: 20px;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333;
+  opacity: 0;
+  transform: translateY(200px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+
+  &.fade-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  h1 { font-size: 2em; }
+  h2 { font-size: 1.5em; }
+  h3 { font-size: 1.25em; }
+  h4 { font-size: 1em; }
+  h5 { font-size: 0.875em; }
+  h6 { font-size: 0.85em; }
+
+  p {
+    margin-bottom: 16px;
+  }
+
+  code {
+    background-color: #333;
+    color: #fff;
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 0.9em;
+  }
+
+  pre {
+    background-color: #333;
+    border-radius: 6px;
+    padding: 16px;
+    overflow: auto;
+    margin-bottom: 16px;
+
+    code {
+      background-color: transparent;
+      padding: 0;
+      color: #fff;
+    }
+  }
+
+  blockquote {
+    margin: 0 0 16px;
+    padding: 0 1em;
+    color: #6a737d;
+    border-left: 0.25em solid #dfe2e5;
+  }
+}
+
+.toc-container {
+  position: fixed;
+  right: 20px;
+  top: 100px;
+  width: 280px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  background-color: transparent;
+  padding: 20px;
+  z-index: 1000;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #ddd;
+    border-radius: 3px;
+  }
+
+  .toc-title {
+    font-size: 1.2em;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #333;
+  }
+
+  .toc-content {
+    .toc-item {
+      padding: 6px 0;
+      color: #666;
+      font-size: 0.95em;
+      line-height: 1.5;
+      transition: all 0.3s ease;
+      transform-origin: left center;
+
+      &:hover {
+        color: #1976d2;
+        transform: translateX(4px) scale(1.05);
+      }
+
+      &.toc-level-1 {
+        padding-left: 0;
+        font-weight: 600;
+        color: #333;
+      }
+      &.toc-level-2 { padding-left: 16px; }
+      &.toc-level-3 { padding-left: 32px; }
+      &.toc-level-4 { padding-left: 48px; }
+      &.toc-level-5 { padding-left: 64px; }
+      &.toc-level-6 { padding-left: 80px; }
+    }
+  }
+}
+
+.toc-container-dark {
+  position: fixed;
+  right: 20px;
+  top: 100px;
+  width: 280px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  background-color: transparent;
+  padding: 20px;
+  z-index: 1000;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #121212;
+    border-radius: 3px;
+  }
+
+  .toc-title {
+    font-size: 1.2em;
+    font-weight: 600;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #fff;
+  }
+
+  .toc-content {
+    .toc-item {
+      padding: 6px 0;
+      color: #fff;
+      font-size: 0.95em;
+      line-height: 1.5;
+      transition: all 0.3s ease;
+      transform-origin: left center;
+
+      &:hover {
+        color: #1976d2;
+        transform: translateX(4px) scale(1.05);
+      }
+
+      &.toc-level-1 {
+        padding-left: 0;
+        font-weight: 600;
+        color: #fff;
+      }
+      &.toc-level-2 { padding-left: 16px; }
+      &.toc-level-3 { padding-left: 32px; }
+      &.toc-level-4 { padding-left: 48px; }
+      &.toc-level-5 { padding-left: 64px; }
+      &.toc-level-6 { padding-left: 80px; }
+    }
+  }
+}

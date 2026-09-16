@@ -1,4 +1,4 @@
-
+﻿
 const routes = [
   {
     path: '/',
@@ -50,17 +50,57 @@ const routes = [
       { path: 'asndetail', component: () => import('pages/inbound/ASNDetailReader.vue') },
       { path: 'stock', component: () => import('pages/inventory/StockListReader.vue') },
       { path: 'stockbin', component: () => import('pages/inventory/StockBinReader.vue') },
+      { path: 'dev-setup', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-mainlayout', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-quasarconf', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-axios', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-router', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-stores', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-project', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-bus', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-i18n', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-listcomponent', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-mdparser', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-newpage', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-newmenu', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-be-overview', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-be-setup', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-be-request-flow', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-be-routes', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-be-models', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-be-signal', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-be-receiver', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-be-jwt', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-be-department', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-be-scheduler', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-be-language', component: () => import('pages/dev/LanguageReader.vue') },
+      { path: 'dev-be-newmodule', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-cli-project', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-cli-app', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-cli-api', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-cli-deploy', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-cli-init', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-cli-initadmin', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-cli-initpwd', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-cli-migrate', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-cli-makemigrations', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-cli-loaddata', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-cli-dumpdata', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-cli-run', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-BUILD_FLOW', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-AUTO_UPDATE', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-auth_key', component: () => import('pages/dev/DevReader.vue') },
     ]
   },
   {
     path: '/404',
-    component: () => import('pages/ErrorNotFound.vue')
+    redirect: '/'
   },
   // Always leave this as last one,
   // but you can also remove it
   {
     path: '/:catchAll(.*)*',
-    component: () => import('pages/ErrorNotFound.vue')
+    redirect: '/'
   }
 ]
 

@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <q-tabs mobile-arrows v-model="tab" align="left" :indicator-color="$q.dark.isActive ? 'yellow' : 'black'">
     <q-tab v-for="(list, index) in tabList"
            :key="index"
@@ -31,6 +31,10 @@ const tabList = computed(() => [
   { name: 'basic', label: t('menuTab.basic') },
   { name: 'db', label: t('menuTab.db') },
   { name: 'signals', label: t('menuTab.signals') },
+  { name: 'dev', label: t('menuTab.dev') },
+  { name: 'backend', label: t('menuTab.backend') },
+  { name: 'cli', label: t('menuTab.cli') },
+  { name: 'sponsor', label: t('menuTab.sponsor') },
   // { name: 'component', label: t('menuTab.component') },
 ])
 

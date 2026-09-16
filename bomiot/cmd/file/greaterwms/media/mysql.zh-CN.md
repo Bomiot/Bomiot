@@ -2,7 +2,7 @@
 
 ## 介绍
 
-- **Bomiot**支持修改为MySQL数据库
+- **Bomiot** 支持切换为 MySQL 数据库。
 
 ---
 
@@ -12,13 +12,15 @@
 pip install mysqlclient
 ```
 
-## 修改setup.ini
+---
 
-```bash
+## 修改 setup.ini
+
+```ini
 [database]
 engine = mysql
-name = db_name            # 你的db设置的name
-user = root               # 一般为root
+name = db_name            # 你的数据库名称
+user = root               # 一般为 root
 password = password       # 密码
 host = 127.0.0.1
 port = 3306

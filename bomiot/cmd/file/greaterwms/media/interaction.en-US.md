@@ -1,15 +1,16 @@
-# Front-end and back-end interaction
+# Front-end and Back-end Interaction
 
 ## Introduction
 
-- **Bomiot**'s front-end and back-end interaction is a unified Json, including the redefinition of queries
-- This can completely unify the front-end and back-end code rules and develop more efficiently
+- **Bomiot**'s front-end and back-end interaction uses a unified JSON format, including a redefined query mechanism.
+- This completely unifies the front-end and back-end code rules for more efficient development.
 
 ---
 
-## Get data
+## Get Data
 
-- Front-end
+- Front-end GET request example:
+
 ```js
 get({
   url: 'core/example/',
@@ -21,5 +22,17 @@ get({
 })
 ```
 
-- In the url, params is spliced with a params, which is a set of json query data
-- The back-end will directly execute this json and then query the database
+- In the URL, `params` concatenates a set of JSON query data.
+- The back-end directly executes this JSON and queries the database.
+
+---
+
+## Request Headers
+
+Each request should carry the following headers to complete identity and context authentication.
+
+| Header
+| --- | --- |
+| `token` | JWT token for user authentication
+| `language` | Current language, e.g. `en-US`, `zh-CN`
+| `project` | Current project identifier

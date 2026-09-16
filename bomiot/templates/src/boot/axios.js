@@ -1,7 +1,7 @@
 import { boot } from 'quasar/wrappers';
 import axios from 'axios';
 import emitter from './bus';
-import { LocalStorage, Notify, Loading } from 'quasar';
+import { LocalStorage, Cookies, Notify, Loading } from 'quasar';
 
 const baseURL = 'http://127.0.0.1:8000' // Replace with your actual API URL
 
@@ -66,8 +66,12 @@ api.interceptors.request.use(
       }
     }
     config.headers.language = lang
-    let project = 'bomiot'
-    if (LocalStorage.has('project')) {
+    let project = 'xxxx'
+    // Try cookie first, then localStorage, then default
+    const cookieProject = Cookies.get('project')
+    if (cookieProject) {
+      project = cookieProject
+    } else if (LocalStorage.has('project')) {
       const projectCheck = JSON.parse(LocalStorage.getItem('project'))
       if (projectCheck !== '') {
         for (const key in projectCheck) {
@@ -108,6 +112,8 @@ api.interceptors.response.use(
         message: response.data.login
       })
       emitter.emit('needLogin', true)
+      Loading.hide();
+      return { results: [], count: 0 }
     } else {
       emitter.emit('needLogin', false)
     }

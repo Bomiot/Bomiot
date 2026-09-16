@@ -3,8 +3,8 @@ import { defineStore } from 'pinia'
 
 export const useMenuDataStore = defineStore('menu', {
   state: () => ({
-    menuData: { tab: 'test1', title: '', icon: 'home', link: '/', routerTo: '/' },
-    homeData: { tab: 'test1', title: '', icon: 'home', link: '/', routerTo: '/' },
+    menuData: { tab: 'standard', title: '', icon: 'home', link: '/', routerTo: '/' },
+    homeData: { tab: 'standard', title: '', icon: 'home', link: '/', routerTo: '/' },
   }),
 
   getters: {

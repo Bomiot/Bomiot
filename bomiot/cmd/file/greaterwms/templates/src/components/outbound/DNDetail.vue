@@ -155,8 +155,8 @@ async function onRequest(props) {
     }
   })
     .then((res) => {
-      rows.value = res.results
-      rowsCount.value = res.count
+      rows.value = res?.results || []
+      rowsCount.value = res?.count || 0
     })
     .catch((err) => {
       $q.notify({

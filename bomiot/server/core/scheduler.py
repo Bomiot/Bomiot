@@ -9,6 +9,9 @@ from django.core.cache import cache
 from django_apscheduler.models import DjangoJob
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.executors.pool import ThreadPoolExecutor
+from apscheduler.triggers.interval import IntervalTrigger
+from apscheduler.triggers.cron import CronTrigger
+from apscheduler.triggers.date import DateTrigger
 from django_apscheduler.jobstores import DjangoJobStore, register_events
 from django_apscheduler.models import DjangoJobExecution
 from datetime import datetime, timedelta
@@ -19,6 +22,12 @@ ARGS_MAP = {
     'cron': ['year', 'month', 'day', 'week', 'day_of_week', 'hour', 'minute', 'second', 'start_date', 'end_date', 'timezone'],
     'interval': ['weeks', 'days', 'hours', 'minutes', 'seconds', 'start_date', 'end_date', 'timezone'],
     'date': ['run_date', 'timezone']
+}
+
+TRIGGER_CLASSES = {
+    'interval': IntervalTrigger,
+    'cron': CronTrigger,
+    'date': DateTrigger,
 }
 
 TIMEZONE = settings.TIME_ZONE if hasattr(settings, 'TIME_ZONE') else 'UTC'
@@ -65,13 +74,9 @@ class SchedulerManager(Thread):
                         self.scheduler.remove_job(job_id)
                     except Exception as e:
                         print(f"Error removing job {job_id}: {str(e)}")
-                if force:
-                    for job in active_jobs:
-                        self._update_job(job, force)
-                else:
-                    scheduled_job_ids_res = {job.id for job in self.scheduler.get_jobs()}
-                    for job in active_job_ids.difference(scheduled_job_ids_res):
-                        self._update_job(active_jobs.filter(job_id=job).first(), force)
+                scheduled_job_ids_res = {job.id for job in self.scheduler.get_jobs()}
+                for job in active_job_ids.difference(scheduled_job_ids_res):
+                    self._update_job(active_jobs.filter(job_id=job).first(), force)
                 self.delete_old_job_executions()
             except Exception as e:
                 print(f"Error syncing jobs: {str(e)}")
@@ -99,20 +104,21 @@ class SchedulerManager(Thread):
             job_func = getattr(module, job.func_name)
             if not callable(job_func):
                 return
+            trigger_cls = TRIGGER_CLASSES[trigger_type]
             self.scheduler.add_job(
                 func=job_func,
-                trigger=trigger_type,
+                trigger=trigger_cls(**trigger_args),
                 id=job.job_id,
                 replace_existing=True,
-                kwargs={'sender': job_func},
-                **trigger_args
+                kwargs={'sender': job_func}
             )
         except Exception as e:
-            print(f"Error updating job {getattr(job, 'job_id', '?')}: {e}")
+            job.type = False
+            job.save()
 
     def run(self):
         try:
-            time.sleep(0.1)
+            JobList.objects.filter().delete()
             self.scheduler.start()
             self.sync_jobs(force=True)
             while not self._stop_event:

@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="hHh lpR fFf">
+  <q-layout view="hHh LpR fFf">
     <q-header :class="[$q.dark.isActive ? 'bg-grey-10' : 'main-headers-sun']">
       <transition
         appear
@@ -80,7 +80,7 @@
       side="left"
       :breakpoint="500"
       :class="{'drawer-background-dark text-white': $q.dark.isActive}">
-        <q-list padding>
+        <q-list dense padding>
           <MenuLink />
         </q-list>
     </q-drawer>
@@ -231,6 +231,13 @@ function projectCheck() {
 }
 
 onMounted(() => {
+  // Sync project from cookie to store on startup
+  const cookieProject = $q.cookies.get('project')
+  if (cookieProject && cookieProject !== projectStore.project) {
+    projectStore.projectChange(cookieProject)
+  } else if (!cookieProject) {
+    $q.cookies.set('project', projectStore.project)
+  }
   tokenStore.tokenCheck()
   listenToEvent()
   getProjectList()
@@ -258,7 +265,7 @@ watch(() => projectStore.project, val => {
   if (val) {
     console.log('Project changed:', val)
     $q.cookies.set('project', val)
-    window.location.reload(true)
+    window.location.href = '/'
   }
 })
 

@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 
 export const useTabDataStore = defineStore('tab', {
   state: () => ({
-    tabData: 'test1'
+    tabData: 'basic'
   }),
 
   getters: {

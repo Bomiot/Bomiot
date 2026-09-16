@@ -2,19 +2,21 @@
 
 ## Introduction
 
-- **Bomiot** Support change to PostgreSQL database
+- **Bomiot** supports switching to a PostgreSQL database.
 
 ---
 
-## Install Libery
+## Install Library
 
 ```bash
 pip install psycopg2
 ```
 
+---
+
 ## Edit setup.ini
 
-```bash
+```ini
 [database]
 engine = postgresql
 name = db_name            # your db name
