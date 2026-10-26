@@ -1,41 +1,53 @@
-# Real-time Files
+# Real-Time File Monitoring
 
 ## Introduction
 
-- **Bomiot** monitors file changes in the `media` folder in real time, including creation, modification, deletion, and movement.
-- Any file change is automatically written to the database (`Files` model), recording file name, type, size, and owner.
-- **Bomiot** broadcasts `bomiot_signals` in real time, and the signal is forwarded to `files.py` for custom handling.
+Bomiot ships with a built-in file monitor that watches the `media` directory in the background for create, modify, delete, and move events:
+
+- File changes are automatically written to the database (`Files` model), recording the name, type, size, and owning user
+- Create and modify events broadcast a `bomiot_signals` signal, which is automatically forwarded to `files.py` in the project root for your custom logic
+
+No listening code is required — uncomment `files.py` and you start receiving data.
 
 ---
 
 ## How It Works
 
-1. `ObserverManager` watches `MEDIA_ROOT` recursively using `watchdog`.
-2. When a file is created or modified, a `Files` record is created/updated in the database.
-3. A `bomiot_signals` signal is sent with `models: 'Files'`.
-4. The signal handler calls `file_get` in `greaterwms/files.py`, passing the file data.
+1. **Startup**: when the server starts, it reads `setup.ini`; with `[system_control] observer = True`, a daemon thread is spawned to recursively watch the `media` directory
+2. **Event aggregation**: filesystem events are debounced by 0.2 seconds, so a burst of changes (e.g. the multiple events produced by a single save) is merged into one pass, avoiding duplicate notifications
+3. **Snapshot diffing**: a before/after snapshot of the directory is diffed to produce the list of created, modified, deleted, and moved files
+4. **Database sync**: the `Files` model is updated according to that list (see the event behavior table below)
+5. **Signal dispatch**: create and modify events emit a `bomiot_signals` signal, routed by `models: 'Files'`
+6. **Project takeover**: the framework parses `files.py` in the project root via AST; if a `file_get` method is defined, the module is dynamically loaded and the method is called with the file data
 
-> Note: Signals are only sent for **create** and **update** events. Delete and move events only update the database.
+### Behavior per Event
+
+| Event | Database behavior | Signal sent |
+|---|---|---|
+| Create | New `Files` record | ✅ |
+| Modify | Update record (size, restore `is_delete`) | ✅ |
+| Delete | Delete record | ❌ |
+| Move | Delete record at old path, create record at new path | ❌ |
+
+> Deletes and moves only sync the database; they do not trigger `files.py`.
 
 ---
 
-## Get File Information
+## File Location
 
-After running `bomiot project <your_project>`, you will get the following file structure:
+File signals are handled by `files.py` under the main project directory:
 
 ```shell
-your-project/                  # Project directory
-├── media/                     # Static files
-│   ├── img/                   # Public images
-│   └── ***.md                 # Various documents
-├── __version__.py             # your_project version
-├── bomiotconf.ini             # Bomiot project identification file
-└── files.py                   # File signal handler
-setup.ini                      # Project configuration file
-...
+workspace/                    # workspace
+├── setup.ini                 # project configuration
+└── greaterwms/               # main project directory
+    ├── media/                # files and documents
+    └── files.py              # file signal handling
 ```
 
-All file information changes are transmitted to `files.py` in real time. The default template is commented out — uncomment it to enable:
+## Taking Over File Signals
+
+The default `files.py` template is commented out. Uncomment to enable:
 
 ```python
 class FileClass:
@@ -43,7 +55,7 @@ class FileClass:
         print(data)
 ```
 
-You will receive a set of real-time JSON data:
+On every file create or modify, `file_get` receives a real-time JSON payload:
 
 ```json
 {
@@ -56,47 +68,43 @@ You will receive a set of real-time JSON data:
 }
 ```
 
-You can obtain information through `files.py` after data changes and do anything you need.
+From here you can run any custom logic: content scanning, format conversion, third-party sync, push notifications, and so on.
 
 ---
 
-## File Owner Detection
+## File Ownership
 
-The file owner is determined by the parent directory name. The directory name under `media/` must match an existing username for the file to be registered:
+Ownership is determined by the **parent directory name**: a file is registered and its signal fired only when the first-level directory under `media/` matches an existing username:
 
 ```
 media/
-├── admin/          # Files here belong to user "admin"
+├── admin/          # files here belong to user "admin"
 │   └── icon.png
-└── alice/          # Files here belong to user "alice"
+└── alice/          # files here belong to user "alice"
     └── report.pdf
 ```
+
+Changes outside a user directory are ignored.
 
 ---
 
 ## Sharing
 
-- Users can share their files with other users.
-- When a user updates a file, the shared user will also receive the updated file in real time.
+- Users can share their files with other users (the `shared_to` field)
+- When a file is updated, the users it is shared with receive the updated file in real time
 
 ---
 
 ## Storage Location
 
-- Files are stored at `media/<user>/<file_name>`.
-
-`Note:`
-
-- All front-end and back-end files are stored under the `media` directory.
+- Files are stored at `media/<username>/<filename>`
+- All front-end and back-end files live under the `media` directory
 
 ---
 
-## Restrictions
+## Upload Limits
 
-In `setup.ini`, you can customize file size and format restrictions.
-
-- `file_size` is the file size in bytes.
-- `file_extension` is the allowed file formats; files not in the list are not allowed to be uploaded.
+The `[file]` section of `setup.ini` controls upload size and format:
 
 ```ini
 [file]
@@ -104,13 +112,18 @@ file_size = 102400000
 file_extension = py,png,jpg,jpeg,gif,bmp,webp,txt,md,html,htm,js,css,json,xml,csv,xlsx,xls,ppt,pptx,doc,docx,pdf
 ```
 
+- `file_size`: max size per file, in bytes
+- `file_extension`: allowed formats; anything not listed is rejected
+
 ---
 
-## Enable File Monitoring
+## Enabling the Monitor
 
-Make sure `observer = True` under `[system_control]` in `setup.ini`. The file monitor starts automatically when the service launches.
+Make sure the switch is on in `setup.ini`; it takes effect automatically at server startup:
 
 ```ini
 [system_control]
 observer = True
 ```
+
+Under multi-worker deployments, a file lock guarantees the monitor thread starts exactly once, so notifications are never duplicated across processes.

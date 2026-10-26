@@ -1,4 +1,4 @@
-﻿#### GreaterWMS 开源仓库管理系统
+﻿﻿#### GreaterWMS 开源仓库管理系统
 
 ![logo](/media/img/logo.png){ loading=lazy }
 
@@ -23,27 +23,27 @@
 ![Vue](https://img.shields.io/badge/Vue-2.6.0-yellowgreen){ loading=lazy }
 ![NodeJS](https://img.shields.io/badge/NodeJS-14.19.3-yellowgreen){ loading=lazy }
 
-[![Bilibili](https://img.shields.io/badge/BiliBili-4987-red)](https://space.bilibili.com/407321291/channel/seriesdetail?sid=776320){ loading=lazy }
+![Bilibili](https://img.shields.io/badge/BiliBili-4987-red){ loading=lazy }
 
 [//]: # (Some Link)
 #### :rocket: 找到我们
 <h6>
-    <a href="https://www.56yhz.com/">官网首页</a>
+    官网首页
 </h6>
 <h6>
-    <a href="https://production.56yhz.com/">演示地址</a>
+    演示地址
 </h6>
 <h6>
-  <a href="https://space.bilibili.com/407321291/channel/seriesdetail?sid=776320">相关视频</a>
+  相关视频
 </h6>
 <h6>
-  <a href="https://github.com/GreaterWMS/GreaterwMS/issues/new?template=bug_report.md&title=[BUG]">提交一个Bug</a>
+  提交一个Bug
 </h6>
 <h6>
-  <a href="https://github.com/GreaterWMS/GreaterWMS/issues/new?template=feature_request.md&title=[FR]">提交一个建议</a>
+  提交一个建议
 </h6>
 <h6>
-  <a href="https://www.56yhz.com/md/greaterwms/en">英文文档</a>
+  英文文档
 </h6>
 
 [//]: # (About the Project)
@@ -74,10 +74,10 @@ OneAPP 理念。 支持扫描设备PDA、手机APP、桌面exe、网站等。
 [//]: # (Install)
 #### :compass: 安装
 python安装
-- [python 3.8.10](https://www.python.org/downloads/release/python-3810/)
+- python 3.8.10
 
 nodejs安装
-- [nodejs 14.19.3](https://nodejs.org/download/release/v14.19.3/)
+- nodejs 14.19.3
 
 Twisted install
 - Please google how to install Twisted , if you have some problem on install it .
@@ -118,13 +118,13 @@ docker-compose restart
 ~~~
 
 <h6>
-  <a href="https://www.56yhz.com/win_10/">Windows X64</a>
+  Windows X64
 </h6>
 <h6>
-  <a href="https://www.56yhz.com/centos_7/">Centos 7</a>
+  Centos 7
 </h6>
 <h6>
-  <a href="https://www.56yhz.com/ubuntu_20/">Ubuntu 20</a>
+  Ubuntu 20
 </h6>
 
 [//]: # (development)
@@ -153,9 +153,9 @@ templates/public/statics/baseurl.txt
 
 - 配套的手机APP
 
-[IOS](https://apps.apple.com/cn/app/%E6%99%BA%E8%83%BD%E4%BB%93%E5%82%A8%E8%BD%AF%E4%BB%B6gwms/id6444078526)
+IOS
 
-[Android](https://production.56yhz.com/media/GWMS.apks)
+Android
 
 GreaterWMS有配套的APP，支持手机扫描，和PDA扫描，配置下服务器请求地址即可
 
@@ -169,7 +169,7 @@ GreaterWMS有配套的APP，支持手机扫描，和PDA扫描，配置下服务�
 
 #### 或直接下载apks安装工具
 
-[Sai](https://po.56yhz.com/media/sai.apk)
+Sai
 
 - 打开Sai APP，选择下载的GWMS.apks，即可完成安装
 
@@ -187,10 +187,10 @@ quasar build # /templates/dist/spa
 #### :computer: 怎么部署到服务器:
 
 <h6>
-  <a href="https://www.56yhz.com/zh/supervisor_process_guarded/">Supervisor教程</a>
+  Supervisor教程
 </h6>
 <h6>
-  <a href="https://www.56yhz.com/zh/nginx_config/">Nginx配置</a>
+  Nginx配置
 </h6>
 
 记得启用ssl的话，需要额外配置
@@ -209,4 +209,4 @@ quasar build # /templates/dist/spa
 <!-- ABOUT AUTHOR -->
 #### :bowing_man: 关于作者
 
-[Elvis.Shi](https://gitee.com/Singosgu/GreaterWMS/wikis/%E6%88%91%E6%98%AF%E5%A6%82%E4%BD%95%E4%BB%8E%E4%B8%80%E4%B8%AA%E7%89%A9%E6%B5%81%E8%8F%9C%E9%B8%9F%EF%BC%8C%E4%B8%80%E7%9B%B4%E5%81%9A%E5%88%B0500%E5%BC%BA%E4%BA%9A%E5%A4%AA%E5%8C%BAChina%20PDC%20Manager%E7%9A%84)
+Elvis.Shi

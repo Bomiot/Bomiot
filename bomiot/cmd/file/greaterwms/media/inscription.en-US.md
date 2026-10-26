@@ -2,55 +2,16 @@
 
 ## Elvis.Shi
 
-A common problem with many projects is that they're handed to users with zero onboarding — users are left staring at a screen with no idea where to start. That's what drove me to create the concept of **`Free Coding`**.
+Let me be honest first: not a single technology in **Bomiot** is new. Environment-free packaging — PyInstaller and Nuitka have done it for years. Compiled protection — packers and obfuscators are mature. Per-device licensing — standard practice in commercial software. Incremental updates — games and desktop clients have had them for ages. It invents nothing.
 
-**Free Coding** is built on three beliefs:
+So why build it? Because delivery wore me down for years: it runs fine on my machine but breaks on the client's; to let someone try it, the source code goes out unprotected; every update means another round of remote assistance. Writing code is only the beginning — delivery is the real grind. And most tools stop at "make an exe"; the updates, licensing, and device management after that remain your own problem.
 
-- Code should keep running while you edit it. Hot updates mean you never have to restart the server just to change a line.
-- A single bug shouldn't crash the entire system. Failures should stay isolated.
-- Documentation shouldn't be a pile of stale PDFs that nobody updates. It should stay in sync with the code, automatically.
+AI has now compressed coding to minutes, while delivery has barely moved. What **Bomiot** does is gather these long-existing capabilities into one delivery chain: packaging for Windows / macOS / Linux, compiled protection, license management, incremental updates. None of them is remarkable on its own; strung together, they are what makes the sentence "AI writes the code, Bomiot delivers it" true.
 
-A project going from 0 to 1 isn't a one-person job — it's a process that every developer and user should be part of from the beginning.
+I wouldn't call it ahead of its time. The means are all known; the direction is at most half a step ahead — it bets on one judgment: after AI, delivery will hurt more than coding. Whether that judgment holds, time will tell.
 
----
+Let me be honest about the limits: the protection raises the bar — it is not unbreakable; the packaged app is larger than a native one; and it isn't for every project, only for when you truly need to put your project into someone else's hands. If that's not your situation, there's no need to force it.
 
-## Why Build **Bomiot**
+**Bomiot** has no grand vision. If it helps you get an idea into users' hands a little faster, it has done its job.
 
-Open source software should be a **tool**, not a finished product. Too many open source projects start out as tools and slowly bloat into applications that are hard to learn and even harder to maintain.
-
-**Bomiot** takes the opposite approach:
-
-- Focus on making the underlying tools solid, and users can build whatever they need on top.
-- Keep the learning curve low, and the possibilities wide open.
-- A good tool doesn't lock you into a fixed way of doing things — it gives you the flexibility to build your own way.
-
-That's what open source should be: enabling people, not restricting them.
-
----
-
-## Performance
-
-**Bomiot**'s ASGI server is written in **Rust**, which gives it a strong performance foundation right out of the box.
-
-- Want to benchmark your project? Use **locust** to run your own stress tests.
-- Three built-in test endpoints are included for comparison. **FastAPI** comes out on top, **Django** trails behind — but both run on the same Rust engine underneath.
-
----
-
-## Signal
-
-The signal mechanism is what makes **Bomiot** feel alive:
-
-- Documents and data stay synchronized in real time — no manual refresh needed.
-- Write code, save it, and see the changes take effect immediately. No restart, no waiting.
-- The goal is simple: a development and deployment environment that's friendly, flexible, and doesn't get in your way.
-
----
-
-## AI + Bomiot
-
-**Bomiot**'s hot-update design is a perfect match for AI coding.
-
-- Let AI write the code, and Bomiot runs it the moment it's saved — no deploy, no restart.
-- No more waiting for builds, pipelines, or server restarts between iterations.
-- From idea to working feature in minutes, not days. That's how projects actually get shipped.
+Ready out of the box, continuously updated. That's the promise I can make.

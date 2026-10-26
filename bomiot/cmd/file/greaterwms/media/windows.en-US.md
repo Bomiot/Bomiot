@@ -2,7 +2,7 @@
 
 #### Lan Version Download
 
-[Windows](https://github.com/GreaterWMS/GreaterWMS/releases)
+Windows
 
 #### description
 
@@ -27,4 +27,4 @@
 
 ##### Operation Tutorial
 
- [Tutorial](https://www.56yhz.com/web_operation.html)
+ Tutorial

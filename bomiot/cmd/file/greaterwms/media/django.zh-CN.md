@@ -2,23 +2,34 @@
 
 ## 简介
 
-Bomiot 使用 **Django** 作为企业级后端框架。
+Bomiot 使用 **Django** 作为后端框架。Django 是一个高级的 Python Web 框架，以"快速开发"和"干净、务实的设计"著称，自带 ORM、后台管理、认证、安全等一系列开箱即用的能力，被广泛用于需要快速交付且不容妥协的项目。
+
+### 核心特性
+
+- **电池齐全**：ORM、模板引擎、表单处理、用户认证、管理后台、国际化、安全防护全部内置，不需要东拼西凑
+- **MTV 架构**：Model（数据）— Template（呈现）— View（逻辑）分层清晰，业务代码各归其位
+- **强大的 ORM**：用 Python 类定义数据模型，自动映射到数据库表，支持 SQLite / MySQL / PostgreSQL / Oracle
+- **自动管理后台**：基于模型零代码生成完整的数据管理界面
+- **安全性**：默认防护 SQL 注入、XSS、CSRF、点击劫持等常见攻击
+- **可扩展**：从原型到百万级访问量的产品，都有成熟的扩展路径
 
 ---
 
-## 创建项目
+## 在 Bomiot 中使用
+
+### 创建项目
 
 ```shell
 bomiot project <project_name>
 ```
 
-## 创建 Django 应用
+### 创建应用
 
 ```shell
-bomiot new <app_name>
+bomiot app <app_name>
 ```
 
-之后即可在该应用中编写 Django 代码。也可以使用标准 Django 命令：
+### 数据库迁移
 
 ```shell
 # 生成迁移文件
@@ -26,6 +37,12 @@ bomiot makemigrations
 
 # 执行迁移
 bomiot migrate
+
+# 加载初始数据
+bomiot loaddata <source>
+
+# 导出数据
+bomiot dumpdata [appname]
 ```
 
 ---
@@ -66,7 +83,9 @@ class Goods(CoreModel):
     data = models.JSONField(default=dict)
 ```
 
-> 💡 `data` JSONField 允许前端发送任意 JSON，后端直接存储，无需逐字段映射。详见 [数据结构](structure)。
+> 💡 `data` JSONField 允许前端发送任意 JSON，后端直接存储，无需逐字段映射。详见 数据结构。
+
+如果需要传统的逐字段建模，同样可以直接使用 Django 模型的全部能力（字段类型、索引、约束、关联关系等）。
 
 ---
 
@@ -86,13 +105,13 @@ urlpatterns = [
 - 指定 `name` 的接口受 Bomiot 权限系统保护。
 - 省略 `name` 的接口为公开接口（无权限校验）。
 
-详见 [权限控制](permission)。
+详见 权限控制。
 
 ---
 
 ## API 视图
 
-Bomiot 使用 DRF 风格视图。每个视图函数接收 `data` 字典，包含请求、查询参数和载荷。
+每个视图函数接收 `data` 字典，包含请求、查询参数和载荷。
 
 ```python
 from bomiot.server.core.message import msg_message_return
@@ -109,7 +128,7 @@ def goods(request, data):
 
 自定义业务逻辑时，在 `receiver.py` 中接管 API 而非修改视图。
 
-详见 [数据接管](data)。
+详见 数据接管。
 
 ---
 
@@ -129,27 +148,9 @@ bomiot_signals.send(sender=my_func, msg={'key': 'value'})
 
 ---
 
-## 数据库迁移
-
-```shell
-# 生成迁移文件
-bomiot makemigrations
-
-# 执行迁移
-bomiot migrate
-
-# 加载初始数据
-bomiot loaddata <source>
-
-# 导出数据
-bomiot dumpdata [appname]
-```
-
----
-
 ## 多数据库支持
 
-Bomiot 支持 SQLite（默认）、MySQL、PostgreSQL、Oracle。在 `setup.ini` 中配置：
+支持 SQLite（默认）、MySQL、PostgreSQL、Oracle，在 `setup.ini` 中配置：
 
 ```ini
 [database]
@@ -161,16 +162,4 @@ host = db_host
 port = db_port
 ```
 
-详见 [SQLite](sqlite)、[MySQL](mysql)、[PostgreSQL](postgresql)。
-
----
-
-## 参考资料
-
-- [Django 官方文档](https://docs.djangoproject.com/zh-hans/4.2/)
-- [Django GitHub](https://github.com/django/django)
-- [Django REST Framework](https://www.django-rest-framework.org/)
-
----
-
-更多高级用法，请参考官方文档或社区资源。
+详见 SQLite、MySQL、PostgreSQL、Oracle。

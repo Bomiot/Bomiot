@@ -8,35 +8,35 @@ Python 应用的无环境交付工具
 
 ## 📑 目录
 
-- [关于 Bomiot](#-关于-bomiot)
+- 关于 Bomiot
 
-- [视频介绍](#-视频介绍)
+- 视频介绍
 
-- [核心特性一览](#-核心特性一览)
+- 核心特性一览
 
-- [应用场景示例](#-应用场景示例)
+- 应用场景示例
 
-- [快速开始](#-快速开始-5-分钟上手)
+- 快速开始
 
-- [命令行速查](#-命令行速查)
+- 命令行速查
 
-- [配置参考](#-配置参考-setupini)
+- 配置参考
 
-- [定时任务](#-定时任务)
+- 定时任务
 
-- [文件监控与上传](#-文件监控与上传)
+- 文件监控与上传
 
-- [系统实时监控](#-系统实时监控)
+- 系统实时监控
 
-- [实时 WebSocket 通信](#-实时-websocket-通信)
+- 实时 WebSocket 通信
 
-- [部署与分发](#-部署与分发)
+- 部署与分发
 
-- [安全说明](#-安全说明)
+- 安全说明
 
-- [参与建设](#-参与建设)
+- 参与建设
 
-- [开源协议](#-开源协议)
+- 开源协议
 
 ***
 
@@ -70,7 +70,7 @@ Bomiot 是一款面向 Python 程序员的命令行工具，核心由 Rust 重�
 
 观看 Bomiot 的视频介绍，快速了解平台核心功能与使用方法。
 
-▶ **[点击观看视频介绍](https://space.bilibili.com/407321291?spm_id_from=333.337.search-card.all.click)** (Bilibili)
+▶ **点击观看视频介绍** (Bilibili)
 
 ***
 
@@ -192,7 +192,7 @@ Bomiot 拥有**免费开放的自有应用市场**，预置 ERP / WMS 等行业�
 
 ### 10. 实时 WebSocket 通信
 
-Bomiot 的 Rust ASGI 网关原生支持 WebSocket，直接在应用的 `main.py` 中编写 WebSocket 路由即可，详见 [WebSocket 章节](#-实时-websocket-通信)。
+Bomiot 的 Rust ASGI 网关原生支持 WebSocket，直接在应用的 `main.py` 中编写 WebSocket 路由即可，详见 WebSocket 章节。
 
 - 💬 **开发极简**：直接使用 FastAPI/Flask 的标准 WebSocket 语法，零学习成本。
 
@@ -595,11 +595,11 @@ bomiot deploy  # 跨平台编译打包为绿色版运行文件
 
 我们欢迎任何形式的贡献！
 
-- 🔗 **官方网站**: <https://www.bomiot.com>
+- 🔗 **官方网站**: https://www.bomiot.com
 
-- 🐛 **提交 Bug**: [创建 Issue](https://github.com/Bomiot/Bomiot/issues/new?template=bug_report.md)
+- 🐛 **提交 Bug**: 创建 Issue
 
-- ✨ **功能建议**: [提交功能需求](https://github.com/Bomiot/Bomiot/issues/new?template=feature_request.md)
+- ✨ **功能建议**: 提交功能需求
 
 - 💻 **代码贡献**: Fork 仓库 -> 创建分支 -> 提交 Pull Request
 
@@ -609,10 +609,10 @@ bomiot deploy  # 跨平台编译打包为绿色版运行文件
 
 ## 📄 开源协议
 
-本项目基于 **Apache License 2.0** 开源，详见 [LICENSE](LICENSE) 文件。
+本项目基于 **Apache License 2.0** 开源，详见 LICENSE 文件。
 
 ***
 
 **⭐ 如果 Bomiot 对您有帮助，请给项目点个 Star！**
 
-Made with ❤️ by [Bomiot Team](https://github.com/Bomiot)
+Made with ❤️ by Bomiot Team

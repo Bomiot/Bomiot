@@ -3,7 +3,7 @@
 
 
 <h4>
-  <a href="https://www.bilibili.com/video/BV1Mh411m72v/?share_source=copy_web&vd_source=22a376f853fb151b9c8909e926f7bf0b">视频教程</a>
+  视频教程
 </h4>
 
 ##### 下载python3.8.10

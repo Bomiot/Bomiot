@@ -2,7 +2,7 @@
 
 #### GreaterWMS仓库管理生态系统群晖NAS用docker部署
 
-[原文地址](https://blog.csdn.net/wbsu2004/article/details/128392486)
+原文地址
 
 #### 安装 Git
 
@@ -176,4 +176,4 @@
 
 ![image-23](/media/img/nas23.png){ loading=lazy style="max-width: 100%" }
 
-[部署视频](https://www.bilibili.com/video/BV1Vo4y1P7yz/)
+部署视频

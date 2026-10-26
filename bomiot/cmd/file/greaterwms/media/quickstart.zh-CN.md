@@ -1,145 +1,88 @@
-# 快速开始
+# 快速入门
 
-## 简介
+本页用 5 分钟跑通 Bomiot 的最小闭环：**安装 → 初始化 → 启动 → 打包**。
 
-Bomiot 是面向仓储与供应链的节点化全栈开发平台，支持单文件部署、多后端框架（Django / FastAPI / Flask）与多前端框架（Vue / React / Angular），并提供 Python 代码编译保护与插件生态。
+## 环境准备
 
----
+- Python 3.11 及以上，自带 pip
+- 三个平台任选其一：Windows / macOS / Linux
 
-## 环境要求
-
-- **Python**：3.9 或更高版本
-- **Node.js**：18.19.1 或更高版本（修改前端时需要）
-- **操作系统**：Windows / macOS / Linux
-
----
-
-## 1. 安装 Bomiot
+## 第一步：安装
 
 ```bash
-# 使用 pip 安装
 pip install bomiot
-
-# 或使用 poetry 安装
-poetry add bomiot
 ```
 
----
-
-## 2. 初始化工作空间
+验证安装：
 
 ```bash
+bomiot --version
+```
+
+## 第二步：初始化项目
+
+```bash
+mkdir myapp
+cd myapp
 bomiot init
 ```
 
-该命令会在当前目录创建 Bomiot 工作空间，生成 `setup.ini` 等全局配置文件。
+`init` 在当前目录生成完整项目骨架：`launcher.py`（启动与更新配置）、`setup.ini`（全局配置）、工作空间目录、三平台图标等。已存在的文件不会被覆盖，可重复执行。
 
----
+> 初始化后建议先替换 `logo.ico / logo.icns / logo.png` 与 `splash.png` 为自己的素材，避免带着默认图标进入构建。
 
-## 3. 创建项目
+## 第三步：初始化数据库
 
 ```bash
-# 创建新项目
-bomiot project my-project
+bomiot migrate      # 建表
+bomiot initadmin    # 创建管理员账号，命令会打印初始密码
 ```
 
-进入项目目录后，可以继续创建应用：
+默认使用 SQLite，零配置。切换 MySQL / PostgreSQL / Oracle 见「数据库」标签下的对应文档。
+
+## 第四步：启动
 
 ```bash
-cd my-project
-
-# 创建应用（默认 Django 框架）
-bomiot new my-app
-
-# 指定后端框架
-bomiot new my-app --framework django
-bomiot new my-app --framework fastapi
-bomiot new my-app --framework flask
-```
-
----
-
-## 4. 数据库
-
-```bash
-# 生成数据库迁移文件
-bomiot makemigrations
-
-# 执行数据库迁移
-bomiot migrate
-
-# 加载初始数据
-bomiot loaddata <source>
-
-# 导出数据
-bomiot dumpdata [appname]
-```
-
----
-
-## 5. 管理员
-
-```bash
-# 创建管理员账户
-bomiot initadmin
-
-# 重置管理员密码
-bomiot initpwd
-```
-
----
-
-## 6. 启动服务
-
-```bash
-# 启动开发服务器（默认 127.0.0.1:8000）
 bomiot run
-
-# 指定主机和端口
-bomiot run --host 0.0.0.0 --port 8080
-
-# 生产环境配置
-bomiot run --host 0.0.0.0 --port 80 --workers 4 --log-level info
 ```
 
-启动后访问 `http://127.0.0.1:8000/` 即可进入系统。
+浏览器访问 `http://127.0.0.1:8000`，用上一步的管理员账号登录。
 
----
+- 默认绑定 `0.0.0.0:8000`，可用 `--port 9000` 等参数调整
+- **Windows 下建议使用单 worker 运行**（多 worker 支持不好），详见 CLI 命令 → run
 
-## 7. 验证安装
-
-启动服务后，可通过以下地址测试各后端框架：
-
-```
-Django:   http://127.0.0.1:8000/test/
-FastAPI:  http://127.0.0.1:8000/fastapi/test/
-Flask:    http://127.0.0.1:8000/flask/test/
-```
-
----
-
-## 8. 打包发布
+## 第五步：打包交付
 
 ```bash
-# 打包项目（核心模块可编译为二进制以保护源码）
-bomiot package my-project
+bomiot build        # 本地构建当前平台的应用包
 ```
 
-打包产物输出在 `dist/` 目录。
+构建产物在 `dist/` 目录，双击即可运行，用户机器无需安装 Python。
 
----
+需要同时产出 Windows / macOS / Linux 三平台包时，用云端构建：
 
-## 常用命令速览
+```bash
+bomiot deploy       # 生成部署工作流
+git push            # 推送后自动触发三平台构建
+```
 
-| 命令 | 说明 |
-|------|------|
-| `bomiot init` | 初始化工作空间 |
-| `bomiot project <name>` | 创建项目 |
-| `bomiot new <app>` | 创建应用 |
-| `bomiot makemigrations` | 生成迁移 |
-| `bomiot migrate` | 执行迁移 |
-| `bomiot initadmin` | 创建管理员 |
-| `bomiot initpwd` | 重置管理员密码 |
+## 常用命令一览
+
+| 命令 | 作用 |
+|---|---|
+| `bomiot init` | 初始化项目骨架 |
 | `bomiot run` | 启动服务 |
-| `bomiot package <name>` | 打包项目 |
-| `bomiot keys` | 初始化校验 Keys |
+| `bomiot migrate` / `makemigrations` | 执行 / 生成数据库迁移 |
+| `bomiot initadmin` / `initpwd` | 创建管理员 / 重置密码 |
+| `bomiot project` / `app` / `api` | 新建工程 / 子应用 / API |
+| `bomiot loaddata` / `dumpdata` | 导入 / 导出数据 |
+| `bomiot build` | 本地构建应用包 |
+| `bomiot deploy` / `publish` | 云端三平台构建 / 发布增量更新 |
+
+每个命令的完整说明见「CLI 命令」标签下的文档。
+
+## 下一步
+
+- 「基础 → setup.ini」：全局配置项说明
+- 「数据库」：切换生产数据库
+- 「CLI 命令 → build / deploy / publish」：完整的交付与更新链路

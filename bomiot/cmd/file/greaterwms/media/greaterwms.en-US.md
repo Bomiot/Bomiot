@@ -1,4 +1,4 @@
-﻿#### GreaterWMS Open Source Inventory Management System
+﻿﻿#### GreaterWMS Open Source Inventory Management System
 
 
 ![logo](/media/img/logo.png){ loading=lazy }
@@ -24,27 +24,27 @@
 ![Vue](https://img.shields.io/badge/Vue-2.6.0-yellowgreen){ loading=lazy }
 ![NodeJS](https://img.shields.io/badge/NodeJS-14.19.3-yellowgreen){ loading=lazy }
 
-[![YouTube](https://img.shields.io/youtube/channel/subscribers/UCPW1wciGMIEh7CYOdLnsloA?color=red&label=YouTube&logo=youtube&style=for-the-badge)](https://www.youtube.com/channel/UCPW1wciGMIEh7CYOdLnsloA){ loading=lazy }
+![YouTube](https://img.shields.io/youtube/channel/subscribers/UCPW1wciGMIEh7CYOdLnsloA?color=red&label=YouTube&logo=youtube&style=for-the-badge){ loading=lazy }
 
 [//]: # (Some Link)
 #### :rocket: Link US
 <h6>
-    <a href="https://www.56yhz.com/">Home Page</a>
+    Home Page
 </h6>
 <h6>
-    <a href="https://production.56yhz.com/">Demo</a>
+    Demo
 </h6>
 <h6>
-  <a href="https://www.youtube.com/channel/UCPW1wciGMIEh7CYOdLnsloA">Video Tutorials</a>
+  Video Tutorials
 </h6>
 <h6>
-  <a href="https://github.com/GreaterWMS/GreaterwMS/issues/new?template=bug_report.md&title=[BUG]">Report Bug</a>
+  Report Bug
 </h6>
 <h6>
-  <a href="https://github.com/GreaterWMS/GreaterWMS/issues/new?template=feature_request.md&title=[FR]">Request Feature</a>
+  Request Feature
 </h6>
 <h6>
-  <a href="https://www.56yhz.com/md/greaterwms/zh-CN">中文文档</a>
+  中文文档
 </h6>
 
 [//]: # (About the Project)
@@ -76,10 +76,10 @@ OneAPP Type. Support scanner PDA, mobile APP, desktop exe, website as well.
 [//]: # (Install)
 #### :compass: Install
 Python install
-- [python 3.8.10](https://www.python.org/downloads/release/python-3810/)
+- python 3.8.10
 
 Nodejs install
-- [nodejs 14.19.3](https://nodejs.org/download/release/v14.19.3/)
+- nodejs 14.19.3
 
 Clone Project
 ~~~shell
@@ -117,13 +117,13 @@ docker-compose restart
 ~~~
 
 <h6>
-  <a href="https://www.56yhz.com/win_10/">Windows X64</a>
+  Windows X64
 </h6>
 <h6>
-  <a href="https://www.56yhz.com/centos_7/">Centos 7</a>
+  Centos 7
 </h6>
 <h6>
-  <a href="https://www.56yhz.com/ubuntu_20/">Ubuntu 20</a>
+  Ubuntu 20
 </h6>
 
 [//]: # (development)
@@ -155,9 +155,9 @@ templates/public/statics/baseurl.txt
 GreaterWMS is supported by a companion mobile app which allows users access to run the business well.
 It can scan the goods by your camera or your PDA scanner.
 
-[IOS](https://apps.apple.com/gb/app/intelligent-warehousing-gwms/id6444078526)
+IOS
 
-[Android](https://production.56yhz.com/media/GWMS.apks)
+Android
 
 #### Download Android installer tools
 
@@ -169,7 +169,7 @@ It can scan the goods by your camera or your PDA scanner.
 
 #### Directly download installer tools
 
-[Sai](https://po.56yhz.com/media/sai.apk)
+Sai
 
 - Open Sai APP, choose GWMS.apks then install
 
@@ -187,10 +187,10 @@ quasar build # /templates/dist/spa
 #### :computer: How To Deploy Server:
 
 <h6>
-  <a href="https://www.56yhz.com/supervisor_process_guarded/">Supervisor Process Guarded</a>
+  Supervisor Process Guarded
 </h6>
 <h6>
-  <a href="https://www.56yhz.com/nginx_config/">Nginx Config</a>
+  Nginx Config
 </h6>
 
 If the server has SSL enabled, please use HTTPS and WSS, if SSL is not enabled, use HTTP and WS
@@ -202,7 +202,7 @@ The front-end code needs to be rebuilt after modification.
 
 If you use GreaterWMS and find it to be useful, please consider making a donation toward its continued development.
 
-[Donate via PayPal](https://paypal.me/singosgu)
+Donate via PayPal
 
 #### Show
 <div align="left">

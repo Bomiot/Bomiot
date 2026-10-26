@@ -10,11 +10,11 @@
 
 #### Directly download installer tools
 
-[Sai](https://po.56yhz.com/media/sai.apk)
+Sai
 
 #### Download GreaterWMS apks
 
-[GWMS](https://po.56yhz.com/media/GWMS.apks)
+GWMS
 
 #### Use Sai installer to install GWMS
 

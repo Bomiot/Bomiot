@@ -1,5 +1,4 @@
 ﻿import os
-import requests
 
 def example_job(**kwargs):
     """Scheduled example job"""

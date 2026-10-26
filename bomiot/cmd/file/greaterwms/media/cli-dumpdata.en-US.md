@@ -1,126 +1,85 @@
-# bomiot dumpdata Command
+# bomiot dumpdata
+
+Export application data from the database into standard JSON data files — for backups, data migration, or shipping seed data with the project.
+
+```bash
+bomiot dumpdata [appname ...]
+```
 
 ## Overview
 
-The `bomiot dumpdata` command is designed to dump data from a bomiot project into a config file. According to the argument definition, `appname` is an optional positional argument that defaults to `core` and specifies the app whose data should be exported.
+`bomiot dumpdata` reads the database and serializes the data of the specified apps (or all apps) into JSON. The output can be imported as-is on another environment with `bomiot loaddata`, moving data between environments.
 
-> **Implementation status**: The subcommand parser is registered in `bomiot/cmd/cmd.py`, but the `cmd()` function has **no** corresponding `elif command == 'dumpdata'` dispatch branch. This means the command is "declared but not implemented" in the current version — the arguments are parsed correctly (including using the default `core`), but execution does not perform any actual operation. It is a planned feature that has not been completed yet.
+The command must be run from the **project root**.
 
-## Usage
+## Basic Usage
 
-```bash
-bomiot dumpdata [appname]
-```
+| Command | Description |
+|---|---|
+| `bomiot dumpdata` | Export data of all apps (to standard output) |
+| `bomiot dumpdata myapp` | Export only the `myapp` app's data |
+| `bomiot dumpdata myapp.mymodel` | Export only one table of the `myapp` app |
+| `bomiot dumpdata app1 app2` | Export several apps at once |
+| `bomiot dumpdata myapp > backup.json` | Write the export to a file (recommended) |
 
-- `[appname]`: Optional app name, string type, defaults to `core`. When omitted, `core` is used automatically.
+> When exporting large amounts of data, always redirect to a file — printing to the terminal is slow and hard to keep.
 
-Registration in `cmd.py`:
+## Common Options
 
-```python
-# dumpdata
-parser_dumpdata = subparsers.add_parser(
-    'dumpdata', help='Dump data to configs')
-parser_dumpdata.add_argument(
-    'appname', default='core', nargs='?', type=str, help='Appname')
-```
+| Option | Description |
+|---|---|
+| `--output FILE` | Write to the given file (equivalent to `>`); supports compressed formats like `.gz` / `.bz2` |
+| `--indent N` | Number of indentation spaces, making the data file readable and version-control friendly, e.g. `--indent 2` |
+| `--exclude APP` | Exclude the given app (may be used multiple times) |
+| `--exclude APP.MODEL` | Exclude a specific table of an app |
+| `--natural-foreign` | Serialize foreign keys as natural keys, avoiding primary-key mismatches across environments |
+| `--natural-primary` | Omit primary keys; they are regenerated on import |
+| `--pks 1,2,3` | Export only records with the given primary keys (with a single model) |
+| `--format json` | Serialization format, defaults to `json` |
 
-Note that `appname` has `nargs='?'` and `default='core'`, so it is optional — when omitted it falls back to `core` without error.
+## Typical Scenarios
 
-## Source Code Analysis
-
-Source file: `bomiot/cmd/cmd.py`.
-
-### Parser Registration
-
-The `dumpdata` subcommand is registered via `subparsers.add_parser('dumpdata', ...)` with help text `Dump data to configs`, and declares an optional positional argument named `appname`:
-
-```python
-parser_dumpdata = subparsers.add_parser(
-    'dumpdata', help='Dump data to configs')
-parser_dumpdata.add_argument(
-    'appname', default='core', nargs='?', type=str, help='Appname')
-```
-
-Key argument attributes:
-
-- `default='core'`: When `appname` is not provided, it defaults to dumping the `core` app's data.
-- `nargs='?'`: Allows the positional argument to be omitted, making it optional.
-- `type=str`: The value type is string.
-
-### Dispatch Logic
-
-In the `cmd()` function, command dispatch is done via an `if/elif` chain. The following shows the branch structure of the `cmd()` function in `cmd.py`, which clearly shows that `dumpdata` is missing a corresponding branch:
-
-```python
-def cmd():
-    """
-    run from cmd
-    :return:
-    """
-    args = parser.parse_args()
-    command = args.command
-    if command == 'project':
-        ...
-    elif command == 'deploy':
-        ...
-    elif command == 'init':
-        ...
-    elif command == 'initadmin':
-        ...
-    elif command == 'initpwd':
-        ...
-    elif command == 'app':
-        ...
-    elif command == 'api':
-        ...
-    # marketplace
-    # elif command == 'market':
-    #     ...
-    # # init auth keys
-    # elif command == 'keys':
-    #     ...
-    # makemigrations
-    elif command == 'makemigrations':
-        ...
-    # migrate
-    elif command == 'migrate':
-        from bomiot.cmd.migrate import migrate
-        migrate()
-    # run server
-    elif command == 'run':
-        ...
-```
-
-The `if/elif` chain handles `project`, `deploy`, `init`, `initadmin`, `initpwd`, `app`, `api`, `makemigrations`, `migrate` and `run`, but there is no `dumpdata` branch. Therefore, when `bomiot dumpdata` or `bomiot dumpdata someapp` is executed, argparse parses the arguments successfully, but `command == 'dumpdata'` matches no branch, so the function returns without performing any data-export operation.
-
-### Expected Behaviour (Based on the Argument Definition)
-
-Although not currently implemented, the design intent can be inferred from the argument help text `Appname` and the default value `core`:
-
-- Accept an app name `appname`, defaulting to `core`.
-- Export that app's data to a config file (dump).
-- Act as the inverse of the `bomiot loaddata` command (dump exports, load imports).
-
-## Practical Examples
-
-### Invoking the command (no actual effect in the current version)
+### Back up one app's data
 
 ```bash
-bomiot dumpdata
+bomiot dumpdata myapp --indent 2 --output myapp_backup.json
 ```
 
-Without `appname`, argparse uses the default value `core`. Since the `cmd()` function has no corresponding dispatch branch, no data-export operation is performed.
-
-### Invoking with an explicit app name
+### Export a single table, human-readable
 
 ```bash
-bomiot dumpdata goods
+bomiot dumpdata myapp.mymodel --indent 2 > mymodel.json
 ```
 
-`appname` is assigned `goods`, but again no actual operation is performed.
+### Full backup excluding transient data
 
-## Related Commands
+```bash
+bomiot dumpdata --exclude sessions --exclude admin.logentry --output full_backup.json
+```
 
-- [bomiot loaddata](./cli-loaddata.en-US.md): Load data from a config file (also in a declared-but-unimplemented state)
-- [bomiot migrate](./cli-init.en-US.md): Apply database migrations
-- [bomiot makemigrations](./cli-makemigrations.en-US.md): Generate database migration files
+### Export a few seed records (for initialization)
+
+```bash
+bomiot dumpdata myapp.mymodel --pks 1,2,3 --indent 2 --output seeds.json
+```
+
+## Working with bomiot loaddata
+
+Exported data files can be imported directly on another environment:
+
+```bash
+# Export on the source environment
+bomiot dumpdata myapp --indent 2 --output myapp.json
+
+# Import on the target environment
+bomiot loaddata myapp.json
+```
+
+For project seed data, place the data file in the app's `fixtures` directory — `loaddata` will find it by filename automatically.
+
+## Notes
+
+- A full export includes every table and can be very large; in production, narrow the scope by naming apps or using `--exclude`
+- Data files contain plain-text content — handle sensitive data with care and do not commit them to public repositories
+- When importing across environments, mismatched schema versions (pending migrations) can cause failures — run `bomiot migrate` on the target first
+- Fields such as user passwords are exported in hashed form and remain usable after import

@@ -1,4 +1,4 @@
-﻿
+
 const routes = [
   {
     path: '/',
@@ -25,7 +25,8 @@ const routes = [
       { path: 'supervisor', component: () => import('pages/basic/SupervisorReader.vue') },
       { path: 'setup', component: () => import('pages/basic/SetupReader.vue') },
       { path: 'bomiotconf', component: () => import('pages/basic/BomiotconfReader.vue') },
-      { path: 'terminal', component: () => import('pages/basic/TerminalReader.vue') },
+      { path: 'quickstart', component: () => import('pages/basic/QuickstartReader.vue') },
+      { path: 'scenarios', component: () => import('pages/basic/ScenariosReader.vue') },
       { path: 'django', component: () => import('pages/basic/DjangoReader.vue') },
       { path: 'flask_app', component: () => import('pages/basic/FlaskReader.vue') },
       { path: 'fastapi_app', component: () => import('pages/basic/FastapiReader.vue') },
@@ -33,6 +34,7 @@ const routes = [
       { path: 'sqlite', component: () => import('pages/db/SqliteReader.vue') },
       { path: 'mysql', component: () => import('pages/db/MysqlReader.vue') },
       { path: 'postgresql', component: () => import('pages/db/PostgresqlReader.vue') },
+      { path: 'oracle', component: () => import('pages/db/OracleReader.vue') },
       { path: 'permission', component: () => import('pages/signals/PermissionReader.vue') },
       { path: 'scheduler', component: () => import('pages/signals/SchedulerReader.vue') },
       { path: 'observer', component: () => import('pages/signals/ObserverReader.vue') },
@@ -63,6 +65,7 @@ const routes = [
       { path: 'dev-mdparser', component: () => import('pages/dev/DevReader.vue') },
       { path: 'dev-newpage', component: () => import('pages/dev/DevReader.vue') },
       { path: 'dev-newmenu', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-uploadfile', component: () => import('pages/dev/DevReader.vue') },
       { path: 'dev-be-overview', component: () => import('pages/dev/DevReader.vue') },
       { path: 'dev-be-setup', component: () => import('pages/dev/DevReader.vue') },
       { path: 'dev-be-request-flow', component: () => import('pages/dev/DevReader.vue') },
@@ -78,7 +81,6 @@ const routes = [
       { path: 'dev-cli-project', component: () => import('pages/dev/DevReader.vue') },
       { path: 'dev-cli-app', component: () => import('pages/dev/DevReader.vue') },
       { path: 'dev-cli-api', component: () => import('pages/dev/DevReader.vue') },
-      { path: 'dev-cli-deploy', component: () => import('pages/dev/DevReader.vue') },
       { path: 'dev-cli-init', component: () => import('pages/dev/DevReader.vue') },
       { path: 'dev-cli-initadmin', component: () => import('pages/dev/DevReader.vue') },
       { path: 'dev-cli-initpwd', component: () => import('pages/dev/DevReader.vue') },
@@ -87,9 +89,10 @@ const routes = [
       { path: 'dev-cli-loaddata', component: () => import('pages/dev/DevReader.vue') },
       { path: 'dev-cli-dumpdata', component: () => import('pages/dev/DevReader.vue') },
       { path: 'dev-cli-run', component: () => import('pages/dev/DevReader.vue') },
-      { path: 'dev-BUILD_FLOW', component: () => import('pages/dev/DevReader.vue') },
-      { path: 'dev-AUTO_UPDATE', component: () => import('pages/dev/DevReader.vue') },
-      { path: 'dev-auth_key', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-cli-build', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'dev-cli-publish', component: () => import('pages/dev/DevReader.vue') },
+      { path: 'split-api', component: () => import('pages/sponsor/SplitApiReader.vue') },
+      { path: 'split-agreement', component: () => import('pages/sponsor/SplitAgreementReader.vue') },
     ]
   },
   {

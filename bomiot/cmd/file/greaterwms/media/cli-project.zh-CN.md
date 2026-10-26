@@ -1,167 +1,55 @@
 # bomiot project
 
+在当前项目的工作空间中创建一个新的**业务项目**（项目文件夹），包含运行所需的基础配置与模板。
+
+```bash
+bomiot project <name>
+```
+
 ## 概述
 
-`bomiot project` 命令用于在当前目录下创建一个新的 bomiot 项目工作空间。它会创建项目目录、复制 `bomiotconf.ini` 配置、调用 `create_file()` 生成基础文件、复制 `templates/` 前端模板。
+Bomiot 采用"工作空间 + 业务项目"的多项目结构：`bomiot init` 初始化工作空间后，可以在其中创建多个相互独立的业务项目，每个项目有自己的配置、数据与代码。`bomiot project <name>` 在当前目录创建这样一个项目文件夹，并补齐运行所需的基础文件。
 
-> 注意：项目名不能为 `greaterwms`（保留名），也不能与已安装的 pip 包同名。
+命令必须在**工作空间根目录**下执行。
 
-## 用法
+## 参数
 
-```bash
-bomiot project <folder>
-```
+| 参数 | 说明 |
+|---|---|
+| `<name>` | 项目名称（必填）。作为项目文件夹名，需为合法的目录名 |
 
-- `folder`：项目名称（必选）
+## 命名约束
 
-**cmd.py 中的注册与分发：**
+以下情况会拒绝创建并提示原因：
 
-```python
-parser_project = subparsers.add_parser(
-    'project', help='Project workspace, default to GreaterWMS')
-parser_project.add_argument('folder', default='',
-                         nargs='?', type=str, help='project workspace folder')
-# ...
-if command == 'project':
-    from bomiot.cmd.project import project
-    project(args.folder)
-```
+| 情况 | 提示 |
+|---|---|
+| 未提供名称 | `Please enter your project name` |
+| 名称为 `greaterwms`（保留名，与工作空间目录冲突） | `Project name "greaterwms" is reserved and cannot be used` |
+| 同名目录已存在 | `Project directory already exists` |
+| 与当前环境中已安装的 Python 包同名 | 拒绝创建（避免导入冲突） |
 
-## 源码分析
+## 生成的内容
 
-`bomiot/cmd/project.py`：
+| 文件 / 目录 | 说明 |
+|---|---|
+| `<name>/` | 项目文件夹 |
+| `<name>/__init__.py` | Python 包标识 |
+| `<name>/bomiotconf.ini` | 项目级基础配置 |
+| `<name>/templates/` | 项目模板目录（前端页面模板等） |
+| 项目运行所需的其余基础文件 | 由模板自动补齐 |
 
-```python
-def project(folder: str):
-    if len(sys.argv) < 3:
-        print('Please enter your project name')
-        return
-
-    project_name = sys.argv[2]
-
-    # Check if project name is reserved
-    if project_name.lower() == 'greaterwms':
-        print('Project name "greaterwms" is reserved and cannot be used')
-        return
-
-    project_path = join(getcwd(), project_name)
-
-    if exists(project_path):
-        print('Project directory already exists')
-        return
-
-    # Check if project name conflicts with installed packages
-    try:
-        installed_packages = [dist.metadata['Name'] for dist in importlib.metadata.distributions()]
-        if project_name in installed_packages:
-            print('Project directory already exists')
-            return
-    except Exception as e:
-        logging.warning(f"Could not check installed packages: {e}")
-
-    try:
-        makedirs(project_path, exist_ok=True)
-        current_path = Path(__file__).resolve()
-        file_path = join(current_path.parent, 'file')
-
-        # Write init file
-        init_file_path = join(project_path, '__init__.py')
-        with open(init_file_path, "w", encoding='utf-8') as f:
-            pass
-
-        # Copy essential files
-        essential_files = ['bomiotconf.ini']
-        for file_name in essential_files:
-            src_path = join(file_path, file_name)
-            dst_path = join(project_path, file_name)
-            if exists(src_path):
-                shutil.copy2(src_path, dst_path)
-            else:
-                logging.warning(f"Essential file not found: {src_path}")
-
-        # Create additional files via create_file function
-        create_file(str(project_name))
-
-        # Copy additional directories
-        copy_files(join(current_path.parent.parent, 'templates'), join(project_path, 'templates'))
-
-        print(f'Initialized project workspace {project_name}')
-    except OSError as e:
-        print(f"Error creating project directory: {e}")
-        return
-    except Exception as e:
-        print(f"Unexpected error during project initialization: {e}")
-        return
-```
-
-### 执行流程
-
-1. **参数校验**：`folder` 不能为空
-2. **保留名检查**：`greaterwms` 是保留名，不能使用
-3. **目录冲突检查**：目标目录不能已存在
-4. **pip 包冲突检查**：项目名不能与已安装的 pip 包同名
-5. **创建目录**：`makedirs(project_path, exist_ok=True)`
-6. **生成 `__init__.py`**：创建空的 `__init__.py`
-7. **复制 `bomiotconf.ini`**：从 `bomiot/cmd/file/` 复制
-8. **调用 `create_file(project_name)`**：生成 pyproject.toml、setup.ini、greaterwms/、logs/、dbs/ 等（详见 [bomiot init](./cli-init.zh-CN.md)）
-9. **复制 `templates/`**：从 bomiot 包复制前端模板到 `project/templates/`
-
-### 生成的项目结构
-
-```
-<project_name>/
-├── __init__.py
-├── bomiotconf.ini
-├── templates/          # 前端 Vue 模板
-└── ...                 # create_file() 生成的文件
-```
-
-## 示例
+## 典型流程
 
 ```bash
-# 创建一个名为 mywms 的项目
-bomiot project mywms
-```
-
-输出：
-```
-Initialized project workspace mywms
-```
-
-## 项目创建后的必要操作
-
-`bomiot project` 只负责创建项目骨架，但前端模板中的项目名仍为默认值 `greaterwms`，需要手动修改后重新构建。
-
-### 1. 修改 Pinia store 中的项目名
-
-打开 `templates/src/stores/project.js`，将 `project` 改为你的项目名：
-
-```js
-// 修改前
-project: 'greaterwms'
-
-// 修改后（假设项目名为 mywms）
-project: 'mywms'
-```
-
-### 2. 重新构建前端
-
-```bash
-cd <project_name>/templates
-npx quasar build
-```
-
-### 3. 启动项目
-
-```bash
-cd <project_name>
-bomiot run
+bomiot init              # 初始化工作空间
+bomiot project erp       # 创建第一个业务项目
+bomiot project oa        # 再创建一个，互不影响
+bomiot run               # 启动（工作空间统一对外提供服务）
 ```
 
 ## 注意事项
 
-1. **保留名**：`greaterwms` 不可用作项目名
-2. **pip 包冲突**：项目名不能与已安装的 pip 包重名
-3. **只复制 bomiotconf.ini**：不像旧版会复制 `__version__.py`、`receiver.py`、`example.py`、`api.py`
-4. **setup.ini 项目名固定为 greaterwms**：由 `create_file()` 内部决定，与传入的 `folder` 无关
-5. **Pinia store 项目名需手动修改**：`templates/src/stores/project.js` 中的 `project` 默认为 `'greaterwms'`，每次 `bomiot project` 后需手动改为实际项目名并执行 `quasar build`
+- 项目名创建后即为文件夹名与项目标识，建议用小写字母、数字、下划线，避免空格与中文
+- 创建失败（重名/保留名/包名冲突）不会写入任何文件，可放心重试
+- 多个业务项目共用同一套运行服务，通过切换机制选择当前操作的项目（见"多项目切换"相关文档）

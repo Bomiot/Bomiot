@@ -1,167 +1,55 @@
 # bomiot project
 
+Create a new **business project** (project folder) inside the current workspace, with the base config and templates it needs to run.
+
+```bash
+bomiot project <name>
+```
+
 ## Overview
 
-`bomiot project` creates a new bomiot project workspace in the current directory. It creates the project directory, copies `bomiotconf.ini`, calls `create_file()` to generate base files, and copies the `templates/` frontend templates.
+Bomiot follows a "workspace + business projects" structure: after `bomiot init` initializes the workspace, you can create multiple independent business projects inside it — each with its own config, data and code. `bomiot project <name>` creates one such project folder in the current directory and fills in its base files.
 
-> Note: The project name cannot be `greaterwms` (reserved) and cannot conflict with an installed pip package.
+The command must be run from the **workspace root**.
 
-## Usage
+## Parameters
 
-```bash
-bomiot project <folder>
-```
+| Parameter | Description |
+|---|---|
+| `<name>` | Project name (required). Used as the project folder name; must be a valid directory name |
 
-- `folder`: Project name (required)
+## Naming Rules
 
-**Registration and dispatch in cmd.py:**
+Creation is rejected, with the reason printed, in these cases:
 
-```python
-parser_project = subparsers.add_parser(
-    'project', help='Project workspace, default to GreaterWMS')
-parser_project.add_argument('folder', default='',
-                         nargs='?', type=str, help='project workspace folder')
-# ...
-if command == 'project':
-    from bomiot.cmd.project import project
-    project(args.folder)
-```
+| Situation | Message |
+|---|---|
+| No name provided | `Please enter your project name` |
+| Name is `greaterwms` (reserved, conflicts with the workspace directory) | `Project name "greaterwms" is reserved and cannot be used` |
+| A directory with the same name already exists | `Project directory already exists` |
+| Name collides with an installed Python package in the environment | Rejected (to avoid import conflicts) |
 
-## Source Code Analysis
+## Generated Content
 
-`bomiot/cmd/project.py`:
+| File / Directory | Description |
+|---|---|
+| `<name>/` | The project folder |
+| `<name>/__init__.py` | Python package marker |
+| `<name>/bomiotconf.ini` | Project-level base configuration |
+| `<name>/templates/` | Project template directory (frontend page templates, etc.) |
+| Remaining base files | Filled in automatically from templates |
 
-```python
-def project(folder: str):
-    if len(sys.argv) < 3:
-        print('Please enter your project name')
-        return
-
-    project_name = sys.argv[2]
-
-    # Check if project name is reserved
-    if project_name.lower() == 'greaterwms':
-        print('Project name "greaterwms" is reserved and cannot be used')
-        return
-
-    project_path = join(getcwd(), project_name)
-
-    if exists(project_path):
-        print('Project directory already exists')
-        return
-
-    # Check if project name conflicts with installed packages
-    try:
-        installed_packages = [dist.metadata['Name'] for dist in importlib.metadata.distributions()]
-        if project_name in installed_packages:
-            print('Project directory already exists')
-            return
-    except Exception as e:
-        logging.warning(f"Could not check installed packages: {e}")
-
-    try:
-        makedirs(project_path, exist_ok=True)
-        current_path = Path(__file__).resolve()
-        file_path = join(current_path.parent, 'file')
-
-        # Write init file
-        init_file_path = join(project_path, '__init__.py')
-        with open(init_file_path, "w", encoding='utf-8') as f:
-            pass
-
-        # Copy essential files
-        essential_files = ['bomiotconf.ini']
-        for file_name in essential_files:
-            src_path = join(file_path, file_name)
-            dst_path = join(project_path, file_name)
-            if exists(src_path):
-                shutil.copy2(src_path, dst_path)
-            else:
-                logging.warning(f"Essential file not found: {src_path}")
-
-        # Create additional files via create_file function
-        create_file(str(project_name))
-
-        # Copy additional directories
-        copy_files(join(current_path.parent.parent, 'templates'), join(project_path, 'templates'))
-
-        print(f'Initialized project workspace {project_name}')
-    except OSError as e:
-        print(f"Error creating project directory: {e}")
-        return
-    except Exception as e:
-        print(f"Unexpected error during project initialization: {e}")
-        return
-```
-
-### Execution Flow
-
-1. **Argument validation**: `folder` must not be empty
-2. **Reserved name check**: `greaterwms` is reserved and cannot be used
-3. **Directory conflict check**: target directory must not exist
-4. **Pip package conflict check**: project name must not match an installed pip package
-5. **Create directory**: `makedirs(project_path, exist_ok=True)`
-6. **Generate `__init__.py`**: creates an empty `__init__.py`
-7. **Copy `bomiotconf.ini`**: from `bomiot/cmd/file/`
-8. **Call `create_file(project_name)`**: generates pyproject.toml, setup.ini, greaterwms/, logs/, dbs/, etc. (see [bomiot init](./cli-init.en-US.md))
-9. **Copy `templates/`**: copies frontend templates from the bomiot package to `project/templates/`
-
-### Generated Project Structure
-
-```
-<project_name>/
-├── __init__.py
-├── bomiotconf.ini
-├── templates/          # frontend Vue templates
-└── ...                 # files generated by create_file()
-```
-
-## Example
+## Typical Flow
 
 ```bash
-# Create a project named mywms
-bomiot project mywms
-```
-
-Output:
-```
-Initialized project workspace mywms
-```
-
-## Post-Creation Steps
-
-`bomiot project` only creates the project scaffold. The project name in the frontend template is still the default value `greaterwms` and must be manually updated before rebuilding.
-
-### 1. Update the project name in the Pinia store
-
-Open `templates/src/stores/project.js` and change `project` to your project name:
-
-```js
-// Before
-project: 'greaterwms'
-
-// After (assuming project name is mywms)
-project: 'mywms'
-```
-
-### 2. Rebuild the frontend
-
-```bash
-cd <project_name>/templates
-npx quasar build
-```
-
-### 3. Start the project
-
-```bash
-cd <project_name>
-bomiot run
+bomiot init              # initialize the workspace
+bomiot project erp       # create the first business project
+bomiot project oa        # create another — they do not affect each other
+bomiot run               # start (the workspace serves them uniformly)
 ```
 
 ## Notes
 
-1. **Reserved name**: `greaterwms` cannot be used as project name
-2. **Pip package conflict**: project name cannot collide with an installed pip package
-3. **Only copies bomiotconf.ini**: unlike the old version, it does not copy `__version__.py`, `receiver.py`, `example.py`, `api.py`
-4. **setup.ini project name is always greaterwms**: determined inside `create_file()`, independent of the passed `folder`
-5. **Pinia store project name must be updated manually**: `templates/src/stores/project.js` has `project` set to `'greaterwms'` by default. After each `bomiot project`, you must manually change it to the actual project name and run `quasar build`
+- The name becomes both the folder name and the project identifier — stick to lowercase letters, digits and underscores; avoid spaces and non-ASCII characters
+- A failed creation (duplicate/reserved/package collision) writes nothing, so retrying is safe
+- Multiple business projects share the same runtime; use the project-switch mechanism to choose the active one (see the "Multi-Project" documentation)

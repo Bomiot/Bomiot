@@ -1,118 +1,64 @@
 # bomiot api
 
+Create a new **API app** in the current workspace with a ready-to-use, full CRUD interface skeleton.
+
+```bash
+bomiot api <name>
+```
+
 ## Overview
 
-`bomiot api` creates a new sub-APP under the current project (greaterwms). Unlike the `app` command, it **automatically replaces `Example` in the templates with your APP name**, producing a ready-to-use complete API skeleton.
+Like `bomiot app`, `bomiot api <name>` creates an app folder and registers it — but the skeleton differs: **api generates a complete CRUD template** with models, serializers, filters, views and routes all wired up, giving you a working set of RESTful endpoints the moment it is created. Use it to stand up data interfaces fast; use `bomiot app` when you prefer a blank skeleton to fill in yourself.
 
-## Usage
+The command must be run from the **workspace root**, and the workspace must be in project mode.
 
-```bash
-bomiot api <folder>
-```
+## Parameters
 
-- `folder`: The name of the APP to create (required, and cannot be `bomiot`)
+| Parameter | Description |
+|---|---|
+| `<name>` | App name (required). Used as the app folder name and the endpoint path prefix; must be a valid directory name |
 
-**Registration and dispatch in cmd.py:**
+## Naming Rules
 
-```python
-# new app
-parser_app = subparsers.add_parser(
-    'api', help='Create Bomiot API for project')
-parser_app.add_argument('folder', default='',
-                         nargs='?', type=str, help='Create API')
-# ...
-elif command == 'api':
-    from bomiot.cmd.createapi import new_api
-    new_api(args.folder)
-```
+| Situation | Result |
+|---|---|
+| No name provided | `Please enter your app name` |
+| Name is `bomiot` (reserved) | `Invalid app name` — creation rejected |
+| An app directory with the same name exists | `App directory already exists` — creation rejected |
 
-## Source Code Analysis
+## Generated Content
 
-`bomiot/cmd/createapi.py`:
+| File | Description |
+|---|---|
+| `models.py` | Example data model |
+| `serializers.py` | Serializers |
+| `filter.py` | Query filters |
+| `views.py` | CRUD views |
+| `urls.py` | Route registration (paths prefixed with the app name) |
 
-```python
-def new_api(folder: str):
-    if len(sys.argv) < 3:
-        print('Please enter your app name')
-    else:
-        if sys.argv[2] == 'bomiot':
-            print('Invalid app name. Please enter a valid app name.')
-        else:
-            current_path = Path(__file__).resolve()
-            project_name = 'greaterwms'
-            project_path = join(getcwd(), project_name)
-            project_config = ConfigParser()
-            project_config.read(join(project_path, 'bomiotconf.ini'), encoding='utf-8')
-            if project_config.get('mode', 'name') == 'project':
-                app_path = join(project_path, sys.argv[2])
-                if exists(app_path):
-                    print('App directory already exists')
-                else:
-                    makedirs(app_path)
-                    copy_files(join(current_path.parent, 'newapi'), app_path)
-                    apps_path = join(app_path, 'apps.py')
-                    os.remove(apps_path)
-                    create_project_apps_py(apps_path, project_name, sys.argv[2])
-                    # ... code replacement ...
-                    print(f'Create APP success {sys.argv[2]}')
-            else:
-                print('Invalid project mode. Please create a new project or switch to project mode.')
-```
+All example identifiers in the skeleton are automatically replaced with your app name, so the endpoints are callable immediately.
 
-### Execution Flow
+## api vs app
 
-1. **Argument validation**: `folder` must not be empty and must not be `bomiot`
-2. **Locate project**: hard-coded `project_name = 'greaterwms'`
-3. **Mode check**: `[mode] name = project`
-4. **Copy newapi templates**: copies the complete file set from `bomiot/cmd/newapi/`
-5. **Generate apps.py**: calls `create_project_apps_py(apps_path, 'greaterwms', folder)`
-6. **Code replacement**: iterates over `filter.py`, `models.py`, `serializers.py`, `urls.py`, `views.py` and performs replacements
+| | `bomiot app` | `bomiot api` |
+|---|---|---|
+| Skeleton | Basic directory structure | Full CRUD interface template |
+| Best for | Building custom features from scratch | Producing callable data endpoints fast |
+| After creation | You write models and interfaces yourself | Example endpoints included — adapt the model and go |
 
-### Code Replacement Logic
-
-```python
-# filter.py
-'from bomiot.server.core import models' → f'from {project_name}.{app_name} import models'
-
-# serializers.py
-'from bomiot.server.core import models' → f'from {project_name}.{app_name} import models'
-
-# urls.py
-'from bomiot.server.function import example' → f'from {project_name}.{app_name} import views'
-
-# views.py
-'from bomiot.server.core import models, serializers, filter' → f'from {project_name}.{app_name} import models, serializers, filter'
-
-# all files
-'Example' → app_name.capitalize()   # class name
-'example' → app_name.lower()        # variable/path name
-```
-
-## Example
+## Typical Flow
 
 ```bash
-# Create an API sub-APP named order
-bomiot api order
+bomiot api goods         # create the goods API app
+# adapt the example model in models.py
+bomiot makemigrations    # generate migrations
+bomiot migrate           # apply migrations
+bomiot run               # start — the goods endpoints are live
 ```
-
-After generation, the import in `order/views.py` becomes:
-```python
-from greaterwms.order import models, serializers, filter
-```
-
-Model class name changes from `Example` to `Order`, and `example` in paths becomes `order`.
-
-## app vs api Comparison
-
-| Feature | `bomiot app` | `bomiot api` |
-|---------|-------------|--------------|
-| Template source | `extends/` | `newapi/` |
-| Code replacement | none, manual edit required | auto-replaces Example/import paths |
-| Use case | custom skeleton, flexible | quick ready-to-use CRUD API |
 
 ## Notes
 
-1. **Hard-coded project name**: must run from a directory containing `greaterwms/bomiotconf.ini`
-2. **bomiotconf.ini must be project mode**
-3. **Replacement is global**: `Example` → `Order`, `example` → `order`; any other comments containing "example" will also be replaced
-4. **Run migrations after creation**: `bomiot makemigrations order` + `bomiot migrate`
+- The example model is only a starting point — after adapting it to your business, **always run the migrations**, otherwise the endpoints will operate on tables that do not exist
+- Same naming advice as `bomiot app`: lowercase letters, digits and underscores
+- A failed creation (duplicate/reserved/wrong mode) writes nothing, so retrying is safe
+- There is no delete command — removing an app means deleting its folder and cleaning up registrations and migration records manually

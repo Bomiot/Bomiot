@@ -2,177 +2,145 @@
 
 ## 为什么介绍 Poetry
 
-- **Bomiot** 通过使用Poetry与PyPi的结合，实现了应用市场和插件模块的使用，方便用户环境搭建和团队合作
-
----
+- **Bomiot** 通过 Poetry 与 PyPI 的结合，实现了应用市场和插件模块的使用，方便用户环境搭建和团队合作。
 
 ## 什么是 Poetry
 
-**Poetry** 是一个现代化的 Python 项目依赖管理和打包工具。它可以帮助你：
-- 管理和锁定依赖（自动生成 `pyproject.toml` 和 `poetry.lock`）
-- 创建和管理虚拟环境
-- 构建和发布 Python 包
+**Poetry** 是一个 Python 依赖管理与打包工具，用一份 `pyproject.toml` 统管项目的元信息、依赖与构建：
 
-Poetry 的目标是让 Python 项目的依赖、打包、分发更加简单、可靠和一致。
-
----
-
-## Poetry 特点
-
-- 支持 PEP 517/518（基于 `pyproject.toml`）
-- 自动管理虚拟环境
-- 精确锁定依赖版本
-- 支持多种 Python 版本隔离
-- 便捷的包发布流程（如 PyPI）
+- 声明并锁定依赖（自动生成 `poetry.lock`，保证每台机器装出完全一致的版本）
+- 自动创建和管理虚拟环境
+- 一键构建并发布 Python 包
 
 ---
 
-## Poetry 安装
+## 安装
 
-推荐使用官方安装脚本：
+推荐独立安装（与项目环境隔离，不污染全局 pip）：
 
 ```bash
-# 推荐方式
+# macOS / Linux
 curl -sSL https://install.python-poetry.org | python3 -
 
-# 或者使用 pip（不推荐）
-pip install poetry
+# Windows PowerShell
+(Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -
 ```
 
-安装后，确认版本：
+验证安装：
 
 ```bash
 poetry --version
 ```
 
+不建议 `pip install poetry`：会把 Poetry 自身的依赖装进全局环境，容易和项目依赖打架。
+
 ---
 
-## Poetry 基本用法
-
-### 新建项目
+## 项目初始化
 
 ```bash
+# 新项目：生成标准目录结构和 pyproject.toml
 poetry new myproject
-```
-- 会创建一个名为 `myproject` 的目录，包含标准的项目结构和初始的 `pyproject.toml` 文件。
 
-### 在已有项目中初始化 Poetry
-
-```bash
-cd your_existing_project
+# 已有项目：交互式补全 pyproject.toml
+cd myproject
 poetry init
 ```
-- 交互式填写项目依赖和元数据，生成 `pyproject.toml`。
 
-### 添加依赖
+生成的 `pyproject.toml` 核心字段：
 
-```bash
-poetry add requests
-poetry add flask_app@2.1.0  # 指定版本
-poetry add pytest --dev  # 添加开发依赖
-```
-- 自动写入 `pyproject.toml` 并安装依赖。
+```toml
+[tool.poetry]
+name = "myproject"
+version = "0.1.0"
+description = ""
+authors = ["your name <you@example.com>"]
 
-### 移除依赖
+[tool.poetry.dependencies]
+python = "^3.11"
+requests = "^2.31"
 
-```bash
-poetry remove requests
-```
-- 会从项目中移除并卸载对应包。
-
-### 安装依赖
-
-```bash
-poetry install
-```
-- 根据 `pyproject.toml` 和 `poetry.lock` 安装所有依赖。
-
-### 更新依赖
-
-```bash
-poetry update
-poetry update requests
-```
-- 更新所有或指定依赖到最新可用版本。
-
-### 虚拟环境管理
-
-- Poetry 默认为每个项目自动创建虚拟环境，无需手动操作。
-- 进入虚拟环境：
-
-  ```bash
-  poetry shell
-  ```
-
-- 直接在虚拟环境中执行命令：
-
-  ```bash
-  poetry run python script.py
-  poetry run pytest
-  ```
-
-### 运行项目
-
-假如 `pyproject.toml` 里配置了 `scripts`，可直接：
-
-```bash
-poetry run my-script
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 ```
 
-### 打包与发布
+## 依赖管理
 
-- 构建项目包：
+```bash
+poetry add requests            # 添加运行依赖
+poetry add "flask>=2.0,<3.0"   # 指定版本区间
+poetry add pytest --group dev  # 添加开发依赖（仅开发环境安装）
+poetry remove requests         # 移除依赖
+poetry install                 # 按 lock 文件安装全部依赖
+poetry install --without dev   # 只装运行依赖（部署时用）
+poetry update                  # 在版本约束内升级全部依赖并刷新 lock
+poetry update requests         # 只升级指定依赖
+poetry show --tree             # 查看依赖树
+```
 
-  ```bash
-  poetry build
-  ```
+版本约束写法：
 
-- 发布到 PyPI：
+| 写法 | 含义 |
+|---|---|
+| `^2.31` | 允许 2.x 内升级（>=2.31, <3.0） |
+| `~2.31` | 只允许补丁升级（>=2.31, <2.32） |
+| `2.31.*` | 通配符，等价于 ~2.31 |
+| `==2.31.0` | 锁定精确版本 |
+| `>=2.0,<3.0` | 区间表达式 |
 
-  ```bash
-  poetry publish
-  # 首次需 poetry config pypi-token.pypi your_token
-  ```
+## 虚拟环境
 
----
+Poetry 自动为每个项目创建独立虚拟环境，常用操作：
+
+```bash
+poetry run python main.py   # 在项目环境内执行命令
+poetry run pytest
+poetry env info             # 查看当前环境路径与信息
+poetry env list             # 列出项目的所有环境
+poetry env use 3.11         # 切换环境使用的 Python 版本
+poetry env remove 3.11      # 删除指定环境
+```
+
+两个实用配置：
+
+```bash
+# 在项目目录内创建 .venv（方便 IDE 识别，推荐）
+poetry config virtualenvs.in-project true
+
+# 查看/修改全局配置
+poetry config --list
+```
+
+> Poetry 2.0 起，`poetry shell` 命令移到了独立插件 `poetry-plugin-shell`。日常更推荐直接用 `poetry run <命令>`，无需进入环境。
+
+## 构建与发布
+
+```bash
+poetry build                              # 构建 sdist 与 wheel（输出到 dist/）
+poetry config pypi-token.pypi <token>     # 配置 PyPI 令牌（一次性）
+poetry publish                            # 发布到 PyPI
+poetry publish --build                    # 构建并发布一步完成
+```
 
 ## 常用命令速查
 
-| 命令                          | 作用说明                     |
-|-------------------------------|------------------------------|
-| poetry new <项目名>           | 创建新项目                   |
-| poetry init                   | 已有项目初始化 Poetry        |
-| poetry add <包名>             | 添加依赖                     |
-| poetry add <包名> --dev       | 添加开发依赖                 |
-| poetry remove <包名>          | 移除依赖                     |
-| poetry install                | 安装依赖                     |
-| poetry update                 | 更新依赖                     |
-| poetry shell                  | 激活虚拟环境                 |
-| poetry run <命令>             | 虚拟环境下运行命令           |
-| poetry build                  | 构建项目包                   |
-| poetry publish                | 发布到 PyPI                  |
+| 命令 | 作用 |
+|---|---|
+| `poetry new <名称>` | 创建新项目 |
+| `poetry init` | 已有项目初始化 |
+| `poetry add <包>` | 添加依赖 |
+| `poetry add <包> --group dev` | 添加开发依赖 |
+| `poetry remove <包>` | 移除依赖 |
+| `poetry install` | 安装依赖（按 lock） |
+| `poetry update` | 升级依赖并刷新 lock |
+| `poetry lock` | 重新生成 lock 文件 |
+| `poetry run <命令>` | 在项目环境内执行 |
+| `poetry env use <版本>` | 切换环境 Python 版本 |
+| `poetry build` / `publish` | 构建 / 发布包 |
 
----
+## 注意事项
 
-## 常见问题
-
-**Q1：如何指定 Python 版本？**  
-A：在 `pyproject.toml` 的 `[tool.poetry.dependencies]` 里添加 `python = "^3.9"`，或 `poetry env use 3.9` 指定虚拟环境 Python 版本。
-
-**Q2：如何切换/定位虚拟环境路径？**  
-A：`poetry env list` 查看所有环境，`poetry env info` 查看当前虚拟环境详情。
-
-**Q3：如何解决依赖冲突？**  
-A：尝试 `poetry update`，如仍冲突，需手动调整依赖版本。
-
----
-
-## 参考链接
-
-- [Poetry 官方文档](https://python-poetry.org/docs/)
-- [Poetry GitHub](https://github.com/python-poetry/poetry)
-- [pyproject.toml 配置说明](https://python-poetry.org/docs/pyproject/)
-
----
-
-如需更多高级用法（如多环境管理、插件扩展等），建议查阅官方文档或社区资源。
+- `poetry.lock` 必须提交到版本库，它是团队与服务器环境一致性的保证。
+- 拉取他人项目后第一条命令永远是 `poetry install`，它会严格按 lock 还原环境。
+- 安装新依赖用 `poetry add`，不要手动编辑 `pyproject.toml` 后忘记 `poetry lock`。

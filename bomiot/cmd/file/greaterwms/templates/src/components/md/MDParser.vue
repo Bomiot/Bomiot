@@ -70,7 +70,7 @@ function MDHtml() {
   if ($q.dark.isActive) {
     const md = new MarkdownIt({
       html: true,
-      linkify: true,
+      linkify: false,
       brakes: true,
       typography: true,
       highlight: function (str, lang) {
@@ -125,7 +125,7 @@ function MDHtml() {
   } else {
     const md = new MarkdownIt({
       html: true,
-      linkify: true,
+      linkify: false,
       brakes: true,
       typography: true,
       highlight: function (str, lang) {

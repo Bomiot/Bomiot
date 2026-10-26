@@ -8,7 +8,7 @@
 
 Like most open source products, GreaterWMS cannot do this alone. We rely on sponsors, advocates and supporters to keep growing. When GreaterWSM starts to bring you some business stability, take into account the tens of thousands of hours it was created and give some money back to the team that created it. Finally, if your company relies on GreaterWMS, the best way to ensure GreaterWMS continues to serve you is to invest in it to keep it going!
 
-Please read our manifesto [Why Donate](https://www.56yhz.com/why_donate/).
+Please read our manifesto Why Donate.
 
 #### Donate
 

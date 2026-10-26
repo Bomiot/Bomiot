@@ -1,5 +1,9 @@
 // app global css in SCSS form
 
+html {
+  overflow-y: scroll;
+}
+
 .main-headers-sun {
   background: linear-gradient(to right, #00b4db, #0083b0)
 }
@@ -168,6 +172,27 @@
     }
   }
 
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 16px;
+  }
+
+  th, td {
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 8px 12px;
+    text-align: left;
+  }
+
+  th {
+    background-color: rgba(255,255,255,0.06);
+    font-weight: 600;
+  }
+
+  tr:nth-child(even) {
+    background-color: rgba(255,255,255,0.03);
+  }
+
   blockquote {
     margin: 0 0 16px;
     padding: 0 1em;
@@ -230,6 +255,27 @@
       padding: 0;
       color: #fff;
     }
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 16px;
+  }
+
+  th, td {
+    border: 1px solid rgba(0,0,0,0.15);
+    padding: 8px 12px;
+    text-align: left;
+  }
+
+  th {
+    background-color: rgba(0,0,0,0.04);
+    font-weight: 600;
+  }
+
+  tr:nth-child(even) {
+    background-color: rgba(0,0,0,0.02);
   }
 
   blockquote {

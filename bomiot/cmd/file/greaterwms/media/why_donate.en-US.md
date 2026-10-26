@@ -19,13 +19,13 @@
 
 - They find free time in their busy schedules of work, family and commitment to get involved because it makes them feel like they can be part of a larger cause (more than an individual).
 
-- To give you some perspective, the lead developer and core maintainer of GreaterWMS [Elvis Shi](https://github.com/Singosgu) in the development phase of 1.0.0-alpha.1 to 1.0.0-rc.1 Spent over 5000 hours. During this time he logged over 3000 commits and added 400,000 lines of code.
+- To give you some perspective, the lead developer and core maintainer of GreaterWMS Elvis Shi in the development phase of 1.0.0-alpha.1 to 1.0.0-rc.1 Spent over 5000 hours. During this time he logged over 3000 commits and added 400,000 lines of code.
 
 - The rest of the team and all staff communicating the support line and fixing the code remain (as of March 2021) working countless hours as unpaid volunteers. They are becoming increasingly accountable to project units and are a valuable resource for the communities we must protect.
 
 #### Financial sponsorship to guarantee maintenance
 
-- Nothing is certain, except that "node_modules" is still the heaviest thing in the universe, and at some point will need regular financial support to guarantee the maintenance of large open source projects. [References](https://github.com/sfosc/sfosc/issues/65#issuecomment-491770533).
+- Nothing is certain, except that "node_modules" is still the heaviest thing in the universe, and at some point will need regular financial support to guarantee the maintenance of large open source projects. References.
 
 - Now that GreaterWMS is at this point, your support will make a difference.
 

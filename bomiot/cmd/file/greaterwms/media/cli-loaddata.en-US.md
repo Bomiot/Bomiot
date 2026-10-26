@@ -1,122 +1,85 @@
-# bomiot loaddata Command
+# bomiot loaddata
+
+Load the contents of data files (fixtures) into the database — for restoring backups, loading seed data, or moving data between environments.
+
+```bash
+bomiot loaddata <fixture> [fixture ...]
+```
 
 ## Overview
 
-The `bomiot loaddata` command is designed to load data from a config file into a bomiot project. According to the argument definition, `source` is a required positional argument that represents the config file path.
+`bomiot loaddata` reads JSON data files and writes their records into the corresponding database tables. Data files are usually produced by `bomiot dumpdata`, but can also be written by hand — a data file is a repeatable package of "seed data".
 
-> **Implementation status**: The subcommand parser is registered in `bomiot/cmd/cmd.py`, but the `cmd()` function has **no** corresponding `elif command == 'loaddata'` dispatch branch. This means the command is "declared but not implemented" in the current version — the arguments are parsed correctly, but execution does not perform any actual operation. It is a planned feature that has not been completed yet.
+The command must be run from the **project root**.
 
-## Usage
+## Basic Usage
 
-```bash
-bomiot loaddata <source>
-```
+| Command | Description |
+|---|---|
+| `bomiot loaddata myapp.json` | Load the given data file |
+| `bomiot loaddata app1.json app2.json` | Load several data files at once |
+| `bomiot loaddata seeds` | Omit the extension; the file is located via fixture lookup rules |
 
-- `<source>`: Required config file path (string type).
+## Where Files Are Looked Up
 
-Registration in `cmd.py`:
+When given a bare filename, files are searched in this order:
 
-```python
-# loaddata
-parser_loaddata = subparsers.add_parser(
-    'loaddata', help='Load data from configs')
-parser_loaddata.add_argument('source', type=str, help='Configs path')
-```
+| Location | Description |
+|---|---|
+| Each app's `fixtures/` directory | Seed data shipped with the app, looked up by filename |
+| Current directory / given path | Read directly when a relative or absolute path is given |
 
-Note that `source` has neither `nargs='?'` nor a `default` value, so it is a required argument — omitting it causes argparse to error out immediately.
+> For project seed data, place the file in the app's `fixtures/` directory with an app-related name (e.g. `myapp.json`). After pulling the code, teammates simply run `bomiot loaddata myapp` to initialize.
 
-## Source Code Analysis
+## Common Options
 
-Source file: `bomiot/cmd/cmd.py`.
+| Option | Description |
+|---|---|
+| `--app myapp` | Load only the records belonging to the `myapp` app |
+| `--ignorenonexistent` | Skip models or fields in the file that no longer exist, instead of failing |
+| `--format json` | Data file format, defaults to `json` (usually detected from the extension) |
+| `--exclude APP` | Exclude the given app's data while loading (may be used multiple times) |
 
-### Parser Registration
+## Typical Scenarios
 
-The `loaddata` subcommand is registered via `subparsers.add_parser('loaddata', ...)` with help text `Load data from configs`, and declares a positional argument named `source`:
-
-```python
-parser_loaddata = subparsers.add_parser(
-    'loaddata', help='Load data from configs')
-parser_loaddata.add_argument('source', type=str, help='Configs path')
-```
-
-### Dispatch Logic
-
-In the `cmd()` function, command dispatch is done via an `if/elif` chain. The following shows the branch structure of the `cmd()` function in `cmd.py`, which clearly shows that `loaddata` is missing a corresponding branch:
-
-```python
-def cmd():
-    """
-    run from cmd
-    :return:
-    """
-    args = parser.parse_args()
-    command = args.command
-    if command == 'project':
-        ...
-    elif command == 'deploy':
-        ...
-    elif command == 'init':
-        ...
-    elif command == 'initadmin':
-        ...
-    elif command == 'initpwd':
-        ...
-    elif command == 'app':
-        ...
-    elif command == 'api':
-        ...
-    # marketplace
-    # elif command == 'market':
-    #     ...
-    # # init auth keys
-    # elif command == 'keys':
-    #     ...
-    # makemigrations
-    elif command == 'makemigrations':
-        ...
-    # migrate
-    elif command == 'migrate':
-        from bomiot.cmd.migrate import migrate
-        migrate()
-    # run server
-    elif command == 'run':
-        ...
-```
-
-The `if/elif` chain handles `project`, `deploy`, `init`, `initadmin`, `initpwd`, `app`, `api`, `makemigrations`, `migrate` and `run`, but there is no `loaddata` branch. Therefore, when `bomiot loaddata <source>` is executed, argparse parses the arguments successfully, but `command == 'loaddata'` matches no branch, so the function returns without performing any data-loading operation.
-
-### Expected Behaviour (Based on the Argument Definition)
-
-Although not currently implemented, the design intent can be inferred from the argument help text `Configs path`:
-
-- Accept a config file path as `source`.
-- Read data from that config and load it into the project database or runtime configuration.
-- Act as the inverse of the `bomiot dumpdata` command (dump exports, load imports).
-
-## Practical Examples
-
-### Invoking the command (no actual effect in the current version)
+### Restore one app's backup
 
 ```bash
-bomiot loaddata configs/backup.json
+bomiot loaddata myapp_backup.json
 ```
 
-The command is parsed correctly by argparse (`source` is assigned `configs/backup.json`), but since the `cmd()` function has no corresponding dispatch branch, no data-loading operation is performed.
-
-### Behaviour when source is omitted
+### Initialize seed data for a new project
 
 ```bash
-bomiot loaddata
+bomiot loaddata seeds.json
 ```
 
-Because `source` is a required positional argument with no default, argparse errors out and exits:
+### Move data between environments
 
-```text
-error: the following arguments are required: source
+```bash
+# Source environment
+bomiot dumpdata myapp --indent 2 --output myapp.json
+
+# Target environment (make sure the schema matches first)
+bomiot migrate
+bomiot loaddata myapp.json
 ```
 
-## Related Commands
+### File contains fields removed from the current code
 
-- [bomiot dumpdata](./cli-dumpdata.en-US.md): Dump data to a config file (also in a declared-but-unimplemented state)
-- [bomiot migrate](./cli-init.en-US.md): Apply database migrations
-- [bomiot makemigrations](./cli-makemigrations.en-US.md): Generate database migration files
+```bash
+bomiot loaddata old_backup.json --ignorenonexistent
+```
+
+## Loading Behavior
+
+- Records are keyed by **primary key**: an existing primary key updates the record, a new one inserts it
+- Files exported with `--natural-primary` contain no primary keys — all records are inserted with freshly generated keys
+- Loading runs in a single transaction; on error it rolls back, leaving no partial data behind
+
+## Notes
+
+- Run `bomiot migrate` on the target database first so the schema matches the data file, otherwise loading may fail
+- Fields such as user passwords are stored as hashes in data files and work directly after loading — never rewrite them as plain text
+- Re-loading the same file is safe (records are updated by primary key), but files without primary keys create duplicates when loaded twice
+- Large files take time to load; avoid writing to the same tables concurrently during the load

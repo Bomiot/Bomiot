@@ -30,7 +30,7 @@ class CoreConfig(AppConfig):
                     from bomiot.server.core.server_monitor import start_monitoring
                     from bomiot.server.server.views import init_permission
                     from bomiot.server.core.signal import bomiot_signals, bomiot_data_signals
-                    from bomiot.cmd.welcome import welcome
+                    from bomiot_cmd.welcome import welcome
                     from bomiot.server.core.models import JobList
                     try:
                         JobList.objects.all().delete()

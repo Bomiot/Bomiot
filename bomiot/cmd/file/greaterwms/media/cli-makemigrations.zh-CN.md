@@ -1,177 +1,86 @@
-# bomiot makemigrations 命令
+# bomiot makemigrations
+
+根据模型（Model）的变更，自动生成数据库迁移文件。
+
+```bash
+bomiot makemigrations [appname ...]
+```
 
 ## 概述
 
-`bomiot makemigrations` 命令用于为 bomiot 项目中的 Django 应用生成数据库迁移文件。它会设置 Django 环境变量、调用 `django.setup()` 初始化 Django，然后通过 Django 的 `call_command('makemigrations', ...)` 生成迁移脚本。
+项目中数据表的结构由模型代码定义。当模型发生变化——新增模型、增加/删除/修改字段、调整字段选项——这些变化需要以**迁移文件**的形式记录下来，之后由 `bomiot migrate` 应用到数据库。
 
-该命令支持传入可选的 `appname` 参数来为指定应用生成迁移，也支持 `--empty` 和 `--dry-run` 两个标志。当不传入 `appname` 时，命令会自动发现所有包含 models 的应用并为其生成迁移。
+`bomiot makemigrations` 会对比当前模型代码与已有迁移文件之间的差异，在应用的 `migrations/` 目录下生成新的迁移文件（按序号自动命名，如 `0002_xxx.py`）。
 
-该命令在 `bomiot/cmd/cmd.py` 中注册为 `makemigrations` 子命令，派发逻辑位于 `cmd()` 函数的 `makemigrations` 分支。
+命令必须在**项目根目录**下执行。
 
-## 用法
+## 基本用法
 
-```bash
-bomiot makemigrations [appname] [--empty] [--dry-run]
-```
+| 命令 | 说明 |
+|---|---|
+| `bomiot makemigrations` | 检测所有应用的模型变更，生成迁移文件 |
+| `bomiot makemigrations myapp` | 只检测 `myapp` 应用的变更 |
 
-- `[appname]`：可选的应用名。可以是 app label（如 `core`），也可以是完整的点分路径（如 `bomiot.server.core`）。
-- `--empty`：创建一个空的迁移文件。
-- `--dry-run`：仅显示将要执行的操作，不实际生成迁移文件。
+## 常用选项
 
-在 `cmd.py` 中的注册方式：
+| 选项 | 说明 |
+|---|---|
+| `--name NAME` | 为迁移文件指定名称后缀，便于识别，如 `--name add_user_email` |
+| `--empty myapp` | 生成一个空迁移文件，用于手写数据迁移 |
+| `--dry-run` | 只显示将生成什么迁移，不实际写文件 |
+| `--check` | 检测到有未生成迁移的模型变更时以非零码退出，适合 CI 检查 |
+| `--merge` | 合并同一应用下出现分支的迁移文件 |
 
-```python
-# makemigrations
-parser_makemigrations = subparsers.add_parser(
-    'makemigrations', help='Generate migrations for database')
-parser_makemigrations.add_argument('appname', nargs='?', type=str, help='App name (e.g., xx or dev.xx)')
-parser_makemigrations.add_argument('--empty', action='store_true', help='Create an empty migration')
-parser_makemigrations.add_argument('--dry-run', action='store_true', help='Show what would be done without making changes')
-```
+## 典型场景
 
-## 源码分析
-
-源文件：`bomiot/cmd/cmd.py`，`cmd()` 函数中的 `makemigrations` 分支。
-
-### 设置 Django 环境
-
-进入分支后，首先设置 `DJANGO_SETTINGS_MODULE` 与 `RUN_MAIN` 环境变量，并调用 `django.setup()` 完成 Django 应用注册表的初始化：
-
-```python
-elif command == 'makemigrations':
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bomiot.server.server.settings")
-    os.environ.setdefault('RUN_MAIN', 'true')
-    import django
-    django.setup()
-    from django.core.management import call_command
-    from django.apps import apps
-```
-
-### 读取参数
-
-从解析结果中取出 `appname`、`empty`、`dry_run` 三个参数，并初始化传给 `call_command` 的参数列表：
-
-```python
-    appname = args.appname
-    empty = args.empty
-    dry_run = args.dry_run
-    cmd_args = ['makemigrations']
-```
-
-### 指定 appname 时的应用发现逻辑
-
-当传入了 `appname` 时，根据是否包含 `.` 分两种匹配方式：
-
-**包含 `.`（完整点分路径）**：遍历所有 app config，按 `app_config.name` 精确匹配，找到后取其 `label` 加入参数；找不到则直接返回：
-
-```python
-    if appname:
-        if '.' in appname:
-            found_app_label = None
-            for app_config in apps.get_app_configs():
-                if app_config.name == appname:
-                    found_app_label = app_config.label
-                    break
-            if found_app_label:
-                cmd_args.append(found_app_label)
-            else:
-                return
-```
-
-**不含 `.`（app label）**：遍历所有 app config，按 `app_config.label` 精确匹配或 `app_config.name` 以 `.` + appname 结尾匹配，找到后加入其 label；找不到则直接返回：
-
-```python
-        else:
-            found_app = None
-            for app_config in apps.get_app_configs():
-                if app_config.label == appname or app_config.name.endswith('.' + appname):
-                    found_app = app_config.label
-                    break
-            if found_app:
-                cmd_args.append(found_app)
-            else:
-                return
-```
-
-### 不传 appname 时的自动发现
-
-当未传入 `appname` 时，遍历所有 app config，检查其 `models_module` 是否存在以及是否能取到 models，把所有包含 models 的应用 label 收集起来加入参数；如果没有任何应用包含 models，则直接返回：
-
-```python
-    else:
-        apps_with_models = []
-        for app_config in apps.get_app_configs():
-            try:
-                if app_config.models_module:
-                    models = apps.get_app_config(app_config.label).get_models()
-                    if models:
-                        apps_with_models.append(app_config.label)
-            except Exception:
-                continue
-        if apps_with_models:
-            cmd_args.extend(apps_with_models)
-        else:
-            return
-```
-
-### 追加标志并执行
-
-根据 `empty` 与 `dry_run` 标志追加对应的 `--empty` / `--dry-run` 参数，最后调用 `call_command` 执行迁移生成，捕获异常并打印错误信息：
-
-```python
-    if empty:
-        cmd_args.append('--empty')
-    if dry_run:
-        cmd_args.append('--dry-run')
-    try:
-        call_command(*cmd_args)
-    except Exception as e:
-        print(f"Error creating migrations: {e}")
-```
-
-## 实战示例
-
-### 为所有应用自动生成迁移
+### 新增了一个字段
 
 ```bash
-bomiot makemigrations
+# 修改 models 代码后
+bomiot makemigrations myapp
+# myapp/migrations/0003_add_score_field.py 生成
 ```
 
-不传 `appname`，命令会自动发现所有包含 models 的应用并生成迁移。
-
-### 为指定 app label 生成迁移
+### 给迁移起个可读的名字
 
 ```bash
-bomiot makemigrations core
+bomiot makemigrations myapp --name add_score_field
+# 生成 0003_add_score_field.py
 ```
 
-按 app label 匹配，等价于匹配 `app_config.label == 'core'` 或 `app_config.name` 以 `.core` 结尾的应用。
-
-### 为指定完整点分路径生成迁移
+### 提交前检查有没有漏掉的迁移
 
 ```bash
-bomiot makemigrations bomiot.server.core
+bomiot makemigrations --check --dry-run
+# 有未记录的变更时返回非零退出码，适合接入 CI
 ```
 
-按 `app_config.name` 精确匹配 `bomiot.server.core`，找到后用其 label 调用 `makemigrations`。
-
-### 创建空迁移
+### 需要迁移数据而不只是表结构
 
 ```bash
-bomiot makemigrations core --empty
+bomiot makemigrations myapp --empty --name backfill_score
+# 生成空迁移文件，在其中手写数据迁移逻辑
 ```
 
-为 `core` 应用创建一个空的迁移文件，通常用于手写数据迁移。
+## 标准工作流
 
-### 预览迁移变更（不写入文件）
-
-```bash
-bomiot makemigrations --dry-run
+```text
+修改模型代码
+  ↓
+bomiot makemigrations [myapp]   ← 生成迁移文件
+  ↓
+检查生成的迁移文件是否符合预期
+  ↓
+bomiot migrate                  ← 应用到数据库（见 migrate 文档）
+  ↓
+将迁移文件与模型代码一起提交到版本管理
 ```
 
-只打印将要生成的迁移内容，不实际写入迁移文件。
+## 注意事项
 
-## 相关命令
-
-- [bomiot migrate](./cli-init.zh-CN.md)：执行 `bomiot migrate` 应用迁移到数据库
-- [bomiot run](./cli-run.zh-CN.md)：生成迁移并应用后启动 uvicorn 服务
+- **迁移文件必须提交到版本管理**。它是团队共享的数据库变更记录，其他成员拉取代码后执行 `bomiot migrate` 即可同步表结构
+- 生成后建议**先查看迁移文件内容**再执行 migrate，确认变更符合预期
+- 删除字段的迁移一旦应用，该字段的数据将被删除且无法恢复
+- 字段改名时系统可能识别为"删除旧字段 + 新增字段"，导致旧数据丢失；迁移生成时会提示确认，注意甄别
+- 团队协作中多人同时改动同一应用的模型可能产生迁移分支，可用 `--merge` 合并
+- 迁移文件生成后若尚未提交，请勿直接修改已生成的迁移文件——如需调整，先回滚或删除该迁移再重新生成

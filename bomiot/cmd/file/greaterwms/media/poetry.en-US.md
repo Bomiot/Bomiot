@@ -1,181 +1,146 @@
-# Poetry Usage Guide
+# Poetry in Depth
 
-## Why Introduction Poetry
+## Why Poetry Is Covered Here
 
-- **Bomiot** integrates Poetry and PyPI to implement an application marketplace and plugin modules, simplifying user environment setup and facilitating team collaboration.
+- **Bomiot** combines Poetry with PyPI to power its app marketplace and plugin modules, making environment setup and team collaboration easier.
 
----
+## What Is Poetry
 
-## What is Poetry
+**Poetry** is a Python dependency-management and packaging tool that drives a project's metadata, dependencies, and build from a single `pyproject.toml`:
 
-**Poetry** is a modern Python dependency management and packaging tool. It helps you:
-- Manage and lock dependencies (automatically generates `pyproject.toml` and `poetry.lock`)
-- Create and manage virtual environments
-- Build and publish Python packages
-
-Poetry’s goal is to make Python project dependency management, packaging, and distribution simple, reliable, and consistent.
+- Declare and lock dependencies (auto-generated `poetry.lock` guarantees identical installs on every machine)
+- Create and manage virtual environments automatically
+- Build and publish Python packages with one command
 
 ---
 
-## Features of Poetry
+## Installation
 
-- Supports PEP 517/518 (`pyproject.toml`-based)
-- Automatic virtual environment management
-- Precise dependency version locking
-- Multi-Python version isolation
-- Convenient package publishing workflow (e.g., PyPI)
-
----
-
-## Installing Poetry
-
-Recommended installation via the official script:
+A standalone install is recommended (isolated from your project environments and global pip):
 
 ```bash
-# Official recommended method
+# macOS / Linux
 curl -sSL https://install.python-poetry.org | python3 -
 
-# Or use pip (not recommended)
-pip install poetry
+# Windows PowerShell
+(Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -
 ```
 
-After installation, verify the version:
+Verify the installation:
 
 ```bash
 poetry --version
 ```
 
+Avoid `pip install poetry` — it dumps Poetry's own dependencies into the global environment, where they can conflict with your projects.
+
 ---
 
-## Basic Usage
-
-### Creating a New Project
+## Project Setup
 
 ```bash
+# New project: generates the standard layout and pyproject.toml
 poetry new myproject
-```
-- This will create a directory named `myproject` with a standard project structure and an initial `pyproject.toml` file.
 
-### Initializing Poetry in an Existing Project
-
-```bash
-cd your_existing_project
+# Existing project: fill in pyproject.toml interactively
+cd myproject
 poetry init
 ```
-- Interactive prompts will help you set up project metadata and dependencies, generating a `pyproject.toml`.
 
-### Adding Dependencies
+Key fields of the generated `pyproject.toml`:
 
-```bash
-poetry add requests
-poetry add flask_app@2.1.0     # Specify version
-poetry add pytest --dev    # Add as a development dependency
-```
-- This automatically updates `pyproject.toml` and installs the dependencies.
+```toml
+[tool.poetry]
+name = "myproject"
+version = "0.1.0"
+description = ""
+authors = ["your name <you@example.com>"]
 
-### Removing Dependencies
+[tool.poetry.dependencies]
+python = "^3.11"
+requests = "^2.31"
 
-```bash
-poetry remove requests
-```
-- Removes and uninstalls the specified package from your project.
-
-### Installing Dependencies
-
-```bash
-poetry install
-```
-- Installs all dependencies specified in `pyproject.toml` and `poetry.lock`.
-
-### Updating Dependencies
-
-```bash
-poetry update
-poetry update requests
-```
-- Updates all or specific dependencies to the latest compatible versions.
-
-### Managing Virtual Environments
-
-- Poetry automatically creates a virtual environment for each project.
-- To activate the shell:
-
-  ```bash
-  poetry shell
-  ```
-
-- To run commands inside the virtual environment:
-
-  ```bash
-  poetry run python script.py
-  poetry run pytest
-  ```
-
-### Running Your Project
-
-If you have defined scripts in `pyproject.toml`, you can run them directly:
-
-```bash
-poetry run my-script
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 ```
 
-### Building and Publishing Packages
+## Managing Dependencies
 
-- Build your project:
+```bash
+poetry add requests            # add a runtime dependency
+poetry add "flask>=2.0,<3.0"   # with a version range
+poetry add pytest --group dev  # add a dev-only dependency
+poetry remove requests         # remove a dependency
+poetry install                 # install everything per the lock file
+poetry install --without dev   # runtime dependencies only (for deployment)
+poetry update                  # upgrade all dependencies within constraints, refresh lock
+poetry update requests         # upgrade one dependency
+poetry show --tree             # inspect the dependency tree
+```
 
-  ```bash
-  poetry build
-  ```
+Version constraint syntax:
 
-- Publish to PyPI:
+| Syntax | Meaning |
+|---|---|
+| `^2.31` | Allow upgrades within 2.x (>=2.31, <3.0) |
+| `~2.31` | Patch upgrades only (>=2.31, <2.32) |
+| `2.31.*` | Wildcard, equivalent to ~2.31 |
+| `==2.31.0` | Pin to an exact version |
+| `>=2.0,<3.0` | Range expression |
 
-  ```bash
-  poetry publish
-  # You may need to set your token: poetry config pypi-token.pypi your_token
-  ```
+## Virtual Environments
 
----
+Poetry creates an isolated environment per project automatically. Common operations:
 
-## Common Commands Cheat Sheet
+```bash
+poetry run python main.py   # run a command inside the project environment
+poetry run pytest
+poetry env info             # show the current environment's path and details
+poetry env list             # list all environments for the project
+poetry env use 3.11         # switch the environment's Python version
+poetry env remove 3.11      # delete an environment
+```
 
-| Command                          | Description                               |
-|-----------------------------------|-------------------------------------------|
-| poetry new <project_name>         | Create a new project                      |
-| poetry init                      | Initialize Poetry in an existing project  |
-| poetry add <package>             | Add a dependency                          |
-| poetry add <package> --dev       | Add a development dependency              |
-| poetry remove <package>          | Remove a dependency                       |
-| poetry install                   | Install dependencies                      |
-| poetry update                    | Update dependencies                       |
-| poetry shell                     | Activate the virtual environment          |
-| poetry run <command>             | Run a command inside the virtual environment |
-| poetry build                     | Build the project package                 |
-| poetry publish                   | Publish to PyPI                           |
+Two useful settings:
 
----
+```bash
+# Create .venv inside the project directory (IDE-friendly, recommended)
+poetry config virtualenvs.in-project true
 
-## Frequently Asked Questions
+# Inspect / change global configuration
+poetry config --list
+```
 
-**Q1: How do I specify the Python version?**  
-A: In the `[tool.poetry.dependencies]` section of `pyproject.toml`, add `python = "^3.9"`. Or use `poetry env use 3.9` to set the Python version for the virtual environment.
+> Since Poetry 2.0, `poetry shell` has moved to the separate `poetry-plugin-shell` plugin. Prefer `poetry run <command>` for daily use — no need to enter the environment at all.
 
-**Q2: How do I switch or locate the virtual environment path?**  
-A: Use `poetry env list` to see all environments, and `poetry env info` for details on the current one.
+## Build and Publish
 
-**Q3: What if installation is slow or fails?**  
-A: You can configure a mirror in `pyproject.toml` or set a repository with `poetry config repositories.xxx https://mirrors.aliyun.com/pypi/simple/`.
+```bash
+poetry build                              # build sdist and wheel (output to dist/)
+poetry config pypi-token.pypi <token>     # configure the PyPI token (once)
+poetry publish                            # publish to PyPI
+poetry publish --build                    # build and publish in one step
+```
 
-**Q4: How do I resolve dependency conflicts?**  
-A: Try `poetry update`. If conflicts persist, you may need to manually adjust dependency versions.
+## Command Cheat Sheet
 
----
+| Command | Purpose |
+|---|---|
+| `poetry new <name>` | Create a new project |
+| `poetry init` | Initialize an existing project |
+| `poetry add <pkg>` | Add a dependency |
+| `poetry add <pkg> --group dev` | Add a dev dependency |
+| `poetry remove <pkg>` | Remove a dependency |
+| `poetry install` | Install dependencies (per lock) |
+| `poetry update` | Upgrade dependencies, refresh lock |
+| `poetry lock` | Regenerate the lock file |
+| `poetry run <cmd>` | Run inside the project environment |
+| `poetry env use <version>` | Switch the environment's Python |
+| `poetry build` / `publish` | Build / publish the package |
 
-## References
+## Notes
 
-- [Poetry Official Documentation](https://python-poetry.org/docs/)
-- [Poetry GitHub](https://github.com/python-poetry/poetry)
-- [pyproject.toml Configuration](https://python-poetry.org/docs/pyproject/)
-
----
-
-For more advanced usage (such as multi-environment management, plugin extensions, etc.), refer to the official documentation or community resources.
+- Always commit `poetry.lock` — it is what keeps teammates and servers on identical versions.
+- After pulling someone else's project, the first command is always `poetry install`, which reproduces the environment exactly from the lock file.
+- Add new dependencies with `poetry add`; if you edit `pyproject.toml` by hand, don't forget to run `poetry lock` afterwards.

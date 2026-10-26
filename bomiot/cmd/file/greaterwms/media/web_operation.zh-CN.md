@@ -1,6 +1,6 @@
 ﻿#### Web端操作教程
 
-[视频教程](https://www.bilibili.com/video/BV15r4y1i7Ph/)
+视频教程
 
 #### 1.首页
 

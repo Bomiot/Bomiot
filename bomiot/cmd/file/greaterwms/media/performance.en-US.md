@@ -208,7 +208,7 @@ class PerformanceAPI(HttpUser):
 
 ## References
 
-- [Locust Official Documentation](https://docs.locust.io/en/stable/)
-- [Locust GitHub](https://github.com/locustio/locust)
+- Locust Official Documentation
+- Locust GitHub
 
 ---

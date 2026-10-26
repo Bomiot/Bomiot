@@ -10,4 +10,4 @@
 
 #### Directly Download
 
-[IOS](https://apps.apple.com/gb/app/intelligent-warehousing-gwms/id6444078526)
+IOS

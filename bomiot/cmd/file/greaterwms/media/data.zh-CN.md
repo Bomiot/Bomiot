@@ -1,33 +1,71 @@
-# 功能数据
+# 数据监控
 
 ## 介绍
 
-- **Bomiot** 的自带 API 是核心功能，提供了一套全新的前后端交互。
-- 前后端创建/更新/删除的数据交互会通过信号全部传输到 `receiver.py` 中。
-- `api.py` 将 URL 路径映射到函数名，`receiver.py` 实现对应的接管逻辑。
+Bomiot 的自带 API 通过 `bomiot_data_signals` 信号把前后端的数据交互（查询、创建、更新、删除）实时送到项目侧接管：
+
+- `api.py` 声明 URL 与接管函数名的映射
+- `receiver.py` 实现对应的接管方法，方法的返回值直接决定数据是否落库、前端收到什么反馈
+
+不接管时接口也能工作：查询走默认过滤返回，写操作原样返回提交数据（不落库）。
 
 ---
 
-## 工作原理
+## 工作流程
 
-1. 前端向某个 URL 发送请求（如 `/core/example/create/`），并通过 `HTTP_PROJECT` 请求头指定项目名称。
-2. 视图发送 `bomiot_data_signals` 信号，携带 `request`、`mode`、`data`、`updated_fields`。
-3. `admin.py` 中的 `data_callback` 从请求中读取 `HTTP_PROJECT`，加载对应项目的 `api.py`，查找该 URL 获取 `func_name`。
-4. `receiver_callback` 导入 `receiver.py` 并调用与 `func_name` 匹配的方法。
-5. 方法返回结果，决定数据是否被存储。
+### 写操作（创建 / 更新 / 删除）
 
-> `HTTP_PROJECT` 请求头决定加载哪个项目的 `api.py` 和 `receiver.py`。设为 `bomiot` 时会替换为默认项目名称。
+1. 前端请求命中内置 API（如 `/core/asn/create/`），视图先开启数据库事务
+2. 视图发送 `bomiot_data_signals` 信号，携带 `request`、`mode`（`create` / `update` / `delete`）、`data`，更新操作额外携带 `updated_fields`
+3. 框架信号接收器从请求头 `HTTP_PROJECT` 读取项目名（缺省或值为 `bomiot` 时使用主工程名），动态加载**该项目**的 `api.py`，按 URL 查出 `func_name`
+4. 框架用 AST 解析**主工程** `greaterwms/receiver.py`，动态加载并调用与 `func_name` 同名的方法
+5. 方法返回一个字典，框架按返回键决定行为：
+
+| 返回 | 数据行为 | 前端表现 |
+|---|---|---|
+| `{"msg": ...}` | **落库**（创建注入创建人与部门、更新剔除保护字段、删除转软删除） | 提示成功 |
+| `{"detail": ...}` | 不落库 | 提示失败原因 |
+| `{"login": ...}` | 不落库 | 触发重新登录 |
+| 未接管 / 方法不存在 | 不落库，原样返回提交数据 | 无提示 |
+
+> 整个写操作在事务中执行，接管方法抛异常会回滚并返回 400。
+
+### 查询（GET）
+
+1. 视图按 `project` + `is_delete` + 部门条件过滤数据，分页前把每行的 `data` JSONField **自动展平**为顶层字段
+2. 分页响应组装时发送信号（`mode='get'`），携带 `query_params`（解析后的查询参数）与 `data`（当前页数据）
+3. 接管方法返回**元组列表**：
+   - `('results', 数据)`：替换本页结果（不返回该项则保持原结果）
+   - 其他 `('键', 值)`：作为额外字段附加到响应中
+
+> 查询一般无需接管，只有需要在前端拿到加工后的数据时才接管。
 
 ---
 
-## `api.py` — API 路由
+## 文件位置
 
-`api.py` 定义了 URL 路径与接收函数名的映射关系：
+两个文件的作用域不同，这是机制设计上的关键点：
+
+```shell
+workspace/                    # 工作区
+├── setup.ini
+├── greaterwms/               # 主工程
+│   └── receiver.py           # 数据接管（全局唯一，所有项目共用）
+└── <your_project>/           # 各子项目
+    └── api.py                # API 路由表（按 HTTP_PROJECT 请求头切换）
+```
+
+- `api.py` 按项目隔离：请求头 `HTTP_PROJECT` 决定加载哪个项目的 `api.py`
+- `receiver.py` 全局只有一份：所有项目的写操作信号都汇聚到 `greaterwms/receiver.py`
+
+---
+
+## `api.py` — API 路由表
 
 ```python
 def api_return(data):
     api_list = [
-        {'method': 'GET', 'api': '/core/example/', 'func_name': 'example_get', 'name': 'Get Example List'},
+        {'method': 'GET',  'api': '/core/example/',        'func_name': 'example_get',    'name': 'Get Example List'},
         {'method': 'POST', 'api': '/core/example/create/', 'func_name': 'example_create', 'name': 'Create Example'},
         {'method': 'POST', 'api': '/core/example/update/', 'func_name': 'example_update', 'name': 'Update Example'},
         {'method': 'POST', 'api': '/core/example/delete/', 'func_name': 'example_delete', 'name': 'Delete Example'},
@@ -40,203 +78,71 @@ def api_return(data):
 | --- | --- |
 | `method` | HTTP 方法（`GET` / `POST`） |
 | `api` | URL 路径 |
-| `func_name` | `receiver.py` 中的函数名 |
+| `func_name` | `receiver.py` 中的接管方法名 |
 | `name` | 权限显示名称 |
+
+URL 未出现在表中时，信号查不到 `func_name`，该请求不会被接管。
 
 ---
 
 ## `receiver.py` — 数据接管
 
-默认模板是注释状态，取消注释即可启用：
+方法名与 `api.py` 的 `func_name` 一一对应，按类组织：
 
 ```python
-from bomiot.server.core.message import msg_message_return, detail_message_return, login_message_return
-from bomiot.server.core.models import Example
-from bomiot.server.core.utils import queryset_to_dict
-
+from bomiot.server.core.message import msg_message_return, detail_message_return
 
 class ExampleClass(object):
 
     def example_get(self, data):
-        print(data.get('query_params').get('params'))
-        example_list = Example.objects.filter()
-        qs_list = queryset_to_dict(example_list)
-        return [
-            ('results', data.get('data')),
-        ]
+        print(data.get('query_params').get('params'))   # 查询参数
+        return [('results', data.get('data'))]          # 保持默认结果
 
     def example_create(self, data):
-        print(data.get('data'))
+        print(data.get('data'))                         # 提交的数据
         language = data.get('request').META.get('HTTP_LANGUAGE', 'en-US')
         return msg_message_return(language, "Success Create")
 
     def example_update(self, data):
-        print(data.get('data'))
-        print(data.get('updated_fields'))
+        print(data.get('updated_fields'))               # {字段: (旧值, 新值)}
         language = data.get('request').META.get('HTTP_LANGUAGE', 'en-US')
         return msg_message_return(language, "Success Update")
 
     def example_delete(self, data):
-        print(data.get('data'))
         language = data.get('request').META.get('HTTP_LANGUAGE', 'en-US')
         return msg_message_return(language, "Success Delete")
 ```
 
-- 方法名与 `api.py` 中的 `func_name` 对应：`example_get`、`example_create`、`example_update`、`example_delete`。
+三个返回构造函数：`msg_message_return`（落库 + 成功）、`detail_message_return`（不落库 + 失败反馈）、`login_message_return`（不落库 + 重新登录）。
 
 ---
 
 ## `data` 参数结构
 
-传递给接收方法的 `data` 参数是一个字典，包含以下键：
-
-| 键 | 说明 | 可用场景 |
+| 键 | 说明 | 场景 |
 | --- | --- | --- |
-| `request` | Django 请求对象 | 全部 |
-| `mode` | 操作模式：`create`、`update`、`delete`（仅 POST 请求） | create、update、delete |
-| `data` | 请求体数据 | create、update、delete |
-| `query_params` | 查询参数（GET 请求） | get |
-| `updated_fields` | 变更字段的新旧值字典 | update |
-
-> 项目名称不是 `data` 的键，而是从请求头中获取：`data.get('request').META.get('HTTP_PROJECT')`。
-
-### 项目隔离
-
-继承自 `DataCoreModel` 的模型包含 `project` 字段，用于多项目数据隔离：
-
-```python
-class DataCoreModel(models.Model):
-    project = models.CharField(max_length=255, default='bomiot', verbose_name='Project Name')
-    is_delete = models.BooleanField(default=False, verbose_name='Delete Label')
-    created_time = models.DateTimeField(auto_now_add=True, verbose_name="Created Time")
-    updated_time = models.DateTimeField(auto_now=True, blank=True, null=True, verbose_name="Updated Time")
-```
-
-- **创建时**：`project` 字段自动设置为 `HTTP_PROJECT` 请求头的值。
-- **查询时**：结果自动按 `project` = `HTTP_PROJECT` 过滤，确保每个项目只能看到自己的数据。
-
-从请求中获取当前语言：
-
-```python
-language = data.get('request').META.get('HTTP_LANGUAGE', 'en-US')
-```
+| `request` | 请求对象（取语言/项目：`request.META` 的 `HTTP_LANGUAGE`、`HTTP_PROJECT`） | 全部 |
+| `mode` | `get` / `create` / `update` / `delete` | 全部 |
+| `data` | 写操作：请求体；查询：当前页已展平数据 | 全部 |
+| `query_params` | 解析后的查询参数字典 | get |
+| `updated_fields` | 变更字段的新旧值 `{字段: (旧值, 新值)}` | update |
 
 ---
 
-## 获取（GET）
+## 项目隔离
 
-```python
-def example_get(self, data):
-    print(data.get('query_params').get('params'))  # 获取查询参数
-    example_list = Example.objects.filter()
-    qs_list = queryset_to_dict(example_list)  # 序列化 queryset
-    return [
-        ('results', data.get('data')),
-    ]
-```
+继承 `DataCoreModel` 的模型自带 `project` 字段：
 
-- `CoreModel` 中的 `data` 字段是 `JSONField`。原始 queryset 结果将业务数据嵌套在 `data` 中：
+- **写入**：落库时自动写入 `HTTP_PROJECT` 的值（创建还会注入 `creater` 与 `department`）
+- **查询**：默认只返回当前项目、`is_delete=False` 且满足部门条件的数据
 
-```json
-[{
-    "id": 1,
-    "data": {
-        "name": "test1",
-        "type": 1
-    },
-    "project": "greaterwms",
-    "is_delete": false,
-    "created_time": "datetime",
-    "updated_time": "datetime"
-}]
-```
-
-- 使用 `queryset_to_dict` 将 `data` JSONField 展平为顶层字段：
-
-```json
-[{
-    "id": 1,
-    "name": "test1",
-    "type": 1,
-    "project": "greaterwms",
-    "is_delete": false,
-    "created_time": "datetime",
-    "updated_time": "datetime"
-}]
-```
-
-- 一般情况下，不需要接管 GET 请求。
-- 仅在需要向前端返回数据中添加或转换数据时，才进行接口接管。
-
-```python
-return [
-    ('results', data.get('data')),  # 这是默认值，可替换为自定义数据
-]
-```
-
-`注意:`
-
-- 返回值是元组列表，形式为 `[('results', data)]`。
-- 使用 `data.get('query_params').get('params')` 获取查询参数。
+每个项目只能看到并操作自己的数据。
 
 ---
 
-## 创建（Create）
+## 注意事项
 
-```python
-def example_create(self, data):
-    print(data.get('data'))  # 获取提交的数据
-    language = data.get('request').META.get('HTTP_LANGUAGE', 'en-US')
-    return msg_message_return(language, "Success Create")
-```
-
-- 创建数据的接口接管，必须返回交互结果。
-- 如果不接管创建数据接口，默认就是前端传什么，后端存什么。
-- 一共 3 种返回端口。
-
-```python
-from bomiot.server.core.message import msg_message_return, detail_message_return, login_message_return
-```
-
-`注意:`
-
-- 只有使用 `msg_message_return` 时，**Bomiot** 才会存储数据，并且前端提示成功。
-- 使用 `detail_message_return` 时，前端返回不能存储的反馈信息。
-- 使用 `login_message_return` 时，会触发前端重新登录，并且数据不会被存储。
-
----
-
-## 更新（Update）
-
-```python
-def example_update(self, data):
-    print(data.get('data'))  # 获取提交的数据
-    print(data.get('updated_fields'))  # 获取更新的字段
-    language = data.get('request').META.get('HTTP_LANGUAGE', 'en-US')
-    return msg_message_return(language, "Success Update")
-```
-
-- 更新数据与创建数据不同的是，**Bomiot** 会通过 `data.get('updated_fields')` 告诉你更新了哪些字段。
-- `updated_fields` 是一个字典：`{字段名: (旧值, 新值)}`。
-- 其他机制与创建数据相同。
-
----
-
-## 删除（Delete）
-
-```python
-def example_delete(self, data):
-    print(data.get('data'))  # 获取提交的数据（包含 `id`）
-    language = data.get('request').META.get('HTTP_LANGUAGE', 'en-US')
-    return msg_message_return(language, "Success Delete")
-```
-
-- 机制与创建数据相同。
-
----
-
-## 注意
-
-- **Bomiot** 的信号机制是热更新，即即时生效，无需重启服务器。
-- 数据接管后，指向其他文件做调用，避免 `receiver.py` 过于臃肿。
-- `CoreModel` 中的 `data` 字段是 `JSONField`，统一了前后端数据。
+- **热更新**：`receiver.py` 每次请求动态加载，改动即时生效，无需重启；`api.py` 走模块导入缓存，改动后需重启服务
+- **保持 receiver.py 精简**：接管方法只做分发，业务逻辑放到独立模块（如 `process/` 目录）中调用，避免文件臃肿
+- **软删除**：删除操作实际是 `is_delete=True`，数据仍在库中
+- 更新落库前框架自动剔除 `id`、`is_delete`、`created_time`、`updated_time`，防止这些字段被前端篡改

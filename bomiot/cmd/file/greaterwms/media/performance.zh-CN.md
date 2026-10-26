@@ -208,7 +208,7 @@ class PerformanceAPI(HttpUser):
 
 ## 参考链接
 
-- [Locust 官方文档（英文）](https://docs.locust.io/en/stable/)
-- [Locust GitHub](https://github.com/locustio/locust)
+- Locust 官方文档（英文）
+- Locust GitHub
 
 ---

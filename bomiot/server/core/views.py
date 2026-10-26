@@ -9,14 +9,16 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from functools import reduce
 
 from bomiot.server.core import serializers, models, filter
-from bomiot.server.core.page import CorePageNumberPagination, PermissionPageNumberPagination, APIPageNumberPagination, TeamPageNumberPagination
-from bomiot.server.core.permission import NormalPermission
+from bomiot.server.core.page import CorePageNumberPagination, PermissionPageNumberPagination, APIPageNumberPagination, \
+    TeamPageNumberPagination
+from bomiot.server.core.permission import NormalPermission, CorePermission
 from bomiot.server.core.utils import readable_file_size, sync_write_file
 from bomiot.server.core.signal import bomiot_signals
 from rest_framework.filters import OrderingFilter
 from rest_framework.exceptions import MethodNotAllowed
 from django_filters.rest_framework import DjangoFilterBackend
-from bomiot.server.core.message import permission_message_return, detail_message_return, msg_message_return, others_message_return
+from bomiot.server.core.message import permission_message_return, detail_message_return, msg_message_return, \
+    others_message_return
 
 from django.contrib.auth import get_user_model
 from django.db.models import Q
@@ -66,9 +68,10 @@ class UserList(viewsets.ModelViewSet):
             return serializers.UserSerializer
         else:
             raise MethodNotAllowed(self.request.method)
-            
+
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
+
 
 class PermissionList(viewsets.ModelViewSet):
     """
@@ -93,7 +96,7 @@ class PermissionList(viewsets.ModelViewSet):
             return serializers.PermissionSerializer
         else:
             raise MethodNotAllowed(self.request.method)
-        
+
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
@@ -209,7 +212,7 @@ class UserSetTeam(viewsets.ModelViewSet):
                 user_data.team = int(data.get('team_id'))
                 user_data.save()
         return Response(msg_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
-                                            "Success set team"), status=200)
+                                           "Success set team"), status=200)
 
 
 class UserSetDepartment(viewsets.ModelViewSet):
@@ -242,7 +245,7 @@ class UserSetDepartment(viewsets.ModelViewSet):
                 user_data.department = data.get('department_id')
                 user_data.save()
         return Response(msg_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
-                                            "Success set department"), status=200)
+                                           "Success set department"), status=200)
 
 
 class UserLock(viewsets.ModelViewSet):
@@ -339,7 +342,7 @@ class UserUpload(viewsets.ModelViewSet):
         create:
             upload files
     """
-    permission_classes = [NormalPermission, ]
+    permission_classes = [CorePermission, ]
     filter_backends = [DjangoFilterBackend, OrderingFilter, ]
     ordering_fields = ['id', "created_time", "updated_time", ]
     filter_class = filter.FileFilter
@@ -347,7 +350,8 @@ class UserUpload(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         data = self.request.FILES
-        exists(join(settings.MEDIA_ROOT, self.request.auth.username)) or os.makedirs(join(settings.MEDIA_ROOT, self.request.auth.username))
+        exists(join(settings.MEDIA_ROOT, self.request.auth.username)) or os.makedirs(
+            join(settings.MEDIA_ROOT, self.request.auth.username))
         for file_name in data:
             file_obj = self.request.FILES.get(file_name)
             file_extension = file_obj.name.split('.')[-1].lower()
@@ -359,7 +363,7 @@ class UserUpload(viewsets.ModelViewSet):
                 file_size = readable_file_size(file_obj.size)
                 file_size_limit = readable_file_size(settings.FILE_SIZE)
                 detail = others_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
-                                                         "File size exceeds limit")
+                                               "File size exceeds limit")
                 context = {"detail": f"{detail} {file_size}/{file_size_limit}"}
                 raise APIException(context)
             file_data = file_obj.read()
@@ -374,7 +378,6 @@ class UserUpload(viewsets.ModelViewSet):
             msg = others_message_return(self.request.META.get('HTTP_LANGUAGE', ''), "Success upload files")
             context = {"msg": f"{msg} {file_obj.name}"}
             return Response(context, status=200)
-                
 
 
 class FilePage(CorePageNumberPagination):
@@ -413,10 +416,10 @@ class UserFiles(viewsets.ModelViewSet):
             else:
                 share_user = '<->' + str(self.request.auth.id) + "<->" + self.request.auth.username
                 return models.Files.objects.filter(
-                                            Q(owner=self.request.auth.username, **query_data)
-                                            |
-                                            Q(shared_to__icontains=share_user, **query_data)
-                                            ).order_by('-updated_time')
+                    Q(owner=self.request.auth.username, **query_data)
+                    |
+                    Q(shared_to__icontains=share_user, **query_data)
+                ).order_by('-updated_time')
         else:
             return models.Files.objects.none()
 
@@ -425,7 +428,7 @@ class UserFiles(viewsets.ModelViewSet):
             return serializers.FileSerializer
         else:
             raise MethodNotAllowed(self.request.method)
-                
+
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
@@ -533,7 +536,7 @@ class TeamList(viewsets.ModelViewSet):
             return serializers.TeamSerializer
         else:
             raise MethodNotAllowed(self.request.method)
-            
+
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 
@@ -614,7 +617,7 @@ class TeamPermission(viewsets.ModelViewSet):
                 )
                 team_data.save()
         return Response(msg_message_return(self.request.META.get('HTTP_LANGUAGE', ''),
-                                            "Success change team permission"), status=200)
+                                           "Success change team permission"), status=200)
 
 
 class TeamChange(viewsets.ModelViewSet):
@@ -709,7 +712,7 @@ class DepartmentList(viewsets.ModelViewSet):
             return serializers.DepartmentSerializer
         else:
             raise MethodNotAllowed(self.request.method)
-            
+
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
 

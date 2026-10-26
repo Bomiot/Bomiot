@@ -4,7 +4,7 @@
   <p><strong>No-environment delivery tool for Python apps</strong></p>
   <p><em>Compile to binary · Cross-platform · Incremental updates · Source code protection</em></p>
 
-  [English](README.md) | [中文](README_CN.md)
+  English | 中文
 
 </div>
 
@@ -12,21 +12,21 @@
 
 ## 📑 Table of Contents
 
-- [About Bomiot](#-about-bomiot)
-- [Video Introduction](#-video-introduction)
-- [Core Features Overview](#-core-features-overview)
-- [Use Case Examples](#-use-case-examples)
-- [Quick Start](#-quick-start-5-minute-hands-on)
-- [CLI Reference](#-cli-reference)
-- [Configuration Reference](#-configuration-reference-setupini)
-- [Scheduled Tasks](#-scheduled-tasks)
-- [File Monitoring & Upload](#-file-monitoring--upload)
-- [Real-time System Monitoring](#-real-time-system-monitoring)
-- [Real-time WebSocket Communication](#-real-time-websocket-communication)
-- [Deployment & Distribution](#-deployment--distribution)
-- [Security Notice](#-security-notice)
-- [Contributing](#-contributing)
-- [License](#-license)
+- About Bomiot
+- Video Introduction
+- Core Features Overview
+- Use Case Examples
+- Quick Start
+- CLI Reference
+- Configuration Reference
+- Scheduled Tasks
+- File Monitoring & Upload
+- Real-time System Monitoring
+- Real-time WebSocket Communication
+- Deployment & Distribution
+- Security Notice
+- Contributing
+- License
 
 ---
 
@@ -60,7 +60,7 @@ For developers, a single `bomiot deploy` command packages your Django / FastAPI 
 
 Watch the video introduction of Bomiot to quickly understand the core features and usage of the platform.
 
-▶ **[Click to Watch Video Introduction](https://youtube.com/@greaterwms3682?si=gShTwLvMtyVNqoqC)** (YouTube)
+▶ **Click to Watch Video Introduction** (YouTube)
 
 ---
 
@@ -152,7 +152,7 @@ Real-time file monitoring system automatically manages user-uploaded files.
 
 ### 10. Real-Time WebSocket Communication
 
-Bomiot's Rust ASGI gateway natively supports WebSocket. You can directly write WebSocket routes in the application's `main.py`. For details, see the [WebSocket Section](#-real-time-websocket-communication).
+Bomiot's Rust ASGI gateway natively supports WebSocket. You can directly write WebSocket routes in the application's `main.py`. For details, see the WebSocket Section.
 
 - 💬 **Minimal Development**: Directly use the standard WebSocket syntax of FastAPI/Flask, zero learning cost.
 - ⚡ **Gateway Forwarding**: The Rust gateway automatically identifies WebSocket requests and efficiently forwards them to the corresponding application.
@@ -476,9 +476,9 @@ Compilation converts Python code to native binaries, effectively improving code 
 
 We welcome contributions of any form!
 
-- 🔗 **Official Website**: [https://www.bomiot.com](https://www.bomiot.com)
-- 🐛 **Submit Bug**: [Create Issue](https://github.com/Bomiot/Bomiot/issues/new?template=bug_report.md)
-- ✨ **Feature Suggestion**: [Submit Feature Request](https://github.com/Bomiot/Bomiot/issues/new?template=feature_request.md)
+- 🔗 **Official Website**: https://www.bomiot.com
+- 🐛 **Submit Bug**: Create Issue
+- ✨ **Feature Suggestion**: Submit Feature Request
 - 💻 **Code Contribution**: Fork the repository -> Create a branch -> Submit a Pull Request
 - 🧩 **Share Applications**: Develop industry applications based on Bomiot and publish them to the free application marketplace to share with the community
 
@@ -486,7 +486,7 @@ We welcome contributions of any form!
 
 ## 📄 License
 
-This project is licensed under the **Apache License 2.0**, see [LICENSE](LICENSE) file for details.
+This project is licensed under the **Apache License 2.0**, see LICENSE file for details.
 
 ---
 
@@ -494,6 +494,6 @@ This project is licensed under the **Apache License 2.0**, see [LICENSE](LICENSE
 
 **⭐ If Bomiot is helpful to you, please give the project a Star!**
 
-Made with ❤️ by [Bomiot Team](https://github.com/Bomiot)
+Made with ❤️ by Bomiot Team
 
 </div>

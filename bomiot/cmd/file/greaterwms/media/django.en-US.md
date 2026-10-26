@@ -2,134 +2,34 @@
 
 ## Introduction
 
-Bomiot uses **Django** as the enterprise-grade backend framework. Django's ORM is universal across all backends (Django, FastAPI, Flask), so models defined in Django can be reused everywhere.
+Bomiot uses **Django** as its backend framework. Django is a high-level Python web framework known for "rapid development and clean, pragmatic design." It ships with an ORM, admin interface, authentication, security, and more out of the box, and is widely used in projects that need fast delivery without compromise.
+
+### Key Features
+
+- **Batteries included**: ORM, template engine, form handling, user authentication, admin panel, i18n, and security protections all built in
+- **MTV architecture**: Model (data) — Template (presentation) — View (logic), cleanly separated
+- **Powerful ORM**: define data models as Python classes, automatically mapped to database tables, with support for SQLite / MySQL / PostgreSQL / Oracle
+- **Automatic admin**: a complete data-management interface generated from your models with zero code
+- **Security**: built-in defenses against SQL injection, XSS, CSRF, clickjacking, and other common attacks
+- **Scalable**: a proven path from prototype to products serving millions of requests
 
 ---
 
-## Create a Project
+## Using It in Bomiot
+
+### Create a Project
 
 ```shell
 bomiot project <project_name>
 ```
 
-## Create a Django App
+### Create an App
 
 ```shell
-bomiot new <app_name>
+bomiot app <app_name>
 ```
 
-Then you can write your Django application within this app. You can also use the standard Django commands:
-
-```shell
-# Generate migration files
-bomiot makemigrations
-
-# Apply migrations
-bomiot migrate
-```
-
----
-
-## Project Structure
-
-```
-your-project/                 # Project directory
-├── <app_name>/               # Django app
-│   ├── migrations/           # Database migrations
-│   ├── __init__.py
-│   ├── admin.py              # Admin registration
-│   ├── apps.py               # App config
-│   ├── models.py             # Data models
-│   ├── serializers.py        # DRF serializers
-│   ├── urls.py               # URL routing
-│   └── views.py              # API views
-├── language/                 # i18n files
-├── media/                    # Static files
-├── bomiotconf.ini            # Project identifier
-├── receiver.py               # Data takeover
-├── server.py                 # Server monitoring
-└── files.py                  # File monitoring
-setup.ini                     # Global config
-```
-
----
-
-## Defining Models
-
-Bomiot provides a `CoreModel` base class with common fields (`id`, `created_time`, `updated_time`, `is_delete`).
-
-```python
-from bomiot.server.core.models import CoreModel
-
-class Goods(CoreModel):
-    # All business data is stored in a single JSONField for front-end/back-end consistency
-    data = models.JSONField(default=dict)
-```
-
-> 💡 The `data` JSONField allows the front-end to send arbitrary JSON, and the back-end stores it directly without field-by-field mapping. See [Structure](structure) for details.
-
----
-
-## URL Routing
-
-Define routes in `urls.py` with a `name` for permission control:
-
-```python
-from django.urls import path
-from . import views
-
-urlpatterns = [
-    path('goods/', views.goods, name="Goods"),
-]
-```
-
-- If `name` is specified, the interface is protected by Bomiot's permission system.
-- If `name` is omitted, the interface is public (no permission check).
-
-See [Permission](permission) for details.
-
----
-
-## API Views
-
-Bomiot uses Django REST Framework (DRF) style views. Each view function receives a `data` dict containing the request, query params, and payload.
-
-```python
-from bomiot.server.core.message import msg_message_return
-
-def goods(request, data):
-    # data contains: request, query_params, data (POST body)
-    language = data.get('request').META.get('HTTP_LANGUAGE', 'en-US')
-    return msg_message_return(language, "Success")
-```
-
----
-
-## Data Takeover (receiver.py)
-
-For custom business logic, take over the API in `receiver.py` instead of modifying views. Bomiot signals enable hot updates — changes take effect immediately without restarting the server.
-
-See [Function Data](data) for details.
-
----
-
-## Signal Mechanism
-
-Bomiot's signal system (`bomiot_signals`, `bomiot_data_signals`) allows real-time communication between components:
-
-```python
-from bomiot.server.core.signal import bomiot_signals
-
-# Send a signal
-bomiot_signals.send(sender=my_func, msg={'key': 'value'})
-```
-
-- **Hot update**: Signal handlers take effect immediately without server restart.
-- **Real-time**: File changes, data updates, and server metrics are broadcast via signals.
-
----
-
-## Migrations
+### Database Migrations
 
 ```shell
 # Generate migration files
@@ -147,13 +47,114 @@ bomiot dumpdata [appname]
 
 ---
 
-## Multi-database Support
+## Project Structure
 
-Bomiot supports SQLite (default), MySQL, PostgreSQL, and Oracle. Configure in `setup.ini`:
+```
+your-project/                 # project directory
+├── <app_name>/               # Django app
+│   ├── migrations/           # database migrations
+│   ├── __init__.py
+│   ├── admin.py              # admin registration
+│   ├── apps.py               # app configuration
+│   ├── models.py             # data models
+│   ├── serializers.py        # serializers
+│   ├── urls.py               # URL routing
+│   └── views.py              # API views
+├── language/                 # i18n files
+├── media/                    # static files
+├── bomiotconf.ini            # project identity
+├── receiver.py               # data takeover
+├── server.py                 # server monitoring
+└── files.py                  # file monitoring
+setup.ini                     # global configuration
+```
+
+---
+
+## Defining Models
+
+Bomiot provides a `CoreModel` base class with common fields (`id`, `created_time`, `updated_time`, `is_delete`).
+
+```python
+from bomiot.server.core.models import CoreModel
+
+class Goods(CoreModel):
+    # All business data is stored in a single JSONField, keeping front and back ends consistent
+    data = models.JSONField(default=dict)
+```
+
+> 💡 The `data` JSONField lets the front end send arbitrary JSON, stored directly by the backend without field-by-field mapping. See Data Structure.
+
+If you prefer traditional field-by-field modeling, the full power of Django models (field types, indexes, constraints, relationships) is equally available.
+
+---
+
+## URL Routing
+
+Define routes in `urls.py`. The `name` attribute is used for permission control:
+
+```python
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('goods/', views.goods, name="Goods"),
+]
+```
+
+- Endpoints with a `name` are protected by the Bomiot permission system.
+- Endpoints without a `name` are public (no permission check).
+
+See Permission Control.
+
+---
+
+## API Views
+
+Each view function receives a `data` dict containing the request, query parameters, and payload.
+
+```python
+from bomiot.server.core.message import msg_message_return
+
+def goods(request, data):
+    # data contains: request, query_params, data (POST body)
+    language = data.get('request').META.get('HTTP_LANGUAGE', 'en-US')
+    return msg_message_return(language, "Success")
+```
+
+---
+
+## Data Takeover
+
+To customize business logic, take over the API in `receiver.py` instead of modifying views.
+
+See Data Takeover.
+
+---
+
+## Signal System
+
+The Bomiot signal system (`bomiot_signals`, `bomiot_data_signals`) enables real-time communication between components:
+
+```python
+from bomiot.server.core.signal import bomiot_signals
+
+# Send a signal
+bomiot_signals.send(sender=my_func, msg={'key': 'value'})
+```
+
+- **Hot reload**: signal handlers take effect immediately, no server restart needed.
+- **Real-time**: file changes, data updates, and server metrics are all broadcast via signals.
+
+---
+
+## Multi-Database Support
+
+SQLite (default), MySQL, PostgreSQL, and Oracle are supported. Configure in `setup.ini`:
 
 ```ini
 [database]
-engine = sqlite    # sqlite | mysql | postgresql | oracle
+engine = sqlite
 name = db_name
 user = db_user
 password = db_pwd
@@ -161,16 +162,4 @@ host = db_host
 port = db_port
 ```
 
-See [SQLite](sqlite), [MySQL](mysql), [PostgreSQL](postgresql) for setup details.
-
----
-
-## References
-
-- [Django Official Documentation](https://docs.djangoproject.com/en/4.2/)
-- [Django GitHub](https://github.com/django/django)
-- [Django REST Framework](https://www.django-rest-framework.org/)
-
----
-
-For more advanced usage, refer to the official documentation or community resources.
+See SQLite, MySQL, PostgreSQL, Oracle.

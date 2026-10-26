@@ -111,7 +111,10 @@ TEMPLATES_PATH = join(WORKING_SPACE, PROJECT_NAME)
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [TEMPLATES_PATH],
+        # WORKING_SPACE is included so sub-project index.html files
+        # (served directly from <workspace>/<project>/templates) pass the
+        # template loader's safe_join check
+        'DIRS': [TEMPLATES_PATH, WORKING_SPACE],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

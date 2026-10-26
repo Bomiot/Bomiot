@@ -11,10 +11,8 @@ from bomiot.server.core.utils import receiver_callback, dynamic_import_and_call,
 from bomiot.server.core.signal import bomiot_data_signals
 from bomiot.server.core.signal import bomiot_signals
 
-
 # get user_model
 User = get_user_model()
-
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
@@ -61,10 +59,7 @@ def data_callback(**kwargs):
     Signal receiver to handle the received signal
     """
     path = kwargs.get('request').path
-    project_name = kwargs.get('request').META.get('HTTP_PROJECT', settings.PROJECT_NAME)
-    if project_name.lower() == 'bomiot':
-        project_name = settings.PROJECT_NAME
-    api_obj = dynamic_import_and_call(f'{project_name}.api', 'api_return', f'{path}')
+    api_obj = dynamic_import_and_call('greaterwms.api', 'api_return', f'{path}')
     value = api_obj.get('func_name')
     feedback = receiver_callback(kwargs, value)
     return feedback

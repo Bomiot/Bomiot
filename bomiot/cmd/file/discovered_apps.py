@@ -22,10 +22,12 @@ def discover(working_space):
             apps.append(f"greaterwms.{entry.name}")
     return apps
 
-def main(working_space):
+def main(working_space, argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default="apps.json")
-    args = ap.parse_args()
+    # argv=None falls back to sys.argv for standalone use; callers inside the
+    # CLI must pass [] to avoid parsing the outer command line.
+    args, _ = ap.parse_known_args(argv)
 
     apps = discover(working_space)
     out_path = Path(working_space) / args.out

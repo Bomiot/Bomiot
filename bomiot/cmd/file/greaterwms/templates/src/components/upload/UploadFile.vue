@@ -110,7 +110,6 @@ import { useI18n } from "vue-i18n"
 import { useTokenStore } from 'stores/token'
 import { useLanguageStore } from 'stores/language'
 import { computed, ref, watch } from "vue"
-import { baseURL } from 'boot/axios'
 
 const { t } = useI18n()
 const $q = useQuasar()
@@ -127,22 +126,21 @@ const ScreenWidth = ref($q.screen.width * 0.825 + '' + 'px')
 const CardBackground = ref($q.dark.isActive? '#1D1D1D' : '#1972D2')
 
 function onUploaded(response) {
-  if (JSON.parse(response.xhr.responseText).msg) {
-    uploaderRef.value.files.forEach(item => {
-      if (item.name === response.files[0].name) {
-        item.notice = JSON.parse(response.xhr.responseText).msg
+  const res = JSON.parse(response.xhr.responseText)
+  uploaderRef.value.files.forEach(item => {
+    if (item.name === response.files[0].name) {
+      if (res.msg) {
+        item.notice = res.msg
         item.__status = 'uploaded'
+      } else if (res.detail) {
+        item.notice = res.detail
+        item.__status = 'failed'
+      } else if (res.login) {
+        item.notice = res.login
+        item.__status = 'failed'
       }
-    })
-  }
-  if (JSON.parse(response.xhr.responseText).detail) {
-    uploaderRef.value.files.forEach(item => {
-      if (item.name === response.files[0].name) {
-        item.notice = JSON.parse(response.xhr.responseText).detail
-        item.__status = 'failed '
-      }
-    })
-  }
+    }
+  })
 }
 
 function onError(error) {
@@ -151,12 +149,8 @@ function onError(error) {
 
 function getUrl (e) {
   if (e) {
-    var domain = window.location.hostname;
-    if (domain === 'localhost') {
-      return `${baseURL}/core/user/upload/`
-    } else {
-      return 'core/user/upload/'
-    }
+    // Relative path, same as the axios instance — works on any host/port
+    return 'core/user/upload/'
   }
 }
 

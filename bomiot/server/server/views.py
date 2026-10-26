@@ -21,7 +21,7 @@ from os import listdir
 import importlib.util
 from configparser import ConfigParser
 from pathlib import Path
-from bomiot.cmd.copyfile import copy_files
+from bomiot_cmd.copyfile import copy_files
 from bomiot.server.core.utils import are_folders_identical
 from django.urls import get_resolver, URLPattern, URLResolver
 
@@ -37,25 +37,18 @@ async def bomiot_test(request):
 class IndexTemplateView(TemplateView):
     def get_template_names(self):
         project_name = self.request.COOKIES.get('project', settings.PROJECT_NAME)
-        if project_name.lower() == 'bomiot':
+        # Cookie is user-controlled; strip any path parts to stay inside the workspace
+        if project_name != os.path.basename(project_name):
+            project_name = settings.PROJECT_NAME
+        if project_name.lower() == 'bomiot' or project_name == settings.PROJECT_NAME:
             template_path = join(settings.WORKING_SPACE, settings.PROJECT_NAME, 'templates/dist/spa/index.html')
         else:
-            if project_name == settings.PROJECT_NAME:
-                template_path = join(settings.WORKING_SPACE, settings.PROJECT_NAME, 'templates/dist/spa/index.html')
+            # Serve the sub-project directly from the workspace root, never mirror it
+            candidate = join(settings.WORKING_SPACE, project_name, 'templates/dist/spa/index.html')
+            if isfile(candidate):
+                template_path = candidate
             else:
-                project_template = join(settings.WORKING_SPACE, project_name, 'templates')
-                working_template = join(settings.WORKING_SPACE, settings.PROJECT_NAME, 'templates', 'project', project_name)
-                if exists(working_template):
-                    while True:
-                        template_mirror = are_folders_identical(project_template, working_template)
-                        if template_mirror is True:
-                            break
-                        else:
-                            continue
-                else:
-                    os.makedirs(working_template)
-                    copy_files(project_template, working_template)
-                template_path = join(working_template, 'dist/spa/index.html')
+                template_path = join(settings.WORKING_SPACE, settings.PROJECT_NAME, 'templates/dist/spa/index.html')
         return [template_path]
 
     def render_to_response(self, context, **response_kwargs):
@@ -187,13 +180,14 @@ def favicon(request):
 
 def statics(request):
     project_name = request.COOKIES.get('project', settings.PROJECT_NAME)
-    if project_name.lower() == 'bomiot':
+    # Cookie is user-controlled; strip any path parts to stay inside the workspace
+    if project_name != os.path.basename(project_name):
+        project_name = settings.PROJECT_NAME
+    if project_name.lower() == 'bomiot' or project_name == settings.PROJECT_NAME:
         base_dir = join(settings.WORKING_SPACE, settings.PROJECT_NAME, 'templates', 'dist', 'spa')
     else:
-        if project_name == settings.PROJECT_NAME:
-            base_dir = join(settings.WORKING_SPACE, settings.PROJECT_NAME, 'templates', 'dist', 'spa')
-        else:
-            base_dir = join(settings.WORKING_SPACE, settings.PROJECT_NAME, 'templates', 'project', project_name, 'dist', 'spa')
+        # Serve the sub-project assets directly from the workspace root
+        base_dir = join(settings.WORKING_SPACE, project_name, 'templates', 'dist', 'spa')
     path = join(base_dir, request.path_info.lstrip('/'))
     if exists(path) and isfile(path):
         resp = FileResponse(open(path, 'rb'))

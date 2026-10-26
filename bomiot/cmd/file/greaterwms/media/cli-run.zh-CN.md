@@ -192,6 +192,8 @@ bomiot run -b 0.0.0.0 -p 8000 -w 4
 
 监听 `0.0.0.0:8000`，启动 4 个 worker 进程。
 
+> **注意**：Windows 环境下建议保持 `--workers 1`（默认值）。Windows 对多 worker 进程支持不好，多 worker 可能出现启动异常或运行不稳定；如需多 worker 提升并发能力，请在 Linux / macOS 环境下运行。
+
 ### 启用调试日志
 
 ```bash
@@ -221,9 +223,3 @@ bomiot run --app my_asgi:application
 ```
 
 将 ASGI 应用入口从默认的 `bomiot_asgi:application` 改为 `my_asgi:application`。
-
-## 相关命令
-
-- [bomiot makemigrations](./cli-makemigrations.zh-CN.md)：启动前生成数据库迁移
-- [bomiot migrate](./cli-init.zh-CN.md)：启动前应用数据库迁移
-- [bomiot init](./cli-init.zh-CN.md)：初始化项目基础文件

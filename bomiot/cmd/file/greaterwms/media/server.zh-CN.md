@@ -2,44 +2,56 @@
 
 ## 介绍
 
-- **Bomiot** 在后台线程中采集服务器状态指标，并保存到数据库。
-- 每个指标都会发送 `bomiot_signals` 信号，信号会转发到 `server.py` 供自定义处理。
-- 通过 `server.py` 接收实时信号，可以构建自己的服务器管理逻辑。
+Bomiot 内置服务器监控器，在后台守护线程中周期性采集服务器指标（CPU、内存、磁盘、网络、进程），采集结果写入数据库，同时通过 `bomiot_signals` 信号实时推送到项目根目录的 `server.py`，供你接管自定义逻辑。
+
+无需编写任何采集代码，取消 `server.py` 中的注释即可接收数据。
 
 ---
 
-## 工作原理
+## 工作流程
 
-1. `start_monitoring()` 启动一个后台线程，运行 `ServerManager.monitor_server()`。
-2. 循环按顺序采集指标：CPU → 内存 → 磁盘 → 网络 → 进程，然后休眠 300 秒。
-3. 每个指标保存到数据库，并发送 `bomiot_signals` 信号。
-4. 信号处理器调用 `greaterwms/server.py` 中对应的方法（`cpu_get`、`memory_get`、`disk_get`、`network_get`、`pid_get`）。
+1. **启动**：服务启动时读取 `setup.ini`，`[system_control] server_monitor = True` 时启动监控守护线程；多 workers 部署下框架通过文件锁保证监控线程只启动一次
+2. **就绪等待**：线程启动后先等待数据库迁移完成（最多 30 秒检测监控表是否就绪），避免启动早期写库报错
+3. **周期采集**：进入无限循环，按固定顺序采集五类指标，每类之间间隔 1 秒：
 
-> 注意：一次完整采集周期约为 5 分钟（300 秒休眠 + 采集耗时）。
+   ```
+   CPU → (1s) → 内存 → (1s) → 磁盘 → (1s) → 网络 → (1s) → 进程 → 休眠 300 秒 → 下一轮
+   ```
+
+   一个完整周期约 5 分钟（4 秒间隔 + 300 秒休眠 + 采集耗时；其中 CPU 使用率采样本身阻塞 1 秒）
+4. **写入数据库**：每个指标按各自的保留策略写入对应模型（见下方"数据保留策略"）
+5. **信号分发**：每条采集结果发送 `bomiot_signals` 信号，`models` 为 `CPU` / `Memory` / `Disk` / `Network` / `Pids`，`type` 为 `created`
+6. **项目接管**：框架按 `models` 路由，用 AST 解析项目根目录 `server.py`，动态加载并调用对应方法：
+
+   | models | server.py 方法 |
+   |---|---|
+   | `CPU` | `cpu_get(data)` |
+   | `Memory` | `memory_get(data)` |
+   | `Disk` | `disk_get(data)` |
+   | `Network` | `network_get(data)` |
+   | `Pids` | `pid_get(data)` |
+
+> **热更新**：`server.py` 在每次信号触发时重新加载，修改后**无需重启服务**即可生效。
 
 ---
 
-## 获取服务器信息
+## 文件位置
 
-使用命令 `bomiot project <your_project>` 后，你会得到以下文件结构：
+监控信号统一由主工程目录下的 `server.py` 接管：
 
 ```shell
-your-project/                 # 项目目录
-├── media/                    # 静态文件
-│   ├── img/                  # 公用图片
-│   └── ***.md                # 各种文档
-├── __version__.py            # 项目版本
-├── bomiotconf.ini            # Bomiot 项目标识文件
-└── server.py                 # 服务器监控信号处理
-setup.ini                     # 项目配置文件
-...
+workspace/                    # 工作区
+├── setup.ini                 # 项目配置文件
+└── greaterwms/               # 主工程目录
+    ├── media/                # 文件与文档目录
+    └── server.py             # 服务器监控信号处理
 ```
 
 ---
 
-## `server.py`
+## 接管监控信号
 
-`server.py` 定义了五个方法，用于接收实时监控数据。默认模板是注释状态，取消注释即可启用：
+`server.py` 默认模板为注释状态，取消注释即可启用：
 
 ```python
 class ServerClass:
@@ -49,15 +61,19 @@ class ServerClass:
     def network_get(self, data):    # 网络信息
         print(data)
 
-    def disk_get(self, data):       # 硬盘信息
+    def disk_get(self, data):       # 磁盘信息
         print(data)
 
-    def cpu_get(self, data):        # CPU 监控
+    def cpu_get(self, data):        # CPU 信息
         print(data)
 
     def memory_get(self, data):     # 内存信息
         print(data)
 ```
+
+> 注意：进程采集是逐个进程发送信号的——`pid_get` 每个周期会被调用 N 次（N 为系统进程数）。在 `pid_get` 中执行重逻辑时注意性能开销。
+
+拿到数据后可以执行任何自定义逻辑：阈值告警、Webhook 推送、写入时序数据库、联动扩缩容等。
 
 ---
 
@@ -115,6 +131,8 @@ class ServerClass:
 
 ### 磁盘（Disk）
 
+每个挂载分区产生一条数据；无权限访问的分区自动跳过。
+
 | 字段 | 说明 |
 | --- | --- |
 | `device` | 设备名 |
@@ -137,6 +155,8 @@ class ServerClass:
 
 ### 网络（Network）
 
+累计值（自系统启动起），如需速率请自行计算相邻两次的差值。
+
 | 字段 | 说明 |
 | --- | --- |
 | `bytes_sent` | 总发送字节数 |
@@ -151,6 +171,8 @@ class ServerClass:
 ```
 
 ### 进程（PIDs）
+
+每个存活进程产生一条数据；PID 为 0 的系统进程与无权限访问的进程自动跳过。
 
 | 字段 | 说明 |
 | --- | --- |
@@ -176,14 +198,16 @@ class ServerClass:
 
 ## 数据保留策略
 
-- **CPU、内存、网络**：记录数达到 10080 条（约 7 天）时自动清理，删除最早的记录。
-- **磁盘、进程**：每次采集全量刷新（删除所有旧记录，仅保留最新数据）。
+| 指标 | 策略 |
+|---|---|
+| CPU / 内存 / 网络 | 记录数达到 10080 条后，每新增一条删除最早一条（按 5 分钟周期约保留 35 天） |
+| 磁盘 / 进程 | 每轮采集前清空旧记录，只保留最新一轮 |
 
 ---
 
 ## 启用系统监控
 
-确保 `setup.ini` 中 `[system_control]` 的 `server_monitor = True`，服务启动后自动在后台线程运行监控。
+确保 `setup.ini` 中开启监控开关，服务启动后自动生效：
 
 ```ini
 [system_control]

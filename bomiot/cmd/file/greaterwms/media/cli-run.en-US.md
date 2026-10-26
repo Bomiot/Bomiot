@@ -192,6 +192,8 @@ bomiot run -b 0.0.0.0 -p 8000 -w 4
 
 Listens on `0.0.0.0:8000` with 4 worker processes.
 
+> **Note**: On Windows, keep `--workers 1` (the default). Windows does not support multiple worker processes well — running multiple workers may cause startup failures or instability. Use Linux / macOS if you need multi-worker concurrency.
+
 ### Enable debug logging
 
 ```bash
@@ -221,9 +223,3 @@ bomiot run --app my_asgi:application
 ```
 
 Changes the ASGI application entry from the default `bomiot_asgi:application` to `my_asgi:application`.
-
-## Related Commands
-
-- [bomiot makemigrations](./cli-makemigrations.en-US.md): Generate database migrations before starting
-- [bomiot migrate](./cli-init.en-US.md): Apply database migrations before starting
-- [bomiot init](./cli-init.en-US.md): Initialise project base files

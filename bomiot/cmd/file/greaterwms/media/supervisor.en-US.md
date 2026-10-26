@@ -1,41 +1,39 @@
-# Supervisor Usage Guide
+# Supervisor Guide
 
 ## Introduction
 
-**Supervisor** is a powerful process control system designed for UNIX-like operating systems. It allows you to monitor and control a number of processes on UNIX-like systems, especially useful for managing long-running services such as web servers, background jobs, and more.
+**Supervisor** is a process control system written in Python that monitors and manages processes on UNIX-like operating systems. It is especially suited for hosting long-running services such as web servers and background jobs.
 
----
+> Supervisor **does not run on Windows** — it only works on UNIX-like systems such as Linux and macOS.
 
-## Features of Supervisor
+It consists of four parts:
 
-- Easy process management (start, stop, restart, monitor)
-- Automatic process restarts on failure
-- Centralized logging and log rotation
-- Web-based monitoring interface
-- Group processes for batch control
-- Event notification and extensibility
+| Component | Role |
+|---|---|
+| `supervisord` | The daemon itself; spawns and supervises all child processes |
+| `supervisorctl` | The command-line client used to inspect and control processes managed by supervisord |
+| Web interface | An optional browser-based management page (enabled via inet_http_server) |
+| XML-RPC interface | An API for third-party integration (the web UI is built on it) |
 
 ---
 
 ## Installation
 
-You can install Supervisor with pip:
-
 ```bash
 pip install supervisor
 ```
 
-Or install using your system’s package manager (may not be the latest version):
+Or via the system package manager (versions may lag behind):
 
 ```bash
-# Ubuntu/Debian
+# Ubuntu / Debian
 sudo apt-get install supervisor
 
-# CentOS/RHEL
+# CentOS / RHEL
 sudo yum install supervisor
 ```
 
-Check version:
+Verify:
 
 ```bash
 supervisord --version
@@ -45,217 +43,188 @@ supervisord --version
 
 ## Quick Start
 
-1. **Generate a default config file** (if not present):
+1. **Generate a fully commented sample configuration**:
 
-   ```bash
-   echo_supervisord_conf > supervisord.conf
-   ```
+```bash
+echo_supervisord_conf > /etc/supervisord.conf
+```
 
-2. **Edit `supervisord.conf`** to define your managed programs.
+2. **Edit the config** and append the programs to manage at the end (see `[program:x]` below).
 
-3. **Start Supervisor:**
+3. **Start the daemon**:
 
-   ```bash
-   supervisord -c supervisord.conf
-   ```
+```bash
+supervisord -c /etc/supervisord.conf
+```
 
-4. **Control processes:**
+4. **Control processes with the client**:
 
-   ```bash
-   supervisorctl -c supervisord.conf status
-   supervisorctl -c supervisord.conf start <program>
-   supervisorctl -c supervisord.conf stop <program>
-   ```
+```bash
+supervisorctl -c /etc/supervisord.conf status
+supervisorctl -c /etc/supervisord.conf start myapp
+supervisorctl -c /etc/supervisord.conf stop myapp
+```
 
 ---
 
-## Configuration File Explained
+## Configuration in Detail
 
-The configuration file is typically named `supervisord.conf` and follows the INI format. Key sections:
+The config file uses INI format. The key sections:
+
+### `[unix_http_server]`
+
+supervisorctl talks to the daemon over a Unix socket by default, so this section **must exist**:
+
+```ini
+[unix_http_server]
+file=/tmp/supervisor.sock
+chmod=0700
+```
 
 ### `[supervisord]`
 
-- Main supervisor process settings (log file, pid file, etc.)
+Runtime settings of the daemon itself:
 
-### `[program:<name>]`
+```ini
+[supervisord]
+logfile=/var/log/supervisord.log
+logfile_maxbytes=50MB
+logfile_backups=10
+loglevel=info
+pidfile=/var/run/supervisord.pid
+nodaemon=false
+```
 
-- Define a process to manage
+### `[supervisorctl]`
 
-Example:
+Client connection settings, matching unix_http_server:
+
+```ini
+[supervisorctl]
+serverurl=unix:///tmp/supervisor.sock
+```
+
+### `[program:x]` — the core section
+
+One section per managed program, where `x` is the program name:
 
 ```ini
 [program:myapp]
 command=/home/user/venv/bin/python /home/user/myapp/app.py
+process_name=%(program_name)s
+numprocs=1
 directory=/home/user/myapp
+umask=022
+priority=999
 autostart=true
-autorestart=true
-stderr_logfile=/var/log/myapp.err.log
-stdout_logfile=/var/log/myapp.out.log
+autorestart=unexpected
+startsecs=3
+startretries=3
+exitcodes=0
+stopsignal=TERM
+stopwaitsecs=10
+stopasgroup=false
+killasgroup=false
 user=myuser
+redirect_stderr=false
+stdout_logfile=/var/log/myapp.out.log
+stdout_logfile_maxbytes=20MB
+stdout_logfile_backups=10
+stderr_logfile=/var/log/myapp.err.log
+environment=LANG=en_US.UTF-8,ENV=production
 ```
 
-### `[group:<name>]`
+Key options:
 
-- Group multiple programs together
+| Option | Description |
+|---|---|
+| `command` | The launch command. **The program must run in the foreground** — it must not daemonize itself |
+| `autostart` | Start automatically when supervisord starts (true/false) |
+| `autorestart` | Restart policy on exit: `false` never; `true` always; `unexpected` only when the exit code is not listed in `exitcodes` |
+| `startsecs` | The process must stay up this many seconds to count as "started successfully", otherwise startup is considered failed |
+| `startretries` | Max startup attempts before giving up and entering FATAL |
+| `exitcodes` | Exit codes considered "expected", default `0` |
+| `stopsignal` | Signal used to stop the process (TERM/INT/QUIT/HUP/KILL…) |
+| `stopwaitsecs` | Seconds to wait after the stop signal before forcing SIGKILL |
+| `stopasgroup` / `killasgroup` | Apply stop/kill to the whole process group, preventing orphaned children |
+| `numprocs` + `process_name` | Run multiple instances, e.g. `process_name=%(program_name)s_%(process_num)02d` with `numprocs=4` |
+| `priority` | Startup order weight; lower numbers start first and stop last |
+| `user` | Run as this user — **avoid root unless necessary** |
+| `redirect_stderr` | When true, stderr is merged into the stdout log |
 
-### `[inet_http_server]` (optional)
+### `[include]` — splitting configuration
 
-- Enable web interface
+With many programs, keep one file per program and include them from the main config:
 
----
+```ini
+[include]
+files = /etc/supervisor/conf.d/*.conf
+```
 
-## Basic Operations
-
-- **Start Supervisor:**
-  ```bash
-  supervisord -c supervisord.conf
-  ```
-- **Stop Supervisor:**
-  ```bash
-  supervisorctl -c supervisord.conf shutdown
-  ```
-- **Reload config:**
-  ```bash
-  supervisorctl -c supervisord.conf reload
-  ```
-- **View all managed programs:**
-  ```bash
-  supervisorctl -c supervisord.conf status
-  ```
-
----
-
-## Managing Programs
-
-- **Start a program:**
-  ```bash
-  supervisorctl start myapp
-  ```
-- **Stop a program:**
-  ```bash
-  supervisorctl stop myapp
-  ```
-- **Restart a program:**
-  ```bash
-  supervisorctl restart myapp
-  ```
-- **Start/stop all:**
-  ```bash
-  supervisorctl start all
-  supervisorctl stop all
-  ```
-
----
-
-## Common Configuration Options
-
-| Option                  | Description                                                 |
-|-------------------------|------------------------------------------------------------|
-| `command`               | Command to run                                             |
-| `directory`             | Working directory                                          |
-| `autostart`             | Whether to start automatically (true/false)                |
-| `autorestart`           | Restart on exit (true/false/unexpected)                    |
-| `startretries`          | Number of retries on failure                               |
-| `user`                  | User to run as                                             |
-| `environment`           | Set environment variables (e.g. `ENV=production`)          |
-| `stdout_logfile`        | Standard output log file                                   |
-| `stderr_logfile`        | Standard error log file                                    |
-| `redirect_stderr`       | Redirect stderr to stdout (true/false)                     |
-| `stopasgroup`, `killasgroup` | Kill child processes on stop                          |
-
----
-
-## Web Interface
-
-You can enable a web interface by adding:
+### `[inet_http_server]` — web UI (optional)
 
 ```ini
 [inet_http_server]
 port=127.0.0.1:9001
-username=youruser
-password=yourpassword
+username=admin
+password=strong_password
 ```
 
-- Access via `http://127.0.0.1:9001/`
-- View and control processes via browser
+Open `http://127.0.0.1:9001/` in a browser to view and control processes. Binding to `127.0.0.1` allows local access only; if you expose it, always set a username and password.
+
+### `[group:x]` — process groups
+
+```ini
+[group:webapps]
+programs=myapp,anotherapp
+priority=999
+```
+
+Then operate on the whole group with e.g. `supervisorctl start webapps:*`.
 
 ---
 
-## Log Management
+## Common supervisorctl Commands
 
-- Each program can have its own `stdout_logfile` and `stderr_logfile`.
-- Use `stdout_logfile_maxbytes` and `stdout_logfile_backups` for log rotation:
+```bash
+supervisorctl status                 # status of all processes
+supervisorctl start myapp            # start
+supervisorctl stop myapp             # stop
+supervisorctl restart myapp          # restart
+supervisorctl start all              # bulk operations
+supervisorctl tail myapp             # live-view a program's stdout
+supervisorctl tail myapp stderr      # live-view stderr
+supervisorctl signal HUP myapp       # send a signal to the process
+supervisorctl reread                 # re-read the config (no effect yet)
+supervisorctl update                 # apply config changes (adds/removes processes as needed)
+supervisorctl reload                 # restart the supervisord daemon itself
+supervisorctl shutdown               # stop supervisord and everything it manages
+```
 
-  ```ini
-  stdout_logfile_maxbytes=20MB
-  stdout_logfile_backups=10
-  ```
+The standard routine after editing the config is `reread` + `update`: new programs get started, removed programs get stopped, and unchanged processes are left alone.
 
----
-
-## Process Groups
-
-- Group multiple programs for batch control:
-
-  ```ini
-  [group:webapps]
-  programs=myapp,anotherapp
-  ```
-
-  - Control with `supervisorctl start webapps:all`
+Run `supervisorctl` with no subcommand to enter interactive mode, where you can type `status`, `restart myapp`, etc. repeatedly.
 
 ---
 
-## Supervisorctl Command Usage
+## Process States
 
-- Use `supervisorctl` interactively:
-
-  ```bash
-  supervisorctl
-  ```
-
-  Then type commands like `status`, `start myapp`, `stop all`, etc.
-
-- Or use it in one-shot mode:
-
-  ```bash
-  supervisorctl restart myapp
-  ```
+| State | Meaning |
+|---|---|
+| `STARTING` | Starting up (waiting for startsecs to elapse) |
+| `RUNNING` | Running normally |
+| `BACKOFF` | Exited too quickly at startup; waiting to retry |
+| `FATAL` | Failed to start after startretries attempts |
+| `STOPPING` | Stopping |
+| `STOPPED` | Stopped |
+| `EXITED` | Exited (what happens next depends on autorestart) |
 
 ---
 
-## Best Practices & Tips
+## Notes
 
-- Never run as root unless necessary; use the `user` parameter.
-- Use one config file per service in `/etc/supervisor/conf.d/` and include them in the main config.
-- Monitor log file sizes to avoid disk issues.
-- Use `stopasgroup` and `killasgroup` for proper process tree cleanup.
-- Secure the web interface with strong passwords or bind only to localhost.
-- For production, manage Supervisor with `systemd` or your OS init system.
-
----
-
-## FAQ
-
-**Q1: Can Supervisor manage non-Python processes?**  
-A: Yes. It can manage any process (Node.js, Java, shell scripts, etc.) as long as they run in the foreground.
-
-**Q2: How do I reload configuration without stopping running programs?**  
-A: Use `supervisorctl reread` then `supervisorctl update` to add/remove programs.
-
-**Q3: Where are logs stored?**  
-A: As specified by `stdout_logfile` and `stderr_logfile` in your config.
-
-**Q4: How to auto-start Supervisor on system boot?**  
-A: Use your OS’s init system (systemd, upstart, etc.) to enable Supervisor as a service.
-
----
-
-## References
-
-- [Supervisor Official Documentation](http://supervisord.org/)
-- [Supervisor GitHub Repository](https://github.com/Supervisor/supervisor)
-- [Supervisorctl Docs](http://supervisord.org/running.html#supervisorctl-command-line-interface)
-- [Supervisor Configuration Guide](http://supervisord.org/configuration.html)
-
----
+- **Managed programs must run in the foreground.** If a program forks itself into the background, supervisord thinks it exited and will keep restarting it.
+- Control log rotation with `stdout_logfile_maxbytes` + `stdout_logfile_backups` — always set them, or logs can fill the disk.
+- When stopping script-based programs, enable `stopasgroup` and `killasgroup`; otherwise children spawned through a shell may be left behind as orphans.
+- Never expose the web UI directly to the public internet; if remote access is required, bind to an internal address and use a strong password.
+- Let the operating system's init system (e.g. a systemd unit) start supervisord itself at boot — ready-made scripts for major distributions are available.

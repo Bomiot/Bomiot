@@ -1,148 +1,92 @@
-# bomiot migrate 命令
+# bomiot migrate
+
+将迁移文件应用到数据库，使表结构与模型代码保持一致。
+
+```bash
+bomiot migrate [appname] [migration_name]
+```
 
 ## 概述
 
-`bomiot migrate` 命令用于执行数据库迁移，将所有待应用的 Django 迁移应用到数据库中。它会设置 `DJANGO_SETTINGS_MODULE` 与 `RUN_MAIN` 环境变量，调用 `django.setup()` 完成应用注册，然后调用 Django 内置的 `call_command('migrate')` 应用全部 pending 迁移。
+`bomiot makemigrations` 生成迁移文件后，数据库本身还没有变化。`bomiot migrate` 负责**实际执行**这些变更：按依赖顺序把未应用的迁移逐一应用到数据库，并记录每个迁移的应用状态，保证同一个迁移不会重复执行。
 
-该命令由 `bomiot/cmd/migrate.py` 中的 `migrate()` 函数实现，并在 `bomiot/cmd/cmd.py` 中注册为 `migrate` 子命令。
+命令必须在**项目根目录**下执行。
 
-## 用法
+## 基本用法
+
+| 命令 | 说明 |
+|---|---|
+| `bomiot migrate` | 应用所有应用中尚未执行的迁移（最常用） |
+| `bomiot migrate myapp` | 只应用 `myapp` 应用的迁移 |
+| `bomiot migrate myapp 0003` | 将 `myapp` 迁移到指定版本（可前进也可回退） |
+| `bomiot migrate myapp zero` | 回退 `myapp` 的所有迁移（回到建表前） |
+
+## 常用选项
+
+| 选项 | 说明 |
+|---|---|
+| `--plan` | 只列出将要执行哪些迁移，不实际执行 |
+| `--fake` | 只更新迁移记录、不实际改表结构——用于表结构已被人为调整过的特殊情况 |
+| `--fake-initial` | 当数据库中已存在对应表结构时，跳过初始迁移的实际执行 |
+| `--run-syncdb` | 为没有迁移文件的应用直接建表（不推荐常规使用） |
+
+## 典型场景
+
+### 拉取代码后同步表结构
+
+```bash
+git pull
+bomiot migrate
+```
+
+团队标准动作：别人提交的迁移文件，在你本地应用一次，两边数据库结构即一致。
+
+### 新项目首次初始化
 
 ```bash
 bomiot migrate
 ```
 
-- 该命令**不接受任何参数**。它会应用项目中所有 app 的全部未应用迁移。
+自动创建所有内置表和业务表，生成一个可用的空库。
 
-在 `cmd.py` 中的注册方式：
-
-```python
-# migrate
-parser_migrate = subparsers.add_parser('migrate', help='Migrate database')
-```
-
-派发逻辑：
-
-```python
-# migrate
-elif command == 'migrate':
-    from bomiot.cmd.migrate import migrate
-    migrate()
-```
-
-## 源码分析
-
-源文件：`bomiot/cmd/migrate.py`
-
-完整源码如下：
-
-```python
-import os
-import django
-from django.core.management import call_command
-
-
-def migrate():
-    """
-    Execute database migrations
-    """
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bomiot.server.server.settings")
-    os.environ.setdefault('RUN_MAIN', 'true')
-    django.setup()
-    
-    try:
-        call_command('migrate')
-    except Exception as e:
-        print(f"Error during migration: {e}") 
-```
-
-### 设置环境变量
-
-命令先设置两个环境变量：
-
-- `DJANGO_SETTINGS_MODULE`：指向 bomiot 服务器设置模块 `bomiot.server.server.settings`。
-- `RUN_MAIN`：设为 `'true'`。在 Django 的自动重载机制中，`RUN_MAIN` 用于标识“主进程”，避免重复触发 reloader。在此手动设置可让迁移在单进程内直接执行。
-
-```python
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bomiot.server.server.settings")
-    os.environ.setdefault('RUN_MAIN', 'true')
-```
-
-> `setdefault` 仅在变量未设置时写入，不会覆盖已有值。
-
-### 初始化 Django
-
-调用 `django.setup()` 加载设置、注册应用，使 ORM 与迁移系统可用：
-
-```python
-    django.setup()
-```
-
-### 执行迁移
-
-调用 Django 内置的 `call_command('migrate')`，等价于在命令行执行 `python manage.py migrate`，会应用所有未应用的迁移：
-
-```python
-    try:
-        call_command('migrate')
-    except Exception as e:
-        print(f"Error during migration: {e}") 
-```
-
-迁移过程中若抛出异常，会被 `try/except` 捕获并打印 `Error during migration: <异常信息>`，避免进程崩溃。
-
-## 实战示例
-
-### 首次初始化数据库
-
-在新建项目或刚拉取代码后，执行迁移以创建数据库表：
+### 查看将要执行什么
 
 ```bash
-bomiot migrate
+bomiot migrate --plan
 ```
 
-典型输出（节选）：
+列出待执行的迁移清单，确认无误后再正式执行。
 
-```text
-Operations to perform:
-  Apply all migrations: admin, auth, contenttypes, sessions, core, ...
-Running migrations:
-  Applying contenttypes.0001_initial... OK
-  Applying auth.0001_initial... OK
-  ...
-```
-
-### 与 makemigrations 配合使用
-
-当你修改了模型（如在插件中新增 `models.py` 字段），需要先生成迁移再应用：
+### 回退最近一次变更
 
 ```bash
-# 1. 生成迁移文件
-bomiot makemigrations <appname>
-
-# 2. 应用迁移
-bomiot migrate
+bomiot migrate myapp 0002
 ```
 
-### 迁移失败时的输出
+将 `myapp` 回退到 `0002` 版本（`0003` 及其后的迁移被反向执行）。
 
-若数据库连接失败或迁移冲突，会打印错误而非崩溃：
+### 老库接入迁移管理
 
-```text
-Error during migration: <具体异常信息>
+数据库表已存在、但从未跑过迁移时：
+
+```bash
+bomiot migrate --fake-initial
 ```
 
-常见原因包括：数据库未启动、连接配置错误、迁移文件存在依赖冲突等。请根据错误信息排查后重试。
+系统检测到表已存在，只记录迁移状态、不重复建表。
 
-## 执行前置条件
+## 与 makemigrations 的配合
 
-1. 已在工程根目录下运行，bomiot 环境已正确配置。
-2. 数据库服务已启动且连接配置正确。
-3. 对于新项目，建议先执行 `bomiot init` / `bomiot project` 初始化工程结构。
+| 命令 | 职责 | 时机 |
+|---|---|---|
+| `bomiot makemigrations` | **生成**迁移文件（代码 → 文件） | 修改模型后 |
+| `bomiot migrate` | **应用**迁移文件（文件 → 数据库） | 生成迁移后 / 拉取代码后 / 部署时 |
 
-## 相关命令
+## 注意事项
 
-- [bomiot makemigrations](#)：生成迁移文件（命令入口在 `cmd.py` 中，对应 `makemigrations` 子命令）
-- [bomiot initadmin](./cli-initadmin.zh-CN.md)：创建管理员（需先 `migrate` 建表）
-- [bomiot initpwd](./cli-initpwd.zh-CN.md)：重置 admin 密码（需先 `migrate` 建表）
-- [bomiot init](./cli-init.zh-CN.md)：初始化工程基础文件
+- 生产环境执行前建议先 `--plan` 预览，并备份数据库
+- 回退迁移会反向执行变更（如删除字段、删除表），对应数据一并删除，操作前确认
+- 迁移按依赖关系自动排序，跨应用的依赖（外键引用）会自动处理，无需手动指定顺序
+- 一个迁移在一个数据库中只会应用一次；已应用的迁移再次执行 `migrate` 会跳过
+- 不要删除已应用过的迁移文件——迁移记录与文件一一对应，删文件会导致状态错乱
+- 部署流程中的标准顺序：拉代码 → `bomiot migrate` → 重启服务

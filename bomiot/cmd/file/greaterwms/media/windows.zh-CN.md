@@ -2,7 +2,7 @@
 
 #### 局域网 版本下载
 
-[Windows](https://gitee.com/Singosgu/GreaterWMS/releases)
+Windows
 
 #### 说明
 
@@ -22,6 +22,6 @@
 
 ##### 操作教程
 
-[操作视频](https://www.bilibili.com/video/BV15r4y1i7Ph/)
+操作视频
 
- [操作教程](https://www.56yhz.com/zh/web_operation.html)
+ 操作教程

@@ -207,7 +207,7 @@ sm = None
 3. 按 `ARGS_MAP[trigger_type]` 过滤出非空参数构造 `trigger_args`。
 4. `importlib.import_module(job.module_name)` 动态导入模块。
 5. `getattr(module, job.func_name)` 取出函数，校验可调用。
-6. `TRIGGER_CLASSES[trigger_type](**trigger_args)` 构造触发器。
+6. `TRIGGER_CLASSEStrigger_type` 构造触发器。
 7. `scheduler.add_job(func=..., trigger=..., id=job.job_id, replace_existing=True, kwargs={'sender': job_func})`。
 8. 任何异常都会将 `job.type` 置为 `False` 并保存，下次循环跳过该任务，避免反复失败。
 

@@ -7,6 +7,7 @@ import argparse
 import psutil
 import multiprocessing
 import threading
+from bomiot.cmd.file.discovered_apps import main as _discover_apps_main
 
 optional_title = 'Optional arguments'
 
@@ -95,10 +96,10 @@ parser_project.add_argument('folder', default='',
 #                          nargs='?', type=str, help='plugins workspace folder')
 
 # deploy
-parser_deploy = subparsers.add_parser(
-    'deploy', help='Deploy project')
-parser_deploy.add_argument('folder', default='',
-                         nargs='?', type=str, help='deploy project')
+# parser_deploy = subparsers.add_parser(
+#     'deploy', help='Deploy project')
+# parser_deploy.add_argument('folder', default='',
+#                          nargs='?', type=str, help='deploy project')
 
 # init
 parser_init = subparsers.add_parser(
@@ -145,6 +146,16 @@ parser_dumpdata.add_argument(
 # parser_keys = subparsers.add_parser(
 #     'keys', help='Init auth keys')
 
+# build
+parser_build = subparsers.add_parser(
+    'build', help='Build standalone executable')
+
+# publish
+parser_publish = subparsers.add_parser(
+    'publish', help='Publish built project to Bomiot server')
+parser_publish.add_argument('--os', type=str, default=None, help='Operating system name (e.g. windows, linux, macos)')
+parser_publish.add_argument('--code', type=str, default=None, help='Custom verification code string')
+
 # run
 parser_run = subparsers.add_parser(
     'run', help='Run server')
@@ -180,45 +191,49 @@ def cmd():
     command = args.command
     # project workspace for bomiot
     if command == 'project':
-        from bomiot.cmd.project import project
+        from bomiot_cmd.project import project
         project(args.folder)
     # plugins workspace for bomiot
     # elif command == 'plugins':
-    #     from bomiot.cmd.plugins import plugins
+    #     from bomiot_cmd.plugins import plugins
     #     plugins(args.folder)
     # deploy project
-    elif command == 'deploy':
-        from bomiot.cmd.deploy import deploy
-        deploy(args.folder)
+    # elif command == 'deploy':
+    #     from bomiot_cmd.deploy import deploy
+    #     deploy(args.folder)
     # init bomiot
     elif command == 'init':
-        from bomiot.cmd.init import create_file
+        from bomiot_cmd.init import create_file
         create_file(args.folder)
     # init admin
     elif command == 'initadmin':
-        from bomiot.cmd.initadmin import init_admin
+        from bomiot_cmd.initadmin import init_admin
         init_admin()
     # init admin
     elif command == 'initpwd':
-        from bomiot.cmd.initpwd import init_password
+        from bomiot_cmd.initpwd import init_password
         init_password()
     # create app
     elif command == 'app':
-        from bomiot.cmd.createapp import new_app
+        from bomiot_cmd.createapp import new_app
         new_app(args.folder)
     elif command == 'api':
-        from bomiot.cmd.createapi import new_api
+        from bomiot_cmd.createapi import new_api
         new_api(args.folder)
     # marketplace
     # elif command == 'market':
-    #     from bomiot.cmd.market import copy_project
+    #     from bomiot_cmd.market import copy_project
     #     copy_project(args.folder)
     # # init auth keys
     # elif command == 'keys':
-    #     from bomiot.cmd.create_key import auth_key_refresh
+    #     from bomiot_cmd.create_key import auth_key_refresh
     #     auth_key_refresh()
     # makemigrations
     elif command == 'makemigrations':
+        WORKING_SPACE = os.path.join(os.getcwd())
+        # Regenerate apps.json before Django initializes, because settings.py
+        # reads INSTALLED_APPS from it at import time.
+        _discover_apps_main(WORKING_SPACE, [])
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bomiot.server.server.settings")
         os.environ.setdefault('RUN_MAIN', 'true')
         import django
@@ -274,8 +289,18 @@ def cmd():
             print(f"Error creating migrations: {e}")
     # migrate
     elif command == 'migrate':
-        from bomiot.cmd.migrate import migrate
+        from bomiot_cmd.migrate import migrate
+        WORKING_SPACE = os.path.join(os.getcwd())
+        _discover_apps_main(WORKING_SPACE, [])
         migrate()
+    # build standalone executable
+    elif command == 'build':
+        from bomiot_cmd.build import build
+        build()
+    # publish project to Bomiot server
+    elif command == 'publish':
+        from bomiot_cmd.publish import publish
+        publish(args.os, args.code)
     # run server
     elif command == 'run':
         import platform
@@ -285,13 +310,9 @@ def cmd():
         from configparser import ConfigParser
         WORKING_SPACE = os.path.join(os.getcwd())
         # Run discovered_apps.py main() to scan and emit apps.json
-        from bomiot.cmd.file.discovered_apps import main as _discover_apps_main
-        _orig_argv = sys.argv
-        sys.argv = [sys.argv[0]]
-        _discover_apps_main(WORKING_SPACE)
-        sys.argv = _orig_argv
+        _discover_apps_main(WORKING_SPACE, [])
         if platform.system() == 'Windows':
-            from bomiot.cmd.killport import kill_process_on_port
+            from bomiot_cmd.killport import kill_process_on_port
             kill_process_on_port(args.port)
         lockfile = Path(join(WORKING_SPACE, 'bomiot_ready.lock'))
         if lockfile.exists():

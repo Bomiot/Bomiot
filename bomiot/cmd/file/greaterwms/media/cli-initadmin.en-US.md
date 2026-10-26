@@ -1,152 +1,53 @@
-# bomiot initadmin Command
+# bomiot initadmin
+
+Create (or reset) the project's superuser account `admin`.
+
+```bash
+bomiot initadmin
+```
 
 ## Overview
 
-The `bomiot initadmin` command creates the default superuser account for bomiot. It sets the Django environment variables and runs `django.setup()`, obtains the user model via `get_user_model()`, checks whether a superuser named `admin` already exists, and if not, creates one with username `admin`, email `admin@bomiot.com` and initial password `admin`, setting `is_active`, `is_superuser` and `is_staff` all to `True`, and finally warns the user to change the password promptly.
+`bomiot initadmin` ensures a superuser named `admin` exists in the database:
 
-The command is implemented by the `init_admin()` function in `bomiot/cmd/initadmin.py` and registered as the `initadmin` subcommand in `bomiot/cmd/cmd.py`.
+- **First run**: creates the `admin` account with an initial password identical to the username (`admin`), granted superuser and admin-site privileges
+- **Already exists**: nothing is changed; it simply reports the account is ready
+- **Exists but in a broken state** (deactivated, privileges removed): resets the password to the initial value and restores full privileges
 
-## Usage
+The command must be run from the **project root** and operates on the current project's database.
+
+## Prerequisites
+
+Database tables must be ready. For a new project, run first:
 
 ```bash
+bomiot migrate
 bomiot initadmin
 ```
 
-- This command takes **no arguments**.
+## Account Details
 
-Registration in `cmd.py`:
+| Item | Value |
+|---|---|
+| Username | `admin` |
+| Initial password | `admin` |
+| Email | `admin@bomiot.com` |
+| Privileges | Superuser (with admin-site access) |
 
-```python
-# init admin
-parser_initadmin = subparsers.add_parser(
-    'initadmin', help='Create default super user admin')
-```
+> **The initial password is for temporary use only — change it immediately after logging in.** If the password is forgotten, re-run `bomiot initadmin` to reset it to the initial value (this also restores the active state and privileges), or use `bomiot initpwd` to change a password.
 
-Dispatch logic:
+## Typical Scenarios
 
-```python
-# init admin
-elif command == 'initadmin':
-    from bomiot.cmd.initadmin import init_admin
-    init_admin()
-```
+| Scenario | Action |
+|---|---|
+| First login on a new project | `bomiot migrate` → `bomiot initadmin` → log in with `admin` / `admin` |
+| Forgot the admin password | Re-run `bomiot initadmin` — the password is reset to `admin` |
+| admin deactivated or demoted by mistake | Re-run `bomiot initadmin` — restores the active state and full privileges |
+| Delivering to production | Run it, then **log in and change the password right away** — never keep the initial password online |
 
-## Source Code Analysis
+## Notes
 
-Source file: `bomiot/cmd/initadmin.py`
-
-### Setting Up the Django Environment
-
-It first sets the `DJANGO_SETTINGS_MODULE` environment variable to point at bomiot's server settings module, then calls `django.setup()` to register apps before the Django ORM can be used:
-
-```python
-import django
-import os
-from configparser import ConfigParser
-
-
-def init_admin():
-    """
-    create superuser
-    :return:
-    """
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bomiot.server.server.settings")
-    django.setup()
-    from django.contrib.auth import get_user_model
-```
-
-> Note: `os.environ.setdefault` only writes when the environment variable is unset; it does not override an existing value.
-
-### Obtaining the User Model
-
-It uses Django's built-in `get_user_model()` to dynamically obtain the user model configured for the current project (which may be a custom User model):
-
-```python
-    User = get_user_model()
-```
-
-### Checking Whether the Admin Already Exists
-
-It tries to fetch an existing admin superuser via `User.objects.get(username='admin', is_superuser=True)`. If one exists it tells the user they can log in directly; if an exception is raised (i.e. none exists), it falls into the creation branch:
-
-```python
-    try:
-        User.objects.get(username='admin', is_superuser=True)
-        print('Admin user already exists, you can use admin to login:')
-    except:
-```
-
-### Creating the Admin Account
-
-Inside the `except` branch it builds the account info and uses `update_or_create` to create or update the record by `email` and `username`, then sets the password and permission flags:
-
-```python
-        username = 'admin'
-        email = f'{username}@bomiot.com'
-        password = username
-        admin, created = User.objects.update_or_create(email=email, username=username)
-        admin.set_password(password)
-        admin.is_active = True
-        admin.is_superuser = True
-        admin.is_staff = True
-        admin.save()
-        print('%s admin account: %s(%s), initial password: %s, just use it temporarily '
-              'and change the password for safety' % \
-              ('Created' if created else 'Reset', username, email, password))
-```
-
-Key points:
-
-- `username = 'admin'`
-- `email = 'admin@bomiot.com'` (assembled via `f'{username}@bomiot.com'`)
-- `password = 'admin'` (same as the username)
-- `update_or_create` looks up by `email` and `username`, updating if found or creating if not, and returns `(object, created_bool)`.
-- `set_password(password)` hashes the plaintext password before saving.
-- `is_active`, `is_superuser` and `is_staff` are all set to `True`, granting backend login and full permissions.
-- The output picks `Created` or `Reset` based on `created` and explicitly reminds: "just use it temporarily and change the password for safety".
-
-## Practical Examples
-
-### Creating the admin for the first time
-
-```bash
-bomiot initadmin
-```
-
-Output:
-
-```text
-Created admin account: admin(admin@bomiot.com), initial password: admin, just use it temporarily and change the password for safety
-```
-
-You can then log in to the bomiot backend with `admin` / `admin`.
-
-### Running again when the admin already exists
-
-```bash
-bomiot initadmin
-```
-
-Output:
-
-```text
-Admin user already exists, you can use admin to login:
-```
-
-### Prerequisites
-
-Because this command loads Django settings and accesses the database, make sure before running:
-
-1. You are in the project root (containing `setup.ini` or a configured bomiot environment).
-2. You have already run `bomiot migrate` to create tables, otherwise the `User` table will be missing and an error will be raised.
-
-## Security Notice
-
-- The initial password is the weak value `admin`, intended only for first login. After logging in, change it immediately to a strong password via the backend or a method other than [bomiot initpwd](./cli-initpwd.en-US.md).
-- This account has `is_superuser=True` and `is_staff=True`, granting full backend permissions; keep it safe.
-
-## Related Commands
-
-- [bomiot migrate](./cli-migrate.en-US.md): Run database migrations (tables must exist before `initadmin`)
-- [bomiot initpwd](./cli-initpwd.en-US.md): Reset the admin password back to `admin`
-- [bomiot init](./cli-init.en-US.md): Initialize base project files
+- The command talks to the database directly; the server does not need to be running
+- The initial password is a public default that anyone reaching the login page can try — **do not expose the service to the public internet before changing it**
+- Re-running is safe: an account in a healthy state is left untouched
+- The command prints the account and initial password — avoid leaving this information in long-lived terminal logs

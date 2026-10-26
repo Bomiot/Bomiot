@@ -1,122 +1,85 @@
-# bomiot loaddata 命令
+# bomiot loaddata
+
+将数据文件（fixtures）中的内容导入数据库，用于恢复备份、导入初始化数据或在环境之间搬运数据。
+
+```bash
+bomiot loaddata <fixture> [fixture ...]
+```
 
 ## 概述
 
-`bomiot loaddata` 命令设计用于从配置文件中加载数据到 bomiot 项目。根据参数定义，`source` 是一个必填的位置参数，表示配置文件路径。
+`bomiot loaddata` 读取 JSON 格式的数据文件，将其中的记录写入数据库对应的数据表。数据文件通常由 `bomiot dumpdata` 导出，也可以手工编写——一个数据文件即是一份可重复导入的"种子数据"。
 
-> **实现状态说明**：该命令的子命令解析器已在 `bomiot/cmd/cmd.py` 中注册，但 `cmd()` 函数中**没有**对应的 `elif command == 'loaddata'` 派发分支。这意味着当前版本中该命令处于"已声明但未实现"的状态——参数可以正常解析，但执行后不会进行任何实际操作。它属于规划中尚未完成的功能。
+命令必须在**项目根目录**下执行。
 
-## 用法
+## 基本用法
 
-```bash
-bomiot loaddata <source>
-```
+| 命令 | 说明 |
+|---|---|
+| `bomiot loaddata myapp.json` | 导入指定数据文件 |
+| `bomiot loaddata app1.json app2.json` | 一次导入多个数据文件 |
+| `bomiot loaddata seeds` | 省略扩展名，按 fixtures 查找规则搜索同名数据文件 |
 
-- `<source>`：必填的配置文件路径（字符串类型）。
+## 数据文件的查找位置
 
-在 `cmd.py` 中的注册方式：
+传入不带路径的文件名时，按以下顺序查找：
 
-```python
-# loaddata
-parser_loaddata = subparsers.add_parser(
-    'loaddata', help='Load data from configs')
-parser_loaddata.add_argument('source', type=str, help='Configs path')
-```
+| 位置 | 说明 |
+|---|---|
+| 各应用的 `fixtures/` 目录 | 随应用分发的初始化数据，按文件名查找 |
+| 当前目录及指定路径 | 传入相对/绝对路径时直接读取 |
 
-注意 `source` 没有设置 `nargs='?'` 也没有 `default` 值，因此它是一个必填参数，省略时 argparse 会直接报错退出。
+> 项目初始化数据建议放在对应应用的 `fixtures/` 目录下，文件名与应用相关（如 `myapp.json`），团队成员拉取代码后执行 `bomiot loaddata myapp` 即可完成初始化。
 
-## 源码分析
+## 常用选项
 
-源文件：`bomiot/cmd/cmd.py`。
+| 选项 | 说明 |
+|---|---|
+| `--app myapp` | 只导入文件中属于 `myapp` 应用的数据 |
+| `--ignorenonexistent` | 忽略文件中已不存在的模型或字段，跳过而不是报错 |
+| `--format json` | 指定数据文件格式，默认为 `json`（一般从扩展名自动识别） |
+| `--exclude APP` | 导入时排除指定应用的数据（可多次使用） |
 
-### 解析器注册
+## 典型场景
 
-`loaddata` 子命令通过 `subparsers.add_parser('loaddata', ...)` 注册，help 文本为 `Load data from configs`，并声明了一个名为 `source` 的位置参数：
-
-```python
-parser_loaddata = subparsers.add_parser(
-    'loaddata', help='Load data from configs')
-parser_loaddata.add_argument('source', type=str, help='Configs path')
-```
-
-### 派发逻辑
-
-在 `cmd()` 函数中，命令派发通过 `if/elif` 链完成。以下是 `cmd.py` 中 `cmd()` 函数的命令分支结构，可以清楚地看到 `loaddata` 缺少对应的分支：
-
-```python
-def cmd():
-    """
-    run from cmd
-    :return:
-    """
-    args = parser.parse_args()
-    command = args.command
-    if command == 'project':
-        ...
-    elif command == 'deploy':
-        ...
-    elif command == 'init':
-        ...
-    elif command == 'initadmin':
-        ...
-    elif command == 'initpwd':
-        ...
-    elif command == 'app':
-        ...
-    elif command == 'api':
-        ...
-    # marketplace
-    # elif command == 'market':
-    #     ...
-    # # init auth keys
-    # elif command == 'keys':
-    #     ...
-    # makemigrations
-    elif command == 'makemigrations':
-        ...
-    # migrate
-    elif command == 'migrate':
-        from bomiot.cmd.migrate import migrate
-        migrate()
-    # run server
-    elif command == 'run':
-        ...
-```
-
-可以看到 `if/elif` 链中依次处理了 `project`、`deploy`、`init`、`initadmin`、`initpwd`、`app`、`api`、`makemigrations`、`migrate`、`run`，但并没有 `loaddata` 分支。因此当执行 `bomiot loaddata <source>` 时，参数能被 argparse 成功解析，但 `command == 'loaddata'` 不匹配任何分支，函数直接结束，不执行任何数据加载操作。
-
-### 预期行为（基于参数定义）
-
-虽然当前未实现，但从参数 help 文本 `Configs path` 可以推断该命令的设计意图：
-
-- 接收一个配置文件路径作为 `source`。
-- 从该配置中读取数据并加载到项目数据库或运行时配置中。
-- 与 `bomiot dumpdata` 命令互为逆操作（dump 导出，load 导入）。
-
-## 实战示例
-
-### 调用命令（当前版本不产生实际效果）
+### 恢复某个应用的备份
 
 ```bash
-bomiot loaddata configs/backup.json
+bomiot loaddata myapp_backup.json
 ```
 
-该命令能被 argparse 正确解析（`source` 会被赋值为 `configs/backup.json`），但由于 `cmd()` 函数中没有对应的派发分支，不会执行任何数据加载操作。
-
-### 省略 source 参数时的行为
+### 新项目初始化种子数据
 
 ```bash
-bomiot loaddata
+bomiot loaddata seeds.json
 ```
 
-由于 `source` 是必填位置参数且未设置默认值，argparse 会报错并退出：
+### 多环境数据迁移
 
-```text
-error: the following arguments are required: source
+```bash
+# 源环境
+bomiot dumpdata myapp --indent 2 --output myapp.json
+
+# 目标环境（先确保表结构一致）
+bomiot migrate
+bomiot loaddata myapp.json
 ```
 
-## 相关命令
+### 文件里有已删除的旧字段
 
-- [bomiot dumpdata](./cli-dumpdata.zh-CN.md)：将数据导出到配置文件（同样处于已声明未实现状态）
-- [bomiot migrate](./cli-init.zh-CN.md)：应用数据库迁移
-- [bomiot makemigrations](./cli-makemigrations.zh-CN.md)：生成数据库迁移文件
+```bash
+bomiot loaddata old_backup.json --ignorenonexistent
+```
+
+## 导入行为说明
+
+- 记录以**主键**为准：主键已存在则更新该记录，不存在则插入新记录
+- 使用 `--natural-primary` 导出的文件不含主键，导入时全部由数据库生成新主键（相当于纯插入）
+- 导入在同一个事务中完成，出错时回滚，不会留下半截数据
+
+## 注意事项
+
+- 导入前请确认目标库已执行 `bomiot migrate`，表结构与数据文件匹配，否则可能导入失败
+- 数据文件中用户密码等字段为哈希值，导入后可直接登录使用；切勿手工修改为明文
+- 重复导入同一文件是安全的（按主键覆盖更新），但不含主键的文件重复导入会产生重复数据
+- 大文件导入耗时较长，导入期间避免同时写入相同数据表

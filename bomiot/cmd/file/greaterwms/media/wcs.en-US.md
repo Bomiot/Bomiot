@@ -14,13 +14,13 @@ Intralogistics processes are becoming increasingly complex. In manual, automated
 
 ##### Warehouse Control System (WCS)
 
-> [WCS](https://www.56yhz.com/contact_us/) system is a layer of management and control system between WMS system and equipments PLC system, through the control and scheduling of PLC and single-chip microcomputer of various equipment in the automated warehouse. Through the integration, unified scheduling and monitoring of various logistics equipment system interfaces. Such as stackers, conveyors, four-way shuttle robots, AGV, AMR, Hoists, depalletizers, sensors and scanners etc., as well as timely alarms and emergency treatment in case of abnormalities, so as to maintain the throughput of the entire warehouse automation system.
+> WCS system is a layer of management and control system between WMS system and equipments PLC system, through the control and scheduling of PLC and single-chip microcomputer of various equipment in the automated warehouse. Through the integration, unified scheduling and monitoring of various logistics equipment system interfaces. Such as stackers, conveyors, four-way shuttle robots, AGV, AMR, Hoists, depalletizers, sensors and scanners etc., as well as timely alarms and emergency treatment in case of abnormalities, so as to maintain the throughput of the entire warehouse automation system.
 
 ##### System Overview
 
 ![system_overview][2]{ loading=lazy }
 
-> Clothoidy's technical team members have extensive experience in the logistics automation industry, and they come from the software development engineer team of the top three companies in the logistics automation industry. So let us know your logistics automation ideas or concerns, Our [WCS](https://www.56yhz.com/contact_us/) expert can be easily tailored to deliver a solution that best fits into your functional and performance requirements and your existing IT architecture.
+> Clothoidy's technical team members have extensive experience in the logistics automation industry, and they come from the software development engineer team of the top three companies in the logistics automation industry. So let us know your logistics automation ideas or concerns, Our WCS expert can be easily tailored to deliver a solution that best fits into your functional and performance requirements and your existing IT architecture.
 
 ------
 
@@ -60,7 +60,7 @@ Intralogistics processes are becoming increasingly complex. In manual, automated
     >...and More!
 
 ##### Visualization SCADA
->[SCADA](https://www.56yhz.com/contact_us/) subsystems visualize your entire equipment, including material flow, analyze performance-critical data, and provide multiple options for monitoring and control. With dashboards that can be adapted to different user groups, operational data from a technical and logistics perspective is unified, while being highly connected to existing systems.
+>SCADA subsystems visualize your entire equipment, including material flow, analyze performance-critical data, and provide multiple options for monitoring and control. With dashboards that can be adapted to different user groups, operational data from a technical and logistics perspective is unified, while being highly connected to existing systems.
 
 ![SCADA_viewer][3]{ loading=lazy }
 ![SCADA_Monitor][4]{ loading=lazy }

@@ -1,0 +1,94 @@
+# ============================================================================
+# Bomiot Builder Configuration
+# ============================================================================
+# This file is OPTIONAL. When present in the project root directory, each
+# list below is APPENDED to the corresponding hardcoded defaults in build.py.
+# Duplicate entries between defaults and this file are automatically removed.
+#
+# All values are lists of strings. Leave a list empty ([]) to rely solely on
+# the built-in defaults.
+# ============================================================================
+
+[build]
+
+# ---------------------------------------------------------------------------
+# include_packages
+# ---------------------------------------------------------------------------
+# Python packages whose .py source files are C-compiled into the executable.
+# Appended to DEFAULT_INCLUDE_PACKAGES in build.py.
+#
+# Use this for:
+#   - Project's own packages (source protection required)
+#   - Third-party packages NOT already covered by defaults
+#
+# Example: include_packages = ["myapp", "myapp.utils"]
+include_packages = [
+]
+
+# ---------------------------------------------------------------------------
+# include_package_data
+# ---------------------------------------------------------------------------
+# Packages whose non-Python data files (templates, locale, static assets,
+# etc.) are copied into the build output. Appended to
+# DEFAULT_INCLUDE_PACKAGE_DATA in build.py.
+#
+# Note: This only controls DATA files. The package's .py files are still
+# compiled if the package is also listed in include_packages (or defaults).
+#
+# Example: include_package_data = ["rest_framework"]
+include_package_data = [
+]
+
+# ---------------------------------------------------------------------------
+# include_modules
+# ---------------------------------------------------------------------------
+# Individual Python MODULES (single .py files) to compile, as opposed to
+# full packages. Appended to DEFAULT_INCLUDE_MODULES in build.py.
+#
+# Use this when you only need one specific module from a package and want to
+# avoid compiling the entire package.
+#
+# Example: include_modules = ["django.core.management"]
+include_modules = [
+]
+
+# ---------------------------------------------------------------------------
+# nofollow_import_to
+# ---------------------------------------------------------------------------
+# Module name patterns that Nuitka should NOT recurse into during import
+# analysis. Matching modules are skipped at compile time (may cause
+# ImportError at runtime if actually imported).
+# Appended to DEFAULT_NOFOLLOW_IMPORT_TO in build.py.
+#
+# Use this for test suites, dev tools, or heavy modules that are never used
+# at runtime.
+#
+# Example: nofollow_import_to = ["mypackage.tests", "IPython"]
+nofollow_import_to = [
+]
+
+# ---------------------------------------------------------------------------
+# include_data_files
+# ---------------------------------------------------------------------------
+# Individual data files to copy into the build output.
+# Format: "source_path=destination_path" (both relative to project root).
+# Appended to DEFAULT_INCLUDE_DATA_FILES in build.py.
+#
+# Example: include_data_files = ["config.json=config.json", "data/db.sqlite3=data/db.sqlite3"]
+include_data_files = [
+]
+
+# ---------------------------------------------------------------------------
+# include_data_dirs
+# ---------------------------------------------------------------------------
+# Entire directories to copy into the build output.
+# Format: "source_dir=destination_dir" (both relative to project root).
+# Appended to DEFAULT_INCLUDE_DATA_DIRS in build.py.
+#
+# Use this for runtime-required directories like media uploads, templates,
+# or static assets that must keep their folder structure.
+#
+# Example: include_data_dirs = ["static=static", "uploads=uploads"]
+include_data_dirs = [
+    "greaterwms2=greaterwms2",
+]

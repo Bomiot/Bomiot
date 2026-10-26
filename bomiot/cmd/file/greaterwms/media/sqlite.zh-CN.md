@@ -1,82 +1,37 @@
-# Sqlite3 数据库
+# SQLite 数据库
 
 ## 介绍
 
-- **Bomiot**默认数据库是sqlite，为了保证正常运行，最好升级一下
+- **Bomiot** 默认使用 SQLite，零配置、免安装，数据存于单个文件。
+- 驱动为 Python 自带的 `sqlite3` 模块，**无需安装任何依赖**；Python 安装包已内置较新版本的 SQLite 库，一般不需要手动升级。
 
 ---
 
-## Windows
+## 修改 setup.ini
 
-- 安装 Chocolatey
-- 以管理员身份运行 PowerShell，执行：
-
-```bash
-Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+```ini
+[database]
+engine = sqlite
 ```
 
-- 升级 SQLite3
-
-- 运行命令：
-
-```bash
-choco upgrade sqlite --version=3.50.1
-```
-
-若提示版本不可用，可能需要手动添加第三方源或等待 Chocolatey 更新包
+- 仅此一项即可，其余字段（name / user / password / host / port）无需填写。
+- 首次启动自动在工作空间 `dbs/` 目录下创建 `db.sqlite3`。
 
 ---
 
-## Mac
-
-- 升级 Homebrew 包管理工具
+## 初始化数据
 
 ```bash
-brew update
-```
-
-- 升级 SQLite3
-
-```bash
-brew upgrade sqlite
+bomiot migrate
+bomiot initadmin
 ```
 
 ---
 
-## Linux
+## 注意事项
 
-#### 下载最新源码
-
-```bash
-wget https://www.sqlite.org/2025/sqlite-autoconf-3500100.tar.gz
-tar -xzf sqlite-autoconf-3500100.tar.gz
-cd sqlite-autoconf-3500100
-```
-
-#### 安装依赖（以 Ubuntu 为例）
-
-```bash
-sudo apt install autoconf automake libtool libreadline-dev
-```
-
-#### 配置与编译
-
-```bash
-./configure --prefix=/usr/local
-make
-sudo make install
-```
-
-#### 替换系统旧版本
-
-```bash
-sudo mv /usr/bin/sqlite3 /usr/bin/sqlite3_old
-sudo ln -s /usr/local/bin/sqlite3 /usr/bin/sqlite3
-```
-
-#### 更新动态链接库缓存
-
-```bash
-echo "/usr/local/lib" | sudo tee -a /etc/ld.so.conf.d/sqlite3.conf
-sudo ldconfig
-```
+- **并发写锁**：SQLite 同一时刻只允许一个写入者，高并发写入会出现 `database is locked`。开发与中小规模部署足够用；多人同时写入的生产环境建议改用 MySQL / PostgreSQL / Oracle。
+- **备份**：备份就是复制 `dbs/db.sqlite3` 这一个文件，恢复同理。
+- **大小写匹配**：SQLite 的 `LIKE` 对 ASCII 字符默认不区分大小写，与其他数据库行为不同，迁移数据时注意核对查询结果。
+- **外键**：框架连接时已自动开启外键约束，无需额外配置。
+- 修改 `setup.ini` 后需重启服务生效。
