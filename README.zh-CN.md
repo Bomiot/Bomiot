@@ -1,627 +1,207 @@
-🚀 Bomiot
-Python 应用的无环境交付工具
-编译为二进制 · 跨平台 · 增量更新 · 源码保护
+<div align="center"><img src="bomiot\server\media\img\logo.png" alt="Bomiot logo" width="180" height="auto" />
 
-[English](README.md) | [中文](README_CN.md)
+# 🚀 Bomiot
 
+**AI 写代码，Bomiot 打包交付**
+
+*二进制 · 跨平台 · 增量更新 · 源码保护*
+
+[English](README.en.md) | [中文](README_zh-CN.md)
+
+[![PyPI Downloads](https://img.shields.io/pypi/dm/bomiot?label=downloads&color=green)](https://pepy.tech/projects/bomiot)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/python-3670A0?logo=python\&logoColor=white)](https://www.python.org/)
-[![Django](https://img.shields.io/badge/django-092E20?logo=django\&logoColor=white)](https://www.djangoproject.com/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi\&logoColor=white)](https://fastapi.tiangolo.com/)
-[![Flask](https://img.shields.io/badge/flask-000000?logo=flask\&logoColor=white)](https://flask.palletsprojects.com/)
-[![Vue.js](https://img.shields.io/badge/vue-4FC08D?logo=vue.js\&logoColor=white)](https://vuejs.org/)
+[![Python](https://img.shields.io/badge/python-3670A0?logo=python&logoColor=white)](https://www.python.org/)
+[![Django](https://img.shields.io/badge/django-092E20?logo=django&logoColor=white)](https://www.djangoproject.com/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Flask](https://img.shields.io/badge/flask-000000?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![Vue.js](https://img.shields.io/badge/vue-4FC08D?logo=vue.js&logoColor=white)](https://vuejs.org/)
 [![GitHub Stars](https://img.shields.io/github/stars/bomiot/bomiot?style=social)](https://github.com/bomiot/bomiot)
-[![Website](https://img.shields.io/badge/Website-Online-brightgreen)](https://www.bomiot.com)
+[![Home](https://img.shields.io/badge/Home-Online-brightgreen)](https://www.bomiot.com)
+[![QQGroup](https://img.shields.io/badge/QQ群-1095956582-9cf?logo=tencent-qq&logoColor=000&logoWidth=15)](https://jq.qq.com/?_wv=1027&k=49HB5ymm)
 
-***
+</div>
 
-## 📑 目录
-
-- [关于 Bomiot](#-关于-bomiot)
-
-- [视频介绍](#-视频介绍)
-
-- [核心特性一览](#-核心特性一览)
-
-- [应用场景示例](#-应用场景示例)
-
-- [快速开始](#-快速开始-5-分钟上手)
-
-- [命令行速查](#-命令行速查)
-
-- [配置参考](#-配置参考-setupini)
-
-- [定时任务](#-定时任务)
-
-- [文件监控与上传](#-文件监控与上传)
-
-- [系统实时监控](#-系统实时监控)
-
-- [实时 WebSocket 通信](#-实时-websocket-通信)
-
-- [部署与分发](#-部署与分发)
-
-- [安全说明](#-安全说明)
-
-- [参与建设](#-参与建设)
-
-- [开源协议](#-开源协议)
-
-***
+---
 
 ## 🌟 关于 Bomiot
 
-Bomiot 是一款面向 Python 程序员的命令行工具，核心由 Rust 重写 ASGI 网关。它让你写好的 Python 应用可以**无环境地交付到任何人手里**——无需安装 Python、无需配置依赖，双击即用，开机即运行，还能后台静默增量更新。
+> **Bomiot 不是什么「革命性的黑科技框架」**——它把 Python 应用**无环境交付 + 持续更新 + 代码保护**这个真实需求，做成了一条完整的开箱即用链路：**让开发者把写好的应用——不带环境、不带源码、还能持续更新地——交到非技术用户手里。**
 
-> 💡 **Bomiot 不是什么「革命性的黑科技框架」**——技术上，任何合格的工程师都能复刻它。
->
-> 它真正的价值，在于把一个**真实存在却常被忽视的需求**——Python 应用的**无环境交付 + 持续更新 + 代码保护**——做成了一条**完整的、开箱即用的链路**：
->
-> **让 Python 开发者能把写好的应用——不带环境、不带源码、还能持续更新地——交到非技术用户手里，开箱即用。**
+AI 把写代码压缩到了分钟级，交付却停在原地。Bomiot 补的就是这一截：`init` 初始化 → `run` 跑起来 → `build` 打成应用 → `publish` 发布更新，一条链走完。终端用户体验对标手机 App：双击即用、后台静默更新、失败自动回退。
 
-对开发者而言，一个 `bomiot deploy` 命令就能把 Django / FastAPI / Flask 应用打包成绿色版运行文件，拷贝到目标机器双击即可运行，无需任何环境配置。对终端用户而言，体验对标手机 App：开机即用、版本自动静默更新、更新失败自动回滚，全程零感知。每个用户 / 每台设备都可以成为独立节点，节点间通过局域网直接协同；同时内置免费的应用市场，开发者可自由发布和分享应用，也预置了 ERP、WMS 等行业模板供一键安装。
+| 痛点 | Bomiot 解决方案 |
+| :--- | :--- |
+| 🐢 交付难、环境耦合 | ✅ 编译为绿色版二进制，无需 Python 环境，双击即用 |
+| 🔄 用户不更新 | ✅ 增量自动更新，差分下载，失败回退，零感知 |
+| 🧩 前后端反复联调 | ✅ 统一交互契约，四个固定接口，前后端并行开发 |
+| 🗂️ 一人维护多套系统 | ✅ 多项目隔离，请求头标识项目，数据互不越权 |
+| 🛡️ 源码裸奔 | ✅ 编译为原生二进制，有效提高代码保护 |
 
-| 痛点                       | Bomiot 解决方案                                            |
-| :----------------------- | :----------------------------------------------------- |
-| 🐢 **Python 应用交付难、环境耦合** | ✅ **绿色版分发**，编译为二进制，无需安装 Python 与依赖，双击即用                |
-| 🔄 **发版靠手动通知、用户不更新**     | ✅ **增量自动更新**，后台静默下载差分包，下次启动自动生效，失败自动回滚                 |
-| 🖥️ **开机不会自动运行、维护麻烦**    | ✅ **开机即用**，绿色版程序可配置开机自启，开箱即运行                          |
-| 🏢 **企业系统林立、数据孤岛**       | ✅ **企业系统一体化**，ERP/WMS/CRM/MES/OA 统一接入，数据按需流转           |
-| 🔗 **多厂区多机房、协同困难**       | ✅ **节点化组网**，各节点局域网直连，去中心化协同，无需中心服务器                    |
-| 🧩 **前后端分离、集成复杂**        | ✅ **全栈一体化**，Python 后端（Django/FastAPI/Flask）+ 主流前端，灵活搭配 |
-| 📡 **实时通信缺失、轮询低效**       | ✅ **内置 WebSocket**，ASGI 原生实现，实时双向通信                    |
-| 🛡️ **性能瓶颈、代码泄露**        | ✅ **Rust 重构 ASGI 网关**，编译为二进制，性能更稳定，有效提高代码保护            |
-| 💰 **封闭生态、复用困难**         | ✅ **自有免费应用市场**，预置行业模板，开发者可自由发布和分享应用                    |
+坦诚边界：代码保护是提高门槛而非绝对安全；产物体积比原生应用大；只适合「需要把项目交到别人手上」的场景。
 
-***
+---
 
-## 📹 视频介绍
+## ✨ 核心特性
 
-观看 Bomiot 的视频介绍，快速了解平台核心功能与使用方法。
+| 特性 | 说明 |
+| :--- | :--- |
+| 📦 无环境交付 | `bomiot build` 一键编译为绿色版程序，拷贝即运行 |
+| 🔄 增量自动更新 | 文件级哈希清单比对，只下载变化部分；大文件分块、断点续传；失败自动回退，用户零感知 |
+| 🌍 跨平台 | Windows / macOS / Linux × x64 / arm64 全覆盖，构建时自动识别平台与架构 |
+| 🦀 Rust ASGI 网关 | 原生支持 WebSocket，性能稳定，代码保护 |
+| 🧩 多框架 | Django（默认）/ FastAPI / Flask，共享同一套 ORM 与数据层 |
+| 📐 交互契约 | `bomiot api` 生成完整 CRUD 接口，业务逻辑写在 `receiver.py`，改动即时生效 |
+| 🗂️ 多项目 | 一个工作空间多套项目，前端一键切换，后端按 `project` 请求头隔离数据 |
+| 🔑 权限体系 | `urls.py` 的 `name` 声明权限，JWT 认证，部门隔离，软删除 |
+| ⏰ 定时任务 | `task.py` 写函数 + `JobList` 注册，支持 cron / interval / date |
+| 📁 文件监控 | 监听 `media` 目录，自动登记入库，`files.py` 可接管 |
+| 📊 系统监控 | 周期采集 CPU / 内存 / 磁盘 / 网络 / 进程，`server.py` 可接管 |
 
-▶ **[点击观看视频介绍](https://space.bilibili.com/407321291?spm_id_from=333.337.search-card.all.click)** (Bilibili)
+---
 
-***
+## 🌍 跨平台支持
 
-## ✨ 核心特性一览
+一份代码，处处运行。`bomiot build` 自动识别当前操作系统与 CPU 架构，无需任何参数；需要哪个平台的包，就在哪个平台上执行一次构建。
 
-### 1. 绿色版分发 / 无环境交付
+| 平台 | 架构 | 说明 |
+| :--- | :--- | :--- |
+| Windows | x64 | Windows 7 及以上，桌面交付最常见的目标 |
+| macOS | x64 / arm64（Apple Silicon） | 自动识别 Intel 与 M 系列芯片 |
+| Linux | x64 / arm64 | Ubuntu 22.04+ / glibc 2.35+，覆盖服务器与嵌入式 |
 
-**Bomiot 的核心卖点**。将 Python 应用编译为绿色版运行文件，拷贝到目标机器双击即可运行，无需安装 Python、无需配置任何环境。
+- 🖥️ **全场景设备**：办公 PC、云服务器、工控机、树莓派、边缘网关，打好一个包拷到哪台都能跑
+- 🔒 **数据本地**：数据存储在各节点本机，适合内网、断网与有数据主权要求的环境
+- 🔁 **更新按平台隔离**：`manifest--{app}-{os}-{arch}.json` 一平台一清单，Windows 客户端永远拉不到 macOS 的包
 
-- 📦 **绿色版打包**：通过编译将代码、运行时、资源整合为绿色版程序，无需安装，解压即用。
+---
 
-- ⚡ **即开即用**：无需安装 Python、无需配置环境、无需装依赖，双击即可运行。
+## 🚀 快速开始（5 分钟）
 
-- 🔐 **有效代码保护**：Python 代码随编译转为原生二进制，显著提高代码保护。
-
-- 🎯 **面向非技术用户**：交付对象是老板、仓库管理员、业务员，而不是工程师。
-
-### 2. 增量自动更新（静默升级 · 零感知）
-
-**打包分发只是开始，持续迭代才是常态。** Bomiot 内置增量更新机制，让已分发的绿色版应用可以自动检测、下载并应用新版本，告别「发微信通知客户重装」的原始模式。
-
-- 🔍 **自动检测新版本**：启动时自动检查是否有新版本，无需用户手动干预。
-
-- 📦 **增量差分下载**：仅下载变动的部分（而非全量重下），更新包体积小、速度快，几秒内完成。
-
-- 🤫 **后台静默升级**：下载完成后在后台应用更新，下次启动即生效，用户完全无感知。
-
-- ↩️ **失败自动回滚**：若更新过程中出现异常，自动回退至上一个可用版本，保证应用始终可运行。
-
-- 🔄 **版本统一管理**：开发者发布新版本后，所有已安装节点自动收敛到最新版，告别「100 个客户 100 个版本」的运维噩梦。
-
-### 3. 跨平台节点化架构
-
-**一次开发，跨平台运行**。让每台 Windows / macOS / Linux 设备成为独立的服务器节点，支持工控机、边缘网关等物联网设备。
-
-- 🌍 **全平台支持**：原生支持 Windows、macOS 和 Linux，一份代码，处处运行。
-
-- 🔒 **数据本地**：数据存储在各节点，符合数据主权要求，适合内网/断网环境。
-
-- 🤖 **边缘设备支持**：兼容工控机、树莓派、边缘网关等物联网设备，构建边缘计算节点。
-
-- 🌐 **节点化组网**：多厂区、多机房、多分支节点通过局域网互联，去中心化，无需中心服务器。
-
-### 4. Rust 重构 ASGI 网关
-
-Bomiot 使用 Rust 重写了核心 ASGI 网关，编译为原生二进制，带来更稳定的性能表现和代码保护。
-
-- 🦀 **Rust ASGI 网关**：核心网关由 Rust 编写，编译为原生二进制，性能表现更稳定。
-
-- 🚀 **性能稳定**：编译后的二进制在高并发请求下延迟更低、运行更稳定。
-
-- 🔐 **代码保护**：Python 代码随编译一同转为原生二进制，有效提高代码保护。
-
-### 5. 企业系统一体化（多系统统一接入 · 消除数据孤岛）
-
-**专为企业内部系统打通而设计**。ERP、WMS、CRM、MES、OA…接口不统一也没关系，Bomiot 帮您把一切连起来。
-
-- 🏢 **多系统对接**：无论是标准接口、数据库直连还是 UI 级自动化，都能统一接入 Bomiot 节点。
-
-- 🔄 **实时数据流转**：节点间实时抓取与推送，业务状态毫秒级跨系统同步。
-
-- 🧩 **统一权限体系**：一套账号打通各子系统，角色与 API 权限集中管控。
-
-- 📊 **统一监控面板**：各节点运行状态、系统健康度、核心业务指标一屏呈现。
-
-### 6. 内置免费应用市场 · 行业模板一键安装
-
-Bomiot 拥有**免费开放的自有应用市场**，预置 ERP / WMS 等行业模板，同时支持开发者自由发布和分享应用。
-
-- 🏪 **免费应用市场**：内置官方应用市场，开发者可自由发布应用，用户可一键下载，**完全免费**。
-
-- 🎯 **行业模板**：预置 GreaterWMS（仓储）等行业模板，一键安装，开箱即用。
-
-- 🔓 **开放共享**：所有市场内容对所有人开放下载，推动技术的快速传播与复用。
-
-- 🔐 **安全分发**：应用发布前可编译加密，保护开发者的代码选择。
-
-### 7. 多语言全栈框架自由
-
-不挑技术栈，用你最熟悉的工具。Bomiot 支持 Python 后端 + JavaScript 前端的灵活组合。
-
-- **后端支持（Python）**：
-
-  - 🟢 **Django**（企业级首选）
-
-  - 🚀 **FastAPI**（高并发性能）
-
-  - ⚪ **Flask**（轻量灵活）
-
-- **前端支持（JavaScript/TypeScript）**：
-
-  - 💚 **Quasar / Vue 3**（主要支持，完整集成）
-
-  - 🔄 抽象层已预留，可扩展至 React、Angular。
-
-### 8. 内置定时任务调度
-
-内置的数据库驱动定时任务系统，支持多种触发方式。
-
-- ⏰ **三种触发器**：支持 `cron`（定时）、`interval`（间隔）、`date`（日期）三种触发方式。
-
-- 💾 **数据库持久化**：任务存储在数据库中，服务重启后自动恢复。
-
-- 🔄 **自动同步**：SchedulerManager 每 60 秒自动同步任务状态，增删改即时生效。
-
-- 📝 **任务模板**：在 `task.py` 中定义任务函数，即可被调度器调用执行。
-
-### 9. 文件监控与上传
-
-实时文件监控系统，自动管理用户上传的文件。
-
-- 👀 **实时监控**：自动监控媒体目录，捕获文件的创建、修改、删除和移动操作。
-
-- 📋 **自动登记**：文件变动后自动写入数据库，记录文件名、类型、大小和所属用户。
-
-- 📡 **事件通知**：文件变更时通过信号机制实时广播，方便前端或第三方订阅。
-
-- ⚙️ **灵活配置**：在 `setup.ini` 中设置文件大小限制和允许的文件类型。
-
-### 10. 实时 WebSocket 通信
-
-Bomiot 的 Rust ASGI 网关原生支持 WebSocket，直接在应用的 `main.py` 中编写 WebSocket 路由即可，详见 [WebSocket 章节](#-实时-websocket-通信)。
-
-- 💬 **开发极简**：直接使用 FastAPI/Flask 的标准 WebSocket 语法，零学习成本。
-
-- ⚡ **网关转发**：Rust 网关自动识别 WebSocket 请求，高效转发至对应应用。
-
-- 🔌 **全框架支持**：在 Django、FastAPI 或 Flask 应用的 `main.py` 中均可使用。
-
-### 11. 系统实时监控
-
-后台系统监控，实时采集服务器运行状态。
-
-- 💻 **CPU 监控**：采集 CPU 使用率、物理核数、逻辑核数、频率信息。
-
-- 🧠 **内存监控**：采集物理内存和交换分区的总量、已用、可用、使用率。
-
-- 💽 **磁盘监控**：采集各分区的容量、已用、可用、使用率。
-
-- 🌐 **网络监控**：采集网络发送和接收的字节数。
-
-- 📊 **进程监控**：采集所有运行进程的 PID、名称、CPU 占用率、内存占用率。
-
-- 🗄️ **自动清理**：历史数据自动清理（上限 10080 条），防止数据库膨胀。
-
-### 12. 内置 API 限流保护
-
-为您的应用提供开箱即用的 API 安全防护，保障系统稳定性。
-
-- 🛡️ **智能限流**：基于 IP 地址和 HTTP 请求方法（GET/POST 等）进行精细化限流。
-
-- 🛡️ **防刷保护**：有效防止恶意爬虫、接口刷取和拒绝服务（DoS）攻击。
-
-- ⚙️ **灵活配置**：可在 `setup.ini` 的 `[throttle]` 节中自定义限流时间窗口和请求频率。
-
-***
-
-## 💡 应用场景示例
-
-Bomiot 的平台特性使其适用于多种实际业务场景，以下为几个典型示例：
-
-### 🏭 企业系统间自动化对接
-
-企业内部各系统（WMS、ERP、MES、OA、CRM 等）常因接口不统一而难以对接。借助 Bomiot + 浏览器自动化工具（如 Playwright），可以在**不修改任何系统代码**的前提下，实现界面级的自动化操作：
-
-- 实时从一个系统抓取数据，自动填入另一个系统
-
-- 监控业务状态变化，实时跨系统同步
-
-- 无需目标系统提供 API，直接通过界面操作完成数据流转
-
-- 配合定时任务 + WebSocket 通知，异常情况第一时间告警
-
-### 🛒 电商价格与库存监控
-
-搭建自动化电商监控应用，帮助运营团队实时掌握市场动态：
-
-- 定时抓取竞品价格、促销信息，生成价格变动报告
-
-- 监控商品库存状态，低库存时自动触发提醒
-
-- 支持多平台（淘宝、京东、拼多多等）同时监控
-
-- 数据变更通过 WebSocket 实时推送到前端看板
-
-- 开发完成后可编译为绿色版，发给多个运营人员独立运行，数据互不影响
-
-### 📊 数据巡检与自动化报表
-
-利用定时任务 + 文件监控能力，构建自动化数据处理流水线：
-
-- 定时从数据源（数据库、文件、API）采集业务数据
-
-- 自动生成 Excel / PDF 报表并分发到指定人员
-
-- 监控关键业务指标，异常时自动触发预警通知
-
-- 绿色版分发，部署到各部门独立运行，数据不出本机
-
-### 🔧 通用自动化工具集
-
-将重复性工作转化为自动化流程，提升团队效率：
-
-- 表单自动填写与提交（HR 系统、财务系统等）
-
-- 文档自动生成与归档
-
-- 系统健康状态巡检与自动重启
-
-- 开发完成后可一键编译为绿色版，方便多设备/多人员分发
-
-### 🤖 工业物联网与边缘计算
-
-将 Bomiot 节点部署到工控机、边缘网关等设备，构建去中心化的物联网解决方案：
-
-- **边缘数据采集**：在车间、仓库等现场设备上实时采集传感器数据
-
-- **本地处理与告警**：数据在边缘节点本地处理，低延迟触发告警
-
-- **多节点协同**：多个边缘节点通过局域网协同工作，无需云端服务器
-
-- **数据主权**：敏感生产数据保留在本地节点，符合工业安全要求
-
-- **远程运维**：通过 WebSocket 远程监控边缘节点运行状态
-
-### 🏠 智能家居与边缘网关
-
-将 Bomiot 作为家庭或办公室的边缘网关，统一管理智能设备：
-
-- **设备统一接入**：通过 MQTT 协议接入各类智能设备（灯光、传感器、摄像头等）
-
-- **自动化场景编排**：定义自动化规则，如"温度过高自动开启空调"
-
-- **本地语音/自动化**：离线运行，数据不出本地，保护隐私
-
-- **绿色版分发**：即插即用，部署到家庭服务器或迷你主机
-
-***
-
-## 🚀 快速开始 (5 分钟上手)
+环境要求：Python 3.11+，Windows / macOS / Linux。
 
 ```bash
-# 1. 安装 Bomiot
-pip install bomiot
-
-# 2. 初始化工作空间
-bomiot init
-
-# 3. 创建项目、应用和 API
-bomiot project my-project
-bomiot app my-app
-bomiot api my-api
-
-# 4. 初始化数据库和管理员
-bomiot migrate
-bomiot initadmin
-
-# 5. 启动服务
-bomiot run --host 0.0.0.0 --port 8000
+pip install bomiot        # 1. 安装
+mkdir myapp && cd myapp
+bomiot init               # 2. 初始化项目骨架（幂等，可重复执行）
+bomiot migrate            # 3. 建表
+bomiot initadmin          # 4. 创建管理员（命令会打印初始密码）
+bomiot run                # 5. 启动
+bomiot build              # 6. 打包：产物在 build/，双击即可运行
 ```
 
-**完成！** 打开 `http://127.0.0.1:8000/` 就可以开始您的开发之旅了。
+浏览器访问 `http://127.0.0.1:8000`，用管理员账号登录。
 
-***
+> 构建前建议先替换 `logo.ico / logo.icns / logo.png` 与 `splash.png` 为自己的素材。需要其他平台的包时，在对应平台的机器或 CI 上执行 `bomiot build` 即可。
+
+---
 
 ## 🛠️ 命令行速查
 
-| 分类      | 命令                          | 说明          |
-| :------ | :-------------------------- | :---------- |
-| **项目**  | `bomiot init`               | 初始化工作空间     |
-| <br />  | `bomiot project `           | 创建新项目       |
-| <br />  | `bomiot app `               | 创建新应用       |
-| <br />  | `bomiot api `               | 创建新 API     |
-| **数据库** | `bomiot makemigrations`     | 生成迁移文件      |
-| <br />  | `bomiot migrate`            | 执行数据库迁移     |
-| <br />  | `bomiot loaddata `          | 加载初始数据      |
-| <br />  | `bomiot dumpdata [appname]` | 导出数据        |
-| **服务**  | `bomiot run [options]`      | 启动开发服务器     |
-| <br />  | `bomiot deploy`             | 部署项目 (编译打包) |
-| **管理**  | `bomiot initadmin`          | 创建管理员账户     |
-| <br />  | `bomiot initpwd`            | 重置管理员密码     |
+| 命令 | 说明 |
+| :--- | :--- |
+| `bomiot init` | 初始化工作空间 |
+| `bomiot project <name>` | 创建业务项目 |
+| `bomiot app <name>` | 创建业务应用（基础骨架） |
+| `bomiot api <name>` | 创建 API 应用（完整 CRUD 接口模板） |
+| `bomiot makemigrations` / `migrate` | 生成 / 执行数据库迁移 |
+| `bomiot loaddata` / `dumpdata` | 导入 / 导出数据 |
+| `bomiot initadmin` / `initpwd` | 创建管理员 / 重置密码 |
+| `bomiot run [-b host] [-p port] [-w workers]` | 启动服务（默认 `0.0.0.0:8000`，Windows 建议单 worker） |
+| `bomiot build` | 本地构建当前平台应用包 |
+| `bomiot publish --os=<os> --code=<口令>` | 发布增量更新（`--os` 取值 `windows`/`macos`/`linux`） |
 
-***
+---
 
-## 🔧 配置参考 (`setup.ini`)
+## 🔧 配置（setup.ini）
 
-```ini
-[project]
-name = greaterwms
+工作空间根目录的 `setup.ini`，启动时加载，**改完需重启**：
 
-[database]
-# engine: sqlite | mysql | postgresql | oracle
-engine = sqlite
-# ... 其他数据库连接信息 ...
+| 配置段 | 关键项 | 说明 |
+| :--- | :--- | :--- |
+| `[database]` | `engine` | `sqlite`（默认，零配置）/ `mysql` / `postgresql` / `oracle` |
+| `[debug]` | `debug` | 生产环境必须设为 `False` |
+| `[file]` | `file_size` / `file_extension` | 上传大小上限（默认约 100MB）与允许的扩展名 |
+| `[jwt]` | `user_jwt_time` | 登录令牌有效期（秒） |
+| `[throttle]` / `[request]` | - | API 限流（按 IP + 请求方法） |
+| `[mail]` | - | SMTP 邮件配置 |
+| `[system_control]` | `observer` / `scheduler` / `server_monitor` | 文件监控 / 定时任务 / 系统监控三个后台服务开关，默认全开 |
 
-[debug]
-# 控制生产/调试模式
-debug = True
+---
 
-[file]
-# 文件上传配置
-file_size = 102400000    # 最大文件大小 (字节), 默认 100MB
-file_extension = py,png,jpg,jpeg,gif,bmp,webp,txt,md,html,htm,js,css,json,xml,csv,xlsx,xls,ppt,pptx,doc,docx,pdf
+## 📦 构建、发布与自动更新
 
-[system_control]
-# 后台服务开关
-observer = True        # 文件监控
-scheduler = True       # 定时任务调度
-server_monitor = True  # 系统资源监控
+`bomiot init` 生成的 `launcher.py` 是项目中枢，`app_name` / `version` / `base_url`（更新服务器地址）三个变量缺一不可，构建、发布、客户端更新都读它。需要追加打包内容时，在项目根目录建 `builder.toml` 配置。
 
-# ... (其他配置项)
+```bash
+bomiot build                                 # 本地构建 → build/ 目录
+bomiot publish --os=windows --code=example   # 发布到更新服务器
 ```
 
-***
+### 版本控制：每个文件都有指纹
 
-## ⏰ 定时任务
+- 每次构建生成清单文件 `manifest--{app_name}-{os}-{arch}.json`，记录**每个产物文件的哈希值**——清单就是这一版的「指纹全集」
+- 版本与平台严格对应：`{app_name}-{version}-{os}` 一个目录，`windows` / `macos` / `linux` 与 `x64` / `arm64` 各自的清单互不影响，Windows 客户端只会拉 Windows 的包
+- 同一版本同一平台重复发布，服务器比对后直接跳过，不会重复上传
+- `--code` 发布口令由服务器校验，防止他人拿到项目标识后冒充你上传被篡改的更新
 
-Bomiot 内置定时任务系统，通过 `task.py` 定义任务，支持三种触发方式。
+### 自动更新：客户端启动时发生了什么
 
-### 定义任务
+1. **比对版本**：客户端启动时读取本地清单，向 `base_url` 请求远端版本摘要——一致则直接启动，零开销
+2. **拉取清单**：不一致则获取远端完整清单（每个文件的哈希）
+3. **增量下载**：逐个文件对比哈希，**只下载新增和有变化的文件**，没动的文件一个字节都不传
+4. **断点续传**：大文件按块下载，中途断网后从断点继续，不用从头再来
+5. **静默替换**：下载完成后生成更新脚本，应用退出，由脚本完成文件替换并自动重启——用户全程无感知
+6. **失败回退**：下载中断或校验失败，放弃本次更新，按本地版本正常启动，下次启动自动重试
 
-在工作空间的 `task.py` 中定义任务函数：
+用户的业务数据目录（数据库、日志、缓存等）不在更新范围内，版本再怎么换，数据都不受影响。
 
-```python
-def example_job(**kwargs):
-    """示例任务函数"""
-    from datetime import datetime
-    print(f"执行时间: {datetime.now()}")
-    # 在此编写您的业务逻辑
-```
-
-### 触发类型
-
-| 类型         | 说明             | 示例                  |
-| :--------- | :------------- | :------------------ |
-| `cron`     | 按 Cron 表达式定时触发 | 每天 02:00 执行备份       |
-| `interval` | 按固定间隔触发        | 每 5 分钟检查一次          |
-| `date`     | 在指定时间触发一次      | 2026-12-31 23:59 执行 |
-
-### 启用调度
-
-确保 `setup.ini` 中 `[system_control]` 的 `scheduler = True`，服务启动后调度器自动运行。
-
-***
-
-## 📁 文件监控与上传
-
-Bomiot 内置文件监控系统，自动跟踪用户上传的文件变动。
-
-### 监控机制
-
-- **实时监控**：监控 `MEDIA_ROOT` 媒体目录，递归监听所有子目录。
-
-- **事件捕获**：自动捕获文件的 **创建**、**修改**、**删除**、**移动** 四种操作。
-
-- **用户关联**：根据目录层级自动识别文件所属用户，写入 `Files` 数据表。
-
-- **信号通知**：每次文件变动通过 `bomiot_signals` 广播事件，前端可实时订阅。
-
-### 上传配置
-
-在 `setup.ini` 的 `[file]` 节中配置上传参数：
-
-```ini
-[file]
-file_size = 102400000    # 最大文件大小 (默认 100MB)
-file_extension = png,jpg,pdf,docx,...  # 允许的文件扩展名
-```
-
-### 启用文件监控
-
-确保 `setup.ini` 中 `[system_control]` 的 `observer = True`，服务启动后自动启用文件监控。
-
-***
-
-## 📊 系统实时监控
-
-Bomiot 内置系统监控模块，后台采集服务器的核心运行指标，数据存入数据库并通过信号实时广播。
-
-### 监控指标
-
-| 指标      | 采集内容                 | 存储模型      |
-| :------ | :------------------- | :-------- |
-| **CPU** | 使用率、物理核数、逻辑核数、频率     | `CPU`     |
-| **内存**  | 总量、已用、可用、Swap 信息     | `Memory`  |
-| **磁盘**  | 各分区容量、已用、可用、使用率      | `Disk`    |
-| **网络**  | 发送字节数、接收字节数          | `Network` |
-| **进程**  | PID、名称、CPU 占用率、内存占用率 | `Pids`    |
-
-### 采集频率
-
-- 每隔 **5 分钟** 执行一次完整采集
-
-- CPU、内存、网络数据自动清理（上限 10080 条 ≈ 7 天）
-
-- 磁盘和进程每次全量刷新
-
-### 启用系统监控
-
-确保 `setup.ini` 中 `[system_control]` 的 `server_monitor = True`，服务启动后自动在后台线程运行监控。
-
-***
-
-## 📡 实时 WebSocket 通信
-
-Bomiot 的 Rust ASGI 网关原生支持 WebSocket，无需额外配置，直接在应用的 `main.py` 中编写 WebSocket 路由即可。
-
-### 开发示例
-
-在 FastAPI 应用的 `main.py` 中：
-
-```python
-from fastapi import FastAPI, WebSocket
-
-app = FastAPI()
-
-@app.websocket("/ws")
-async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    while True:
-        data = await websocket.receive_text()
-        await websocket.send_text(f"Message text was: {data}")
-```
-
-### 核心特性
-
-- 💬 **开发极简**：直接使用 FastAPI/Flask 的标准 WebSocket 语法，零学习成本。
-
-- ⚡ **网关转发**：Rust 网关自动识别 WebSocket 请求，高效转发至对应应用。
-
-- 🔄 **双向通信**：支持服务端主动推送，实现实时通知、数据广播等场景。
-
-- 🔌 **即开即用**：无需安装额外依赖，框架原生支持。
-
-### 典型应用场景
-
-- 实时数据看板：监控指标变化实时推送至前端
-
-- 系统告警通知：异常情况通过 WebSocket 第一时间通知用户
-
-- 协作编辑：多人实时协同操作同一数据
-
-- 聊天与消息：即时消息、通知广播
-
-***
+---
 
 ## 🌐 部署与分发
 
-Bomiot 提供两种部署方式，满足不同场景需求：
+Bomiot 提供两种部署方式，**全部免费使用**：
 
-| 对比项      | 传统服务器部署 (`bomiot run`) | 节点化分发 (`bomiot deploy`) |
-| :------- | :--------------------- | :---------------------- |
-| **费用**   | ✅ 完全免费                 | 💎 赞助专享                 |
-| **运行环境** | 需安装 Python 及依赖         | 绿色版，双击即用，无需环境           |
-| **增量更新** | 自行处理                   | 内置增量静默更新                |
-| **代码保护** | 源码明文                   | 编译为二进制，有效提高代码保护         |
-| **适用场景** | 服务器部署、开发调试             | 现场电脑、工控机、多设备分发          |
-| **设备绑定** | 无                      | 支持（单设备唯一绑定）             |
+| 对比项 | `bomiot run`（服务器部署） | `bomiot build` + `publish`（节点化分发） |
+| :--- | :--- | :--- |
+| 运行环境 | 需安装 Python 及依赖 | 绿色版，双击即用 |
+| 增量更新 | 自行处理 | 内置静默更新 |
+| 代码保护 | 源码明文 | 编译为二进制 |
+| 设备绑定 | 无 | 单设备唯一绑定 |
 
-### 传统服务器部署 (完全免费)
-
-您可以将 Bomiot 应用像传统 Django/FastAPI 项目一样部署到任意服务器上，**完全免费，无任何限制**。
+### 传统服务器部署
 
 ```bash
-# 传统方式部署到服务器
 bomiot run --host 0.0.0.0 --port 8000
 ```
 
-### 节点化分发 (赞助专享)
+外网部署请配置 HTTPS（`--ssl-keyfile` + `--ssl-certfile`），多 worker 请在 Linux / macOS 环境下运行。
 
-```bash
-bomiot deploy  # 跨平台编译打包为绿色版运行文件
-```
+### 节点化分发
 
-通过跨平台编译打包生成绿色版运行文件，**拷贝到目标机器双击即可运行**。此分发方式为赞助专享，可享编译加密、跨平台即开即用等特性。
+`bomiot build` 生成的绿色版运行文件可直接部署到本地物理设备（PC、工控机、树莓派等）或云服务器实例。首次运行时程序自动生成本机标识文件 `auth_key.py`，携带它访问官网换取 `sponsor.py` 即完成设备绑定——所有校验均在**本地完成**，仅对当前设备有效，换机需重新绑定。
 
-> 💡 **说明：节点化分发同时支持本地物理设备和云服务器环境。** `bomiot deploy` 生成的绿色版运行文件，可直接部署到企业内网的物理设备（PC、工控机、边缘网关、树莓派、本地机房服务器等），也可部署到云服务器实例，所有场景下的设备绑定校验机制一致。
+> **隐私承诺**：验证不联网、不上传任何节点信息或业务数据，代码与数据始终留在本地。
 
-**设备绑定校验机制：**
-
-- 首次运行时，程序自动根据本机网卡信息生成 `auth_key.py`
-
-- 携带 `auth_key.py` 访问官网完成校验，换取 `sponsor.py`
-
-- 所有校验均在**本地完成**，绑定设备唯一标识，仅对当前设备有效
-
-- 每台设备仅可拥有一个 `sponsor.py`，换机或更换云服务器实例需重新完成绑定
-
-> **隐私保护承诺**：所有验证均在**本地完成**，不会向任何服务器上传您的节点信息或业务数据。您的代码、配置和运行数据始终保留在本地节点。
-
-***
+---
 
 ## ⚠️ 安全说明
 
-### 数据所有权与隐私
+生产部署： `[debug]` 设为 `False`；外网必须 HTTPS（`--ssl-keyfile` + `--ssl-certfile`）；定期备份数据库（`bomiot dumpdata`）与 `setup.ini`。建议修改自动更新 URL 与更新文件存放地址，防止他人向更新服务器上传文件。
 
-- **本地验证**：所有验证机制完全在本地运行，无需联网，不收集任何用户数据。
-
-- **数据主权**：所有业务数据、配置文件和运行日志均存储在本地节点，您拥有数据的绝对控制权。
-
-- **无第三方依赖**：除操作系统本身，Bomiot 不会强制您安装任何云端服务或向第三方发送遥测数据。
-
-### 关于代码保护
-
-编译将 Python 代码转为原生二进制，有效提高代码保护。
-
-- 建议将核心算法和敏感逻辑放在**服务端节点**而非客户端
-
-- 对于高安全需求场景，建议配合**代码签名**和**本地校验**机制
-
-### 部署建议
-
-- 生产环境请将 `setup.ini` 中 `[debug]` 的 `debug` 设为 `False`
-
-- 外网部署必须配置 HTTPS（`--ssl-keyfile` + `--ssl-certfile`）
-
-- 定期备份数据库（`bomiot dumpdata`）和 `setup.ini` 配置
-
-***
+---
 
 ## 🤝 参与建设
 
-我们欢迎任何形式的贡献！
-
-- 🔗 **官方网站**: <https://www.bomiot.com>
-
-- 🐛 **提交 Bug**: [创建 Issue](https://github.com/Bomiot/Bomiot/issues/new?template=bug_report.md)
-
-- ✨ **功能建议**: [提交功能需求](https://github.com/Bomiot/Bomiot/issues/new?template=feature_request.md)
-
-- 💻 **代码贡献**: Fork 仓库 -> 创建分支 -> 提交 Pull Request
-
-- 🧩 **分享应用**: 基于 Bomiot 开发行业应用，发布到免费应用市场与社区共享
-
-***
+官方网站：https://www.bomiot.com
 
 ## 📄 开源协议
 
-本项目基于 **Apache License 2.0** 开源，详见 [LICENSE](LICENSE) 文件。
+**Apache License 2.0**，详见 LICENSE 文件。
 
-***
+---
 
-**⭐ 如果 Bomiot 对您有帮助，请给项目点个 Star！**
+**⭐ 如果 Bomiot 对您有帮助，请点个 Star！**
 
-Made with ❤️ by [Bomiot Team](https://github.com/Bomiot)
+**开箱即用，持续更新。** 这是我们能给你的承诺。
+
+Made with ❤️ by Bomiot Team
