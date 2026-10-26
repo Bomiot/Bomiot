@@ -1,4 +1,4 @@
-<div align="center"><img src="bomiot\server\media\img\logo.png" alt="Bomiot logo" width="180" height="auto" />
+<div align="center"><img src="https://gitee.com/Bomiot/Bomiot/blob/main/bomiot/server/media/img/logo.png" alt="Bomiot logo" width="180" height="auto" />
 
 # 🚀 Bomiot
 
