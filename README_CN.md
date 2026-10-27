@@ -8,7 +8,7 @@
 
 [English](README.md) | [中文](README_CN.md)
 
-[![PyPI Downloads](https://img.shields.io/pypi/dm/bomiot?label=downloads&color=green)](https://pepy.tech/projects/bomiot)
+[![PyPI Downloads](https://img.shields.io/pypi/dm/bomiot?label=PyPI&color=green)](https://pepy.tech/projects/bomiot)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3670A0?logo=python&logoColor=white)](https://www.python.org/)
 [![Django](https://img.shields.io/badge/django-092E20?logo=django&logoColor=white)](https://www.djangoproject.com/)

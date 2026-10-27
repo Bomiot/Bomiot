@@ -147,31 +147,31 @@ files = [
 
 [[package]]
 name = "bomiot-cmd"
-version = "0.1.47"
+version = "0.1.54"
 description = "Bomiot CMD library"
 optional = false
 python-versions = "<3.14,>=3.10"
 files = [
-    {file = "bomiot_cmd-0.1.47-cp310-cp310-macosx_11_0_universal2.whl", hash = "sha256:71b3b2d3a67bc638e7dd0e6a51c1952a15f9f6d3b804baf5d637bae75a6c3fd1"},
-    {file = "bomiot_cmd-0.1.47-cp310-cp310-manylinux_2_34_aarch64.whl", hash = "sha256:4a78d86210242859c5f7356d403ecef807402d636634d05abf7628d0b6a9750a"},
-    {file = "bomiot_cmd-0.1.47-cp310-cp310-manylinux_2_34_armv7l.whl", hash = "sha256:31b9e3d44045f9213ca988f640e5304ccdb3c5eaf1db7c4aeef38b551659162a"},
-    {file = "bomiot_cmd-0.1.47-cp310-cp310-manylinux_2_38_x86_64.whl", hash = "sha256:ec33ca6389d672fe4f3df68d0187c453a74b9f0796d1ea2624d9940f2494e495"},
-    {file = "bomiot_cmd-0.1.47-cp310-cp310-win_amd64.whl", hash = "sha256:35c59806ad9a3e0685b8411e6d291fb282327b2949d769a4305afacfece40673"},
-    {file = "bomiot_cmd-0.1.47-cp311-cp311-macosx_11_0_universal2.whl", hash = "sha256:2058edf2855e5ff665bcc8fda353d29222a45cd8a2fd587de04099989de8d748"},
-    {file = "bomiot_cmd-0.1.47-cp311-cp311-manylinux_2_34_aarch64.whl", hash = "sha256:00be989541dd30d2faa5976c8486e9716eb207500b7563b9f3a4af4f2ca534ea"},
-    {file = "bomiot_cmd-0.1.47-cp311-cp311-manylinux_2_34_armv7l.whl", hash = "sha256:bddf05a7d78a7f11b1ca44471bd3dd6ac10b42731e3db392b32fb48814b36cac"},
-    {file = "bomiot_cmd-0.1.47-cp311-cp311-manylinux_2_38_x86_64.whl", hash = "sha256:d22d6cba8e57b2da0f3b08ee7fd80c003f4dfb0f53d117ab33c04402d3e34f5b"},
-    {file = "bomiot_cmd-0.1.47-cp311-cp311-win_amd64.whl", hash = "sha256:b4adaff5473e5f34abb411d21a8bd4e13cbb4f31b7153ac3458a55d0d7aa3175"},
-    {file = "bomiot_cmd-0.1.47-cp312-cp312-macosx_11_0_universal2.whl", hash = "sha256:02e2f71fb27668d3c8df3b574f25f70a055c6994f1b6ad86e761f099d6cc028d"},
-    {file = "bomiot_cmd-0.1.47-cp312-cp312-manylinux_2_34_aarch64.whl", hash = "sha256:71e271e2876abeee7c6ef29ccf77a9e118f4f9898b232d478877919aa979f04e"},
-    {file = "bomiot_cmd-0.1.47-cp312-cp312-manylinux_2_34_armv7l.whl", hash = "sha256:970d317e95ec3ff3fdaa70fcfb620a6ecd636be2d6512942656bc1fe7ec28d15"},
-    {file = "bomiot_cmd-0.1.47-cp312-cp312-manylinux_2_38_x86_64.whl", hash = "sha256:29439f67bc746dc0da2acb5e05378d98506406fedcd6e9b40b3904d81fb8b3f4"},
-    {file = "bomiot_cmd-0.1.47-cp312-cp312-win_amd64.whl", hash = "sha256:bde9f73f31e68342999d753461722016ae6a79ab0c6ddbb6b2eea2cdb9b4caae"},
-    {file = "bomiot_cmd-0.1.47-cp313-cp313-macosx_11_0_universal2.whl", hash = "sha256:8ccd0b61891696fa77331f90314ed8f83a8ef169f3b9bfb652f36c585587eb6b"},
-    {file = "bomiot_cmd-0.1.47-cp313-cp313-manylinux_2_34_aarch64.whl", hash = "sha256:ba4d6365c978ed359635e7e01014e5adcff706091746f79dc790f0ce3863a555"},
-    {file = "bomiot_cmd-0.1.47-cp313-cp313-manylinux_2_34_armv7l.whl", hash = "sha256:ad8da7404a944de37361cb926dfb76e942012ac54f3caea042540f4d8bcf8dcc"},
-    {file = "bomiot_cmd-0.1.47-cp313-cp313-manylinux_2_38_x86_64.whl", hash = "sha256:286f4c6592c3e8b4b6bbaf68b55bc13536e0d2312c2e5b28dfae8ac146c0b3ec"},
-    {file = "bomiot_cmd-0.1.47-cp313-cp313-win_amd64.whl", hash = "sha256:4b0415147a1b404260a004bd4786324b94cdc589fba1e978e62e9af231cb1ae4"},
+    {file = "bomiot_cmd-0.1.54-cp310-cp310-macosx_11_0_universal2.whl", hash = "sha256:9a17995306e87fd09c19f66aec96377b6416d2311b0afada7e32b226d700f9a2"},
+    {file = "bomiot_cmd-0.1.54-cp310-cp310-manylinux_2_31_aarch64.whl", hash = "sha256:9b25920de3f71a9f137790457536961e22f8d7ac0624614a566ed13e7fa82e9c"},
+    {file = "bomiot_cmd-0.1.54-cp310-cp310-manylinux_2_31_armv7l.whl", hash = "sha256:d9a68b9e10d5e2ca6de5cddc107a54c9578070046ef0f308f6bfd88887863933"},
+    {file = "bomiot_cmd-0.1.54-cp310-cp310-manylinux_2_34_x86_64.whl", hash = "sha256:31ded59ade4b7afc4ae023153f805b5e77aac45261c4b4710c04c288cabfa38c"},
+    {file = "bomiot_cmd-0.1.54-cp310-cp310-win_amd64.whl", hash = "sha256:d5a0e95fda52299d8f15b508c4b251de251fe374ce2fc99ca9f07226aaced551"},
+    {file = "bomiot_cmd-0.1.54-cp311-cp311-macosx_11_0_universal2.whl", hash = "sha256:f120224afec573cf575dc41901d99da4f8e5125ed7c412e3a8f97bcebee28fdf"},
+    {file = "bomiot_cmd-0.1.54-cp311-cp311-manylinux_2_31_aarch64.whl", hash = "sha256:4907cf84e8a669f234e6f884030e27d6af8d552ee65ae139a09a20055435aa38"},
+    {file = "bomiot_cmd-0.1.54-cp311-cp311-manylinux_2_31_armv7l.whl", hash = "sha256:5da564a2015ff9ce51a922c0e52ed63dc0aa40310e3a2c0cdb19f64d1e3165fc"},
+    {file = "bomiot_cmd-0.1.54-cp311-cp311-manylinux_2_34_x86_64.whl", hash = "sha256:bcfc8feeb306c952332357b10f7b520575aca0274afd118e9e0f19c6866279c0"},
+    {file = "bomiot_cmd-0.1.54-cp311-cp311-win_amd64.whl", hash = "sha256:e45d4b3fafb782d86f4987fa949812ae5de1ef9f005358743e6ec139df75560a"},
+    {file = "bomiot_cmd-0.1.54-cp312-cp312-macosx_11_0_universal2.whl", hash = "sha256:564cba25e194b0033656607e1f473b3418461dd96e103f31dcef431ce3fe5f03"},
+    {file = "bomiot_cmd-0.1.54-cp312-cp312-manylinux_2_31_aarch64.whl", hash = "sha256:a411bc0e550d6bb275864c47650b6ca7fb0f9fc2b2322d4affd339f090b8590b"},
+    {file = "bomiot_cmd-0.1.54-cp312-cp312-manylinux_2_31_armv7l.whl", hash = "sha256:ef2c64fa0d02d1429ffb5564e6b9836cea490cb3c56e7ae2a5071feca618b5c3"},
+    {file = "bomiot_cmd-0.1.54-cp312-cp312-manylinux_2_34_x86_64.whl", hash = "sha256:85f0b488df8775ae3e04ed54734bf5bce8838dae22f2c572bfdb23dcd4253948"},
+    {file = "bomiot_cmd-0.1.54-cp312-cp312-win_amd64.whl", hash = "sha256:4d4e2eeed107a0020df96a6fa1bc26653ce2130579dea1ba47801a202d4d16e5"},
+    {file = "bomiot_cmd-0.1.54-cp313-cp313-macosx_11_0_universal2.whl", hash = "sha256:259be16d373048228b834e5498f33abc5c1e76cca847aff2c7f6e2b48c674c0f"},
+    {file = "bomiot_cmd-0.1.54-cp313-cp313-manylinux_2_31_aarch64.whl", hash = "sha256:42a710625ce1f0d85d304564d735f4aad14baffb591d6e6327a80b4e7c1ce639"},
+    {file = "bomiot_cmd-0.1.54-cp313-cp313-manylinux_2_31_armv7l.whl", hash = "sha256:ef743acf90368bacb037066b54eafcf50f3b2195264331e5b182b46f4694d510"},
+    {file = "bomiot_cmd-0.1.54-cp313-cp313-manylinux_2_34_x86_64.whl", hash = "sha256:4800c76375b5a473f30e7872b87eb7f359d8a64cbb635c581a29164a28914e5d"},
+    {file = "bomiot_cmd-0.1.54-cp313-cp313-win_amd64.whl", hash = "sha256:bf0c5d2d28d50d1d3f3e2884fc72d4f995b09776e2b2b30fcd2d31142e11957d"},
 ]
 
 [[package]]
@@ -278,13 +278,13 @@ files = [
 
 [[package]]
 name = "certifi"
-version = "2026.10.19"
+version = "2026.10.23"
 description = "Python package for providing Mozilla's CA Bundle."
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "certifi-2026.10.19-py3-none-any.whl", hash = "sha256:42d35340cc5b9ba78e818ddbff0c5b1c2b779de448a340fd1b989f5fa8670e1b"},
-    {file = "certifi-2026.10.19.tar.gz", hash = "sha256:035c1e85572b141bf1c3a3eff0e33a8eb74917522f2559075ff8d2fea780a1ae"},
+    {file = "certifi-2026.10.23-py3-none-any.whl", hash = "sha256:e9b54de76e530bb6cf0ccd036787103acb58fd42ba930ea8bf948ddbaa2f61d1"},
+    {file = "certifi-2026.10.23.tar.gz", hash = "sha256:a9895e6e2758b371e0545e321a3a8fd1fcfd9829ada8824a936dfb16aaaf36cd"},
 ]
 
 [[package]]
@@ -1666,17 +1666,18 @@ crypto = ["cryptography (>=3.4.0)"]
 
 [[package]]
 name = "python-dateutil"
-version = "2.9.0.post0"
+version = "3.0.0"
 description = "Extensions to the standard Python datetime module"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
 files = [
-    {file = "python-dateutil-2.9.0.post0.tar.gz", hash = "sha256:37dd54208da7e1cd875388217d5e00ebd4179249f90fb72437e91a35459a0ad3"},
-    {file = "python_dateutil-2.9.0.post0-py2.py3-none-any.whl", hash = "sha256:a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427"},
+    {file = "python_dateutil-3.0.0-py2.py3-none-any.whl", hash = "sha256:3c79630202e4152c6add678446984236efe4f57e84d8e892aab0637bab82e9fd"},
+    {file = "python_dateutil-3.0.0.tar.gz", hash = "sha256:7ebcb3c29a92f3ceafe79a7a48a5c45677e9e004bbeec5742ac0bbb00560b7a2"},
 ]
 
 [package.dependencies]
-six = ">=1.5"
+six = ">=1.6"
+tzdata = "*"
 
 [[package]]
 name = "python-dotenv"
@@ -1898,13 +1899,13 @@ files = [
 
 [[package]]
 name = "tzlocal"
-version = "5.4.4"
+version = "5.4.5"
 description = "tzinfo object for the local timezone"
 optional = false
 python-versions = ">=3.10"
 files = [
-    {file = "tzlocal-5.4.4-py3-none-any.whl", hash = "sha256:aae09f0126a8a86fa736be266eb4a471380d26a0de3bc14844e7821fee3e2a15"},
-    {file = "tzlocal-5.4.4.tar.gz", hash = "sha256:8dbb8660838688a7b6ba4fed31d18dedf842afb4d47ca050d6d891c2c15f3be4"},
+    {file = "tzlocal-5.4.5-py3-none-any.whl", hash = "sha256:ecab534f6d65d9deb4c4ea52c121ab6dd5958e9b878e71dcb102578269752454"},
+    {file = "tzlocal-5.4.5.tar.gz", hash = "sha256:ba976898bad27945178c9ca25c222c19e322b30c10342b9f40b46714f70d2d5f"},
 ]
 
 [package.dependencies]
